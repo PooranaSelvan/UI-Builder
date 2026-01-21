@@ -1,0 +1,61 @@
+.sirpam-logo {
+     height: 40px;
+}
+.navbar {
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+     justify-content: space-evenly;
+     padding: 15px 30px;
+     background-color: var(--bg-glass);
+     letter-spacing: 0.3px;
+     position: sticky;
+     top: 0;
+     border-bottom: 1px solid var(--red-200);
+     z-index: 1000;
+}
+.nav-flex {
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+     gap: 10px;
+}
+li {
+     list-style: none;
+}
+
+.nav-heading {
+     font-size: 22px;
+     color: var(--primary);
+}
+.navbar-navigations {
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+     justify-content: center;
+     gap: 30px;
+     font-size: 14px;
+}
+
+.nav-btn {
+     padding: 10px 20px;
+     font-size: 14px;
+     border-radius: 8px;
+     font-weight: 700;
+}
+.nav-btn-primary {
+     background-color: var(--red-100);
+     color: var(--primary);
+}
+.nav-btn-primary:hover {
+     background-color: var(--red-200);
+}
+.nav-btn-primary:active {
+     background-color: var(--red-300);
+}
+
+.nav-btn-secondary {
+     background-color: var(--primary);
+     color: white;
+     box-shadow: var(--btn-shadow-normal);
+}
