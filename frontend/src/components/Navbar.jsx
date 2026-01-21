@@ -2,6 +2,7 @@ import React from 'react';
 import sirpamLogo from '../assets/sirpam-logo.svg';
 import "./navbar.css";
 import Button from './Button';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   return (
@@ -14,16 +15,16 @@ const Navbar = () => {
       <div>
         <ul className='nav-flex navbar-navigations'>
           <li>
-            <Button className='nav-btns' style={{color : "black", fontSize : "14px"}}>Feature</Button>
+            <Link to='/features' className='nav-btns' style={{color : "black", fontSize : "14px"}}>Features</Link>
           </li>
           <li>
-            <Button className='nav-btns' style={{color : "black", fontSize : "14px"}}>Docs</Button>
+            <Link to='/docs' className='nav-btns' style={{color : "black", fontSize : "14px"}}>Docs</Link>
           </li>
           <li>
-            <Button className='nav-btns' style={{color : "black", fontSize : "14px"}}>Workspace</Button>
+            <Link to='workspace' className='nav-btns' style={{color : "black", fontSize : "14px"}}>Workspace</Link>
           </li>
           <li>
-            <Button className='nav-btns' style={{color : "black", fontSize : "14px"}}>Templates</Button>
+            <Link to='templates' className='nav-btns' style={{color : "black", fontSize : "14px"}}>Templates</Link>
           </li>
         </ul>
       </div>
