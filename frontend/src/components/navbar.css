@@ -1,0 +1,13 @@
+.sirpam-logo {
+     height: 40px;
+}
+.navbar {
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+     justify-content: space-evenly;
+     padding: 15px 30px;
+     background-color: var(--bg-glass);
+     border: 2px solid var(--border-soft);
+     margin: 20px;
+}
