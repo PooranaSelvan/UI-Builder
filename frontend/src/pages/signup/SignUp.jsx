@@ -42,7 +42,7 @@ const SignUp = () => {
             <div className="input-wrapper">
               <input
                 type="password"
-                placeholder="*******"
+                placeholder="••••••••"
                 className="signup-input"
               />
             </div>
@@ -55,7 +55,7 @@ const SignUp = () => {
             <div className="input-wrapper">
               <input
                 type="password"
-                placeholder="*******"
+                placeholder="••••••••"
                 className="signup-input"
               />
             </div>
