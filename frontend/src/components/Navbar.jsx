@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import sirpamLogo from '../assets/sirpam-logo.svg';
 import "./navbar.css";
 import Button from './Button';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 const Navbar = () => {
@@ -14,19 +14,19 @@ const Navbar = () => {
       {/* Logo */}
       <div className='nav-logo'>
         <img src={sirpamLogo} alt="" className='sirpam-logo' />
-        <Link to='/' className='nav-heading'>Sirpam</Link>
+        <NavLink to='/' className='nav-heading'>Sirpam</NavLink>
       </div>
 
       {/* Desktop */}
       <ul className='nav-flex desktop-navbar'>
-        <li><Link to='/features' className='nav-btns'>Features</Link></li>
-        <li><Link to='/docs' className='nav-btns'>Docs</Link></li>
-        <li><Link to='/workspace' className='nav-btns'>Workspace</Link></li>
-        <li><Link to='/templates' className='nav-btns'>Templates</Link></li>
+        <li><NavLink to='/features' className='nav-btns'>Features</NavLink></li>
+        <li><NavLink to='/docs' className='nav-btns'>Docs</NavLink></li>
+        <li><NavLink to='/workspace' className='nav-btns'>Workspace</NavLink></li>
+        <li><NavLink to='/templates' className='nav-btns'>Templates</NavLink></li>
       </ul>
       <div className='nav-flex desktop-navbar'>
-        <Button className='nav-btn nav-btn-primary'>Login</Button>
-        <Button className='nav-btn primary-button'>Get Started</Button>
+        <NavLink to='/login' className='nav-btn nav-btn-primary'>Login</NavLink>
+        <NavLink to='/signup' className='nav-btn primary-button'>Get Started</NavLink>
       </div>
 
 
@@ -38,14 +38,14 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {open && (
         <div className="mobile-menu">
-          <Link to="/features" onClick={() => setOpen(false)}>Features</Link>
-          <Link to="/docs" onClick={() => setOpen(false)}>Docs</Link>
-          <Link to="/workspace" onClick={() => setOpen(false)}>Workspace</Link>
-          <Link to="/templates" onClick={() => setOpen(false)}>Templates</Link>
+          <NavLink to="/features" onClick={() => setOpen(false)}>Features</NavLink>
+          <NavLink to="/docs" onClick={() => setOpen(false)}>Docs</NavLink>
+          <NavLink to="/workspace" onClick={() => setOpen(false)}>Workspace</NavLink>
+          <NavLink to="/templates" onClick={() => setOpen(false)}>Templates</NavLink>
 
           <div className="mobile-actions">
-            <Button className='nav-btn nav-btn-primary'>Login</Button>
-            <Button className='nav-btn primary-button'>Get Started</Button>
+            <NavLink to='/login' className='nav-btn nav-btn-primary'>Login</NavLink>
+            <NavLink to='/signup' className='nav-btn primary-button'>Get Started</NavLink>
           </div>
         </div>
       )}
