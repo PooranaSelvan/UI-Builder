@@ -130,6 +130,17 @@ a {
      display: none;
 }
 
+
+/* Active State of NavLink */
+a.active:not(.nav-heading):not(.nav-btn) {
+     color: var(--primary);
+     font-weight: 700;
+     text-decoration: underline;
+     text-decoration-color: var(--primary);
+     text-underline-offset: 6px;
+     text-decoration-thickness: 2px;
+}
+
 @media screen and (max-width: 768px) {
      .navbar {
           justify-content: space-between;

@@ -237,6 +237,7 @@
      position: absolute;
      background-image: radial-gradient(white 2px, transparent 2px);
      background-size: 24px 24px;
+     pointer-events: none;
 }
 
 .starter-gradient {
@@ -316,6 +317,13 @@
           padding: 80px 100px;
      }
 
+     .home-gradient-round-blur {
+          display: none;
+     }
+
+     .scrollToExplore {
+          display: none;
+     }
 }
 
 @media screen and (max-width: 768px) {
@@ -341,11 +349,6 @@
 
      .home-hero-btns {
           justify-content: center;
-     }
-
-     /* Scroll indicator */
-     .scrollToExplore {
-          bottom: -40px;
      }
 
      /* Steps */
@@ -412,6 +415,7 @@
      }
 
      .steps-card p {
+          text-align: left;
           max-width: 100%;
      }
 
