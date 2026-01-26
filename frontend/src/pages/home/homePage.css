@@ -150,14 +150,14 @@
 }
 
 .steps-card:hover {
-     transform: translateY(-10px);
-     box-shadow: var(--btn-shadow-normal);
+     transform: translateY(-2px);
+     box-shadow: 0px 2px 10px rgba(255, 128, 128, 0.432);
 }
 .steps-card:hover .step-heading {
      color: var(--primary);
 }
 .steps-card:hover .step-icon {
-     border: 2px solid var(--primary);
+     border: 1px solid var(--primary);
 }
 
 .step-number {
