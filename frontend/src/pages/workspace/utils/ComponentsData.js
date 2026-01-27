@@ -11,7 +11,6 @@ import {
   List,
   Grid,
   Table,
-  BarChart,
   Heading,
   AlignLeft
 } from "lucide-react";
