@@ -1,5 +1,5 @@
 import React from 'react';
-import "./canvas.css";
+import "./work-canvas.css";
 
 const Canvas = () => {
   return (
