@@ -3,8 +3,8 @@ import "./work-canvas.css";
 
 const Canvas = () => {
   return (
-    <div className='canvas-wrapper'>
-      <div className="canvas"></div>
+    <div className='work-canvas-wrapper'>
+      <div className="work-canvas"></div>
     </div>
   )
 }
