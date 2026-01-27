@@ -4,14 +4,17 @@
      align-items: center;
      justify-content: center;
      background-color: #E9EBEE;
-     height: 85vh;
-     width: 40%;
-     margin-top: 40px;
-     border: 2px solid red;
+     height: 100%;
+     width: 65%;
+     padding: 50px;
+     overflow-y: scroll;
 }
-.work-canvas {
+.canvas-drop-zone {
      background-color: white;
      border-radius: 12px;
-     height: 400px;
-     width: 400px;
+     height: 200%;
+}
+
+.test-component:hover {
+     border: 2px solid deepskyblue;
 }
