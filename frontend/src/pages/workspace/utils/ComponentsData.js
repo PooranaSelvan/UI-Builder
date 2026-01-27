@@ -25,7 +25,12 @@ export const components = [
         icon: Grid,
         tag: "div",
         content: "Row",
-        defaultProps: { className: "layout-row test-component" },
+        defaultProps: {
+          className: "layout-row test-component",
+          style: {
+            height: "300px"
+          }
+        },
         children: []
       },
       {
@@ -34,7 +39,11 @@ export const components = [
         icon: Layout,
         tag: "div",
         content: "Column",
-        defaultProps: { className: "layout-column test-component" },
+        defaultProps: {
+          className: "layout-column test-component", style: {
+            height: "300px"
+          }
+        },
         children: []
       },
       {
@@ -43,7 +52,11 @@ export const components = [
         icon: Square,
         tag: "div",
         content: "Container",
-        defaultProps: { className: "layout-container test-component" },
+        defaultProps: {
+          className: "layout-container test-component", style: {
+            height: "500px"
+          }
+        },
         children: []
       },
     ]

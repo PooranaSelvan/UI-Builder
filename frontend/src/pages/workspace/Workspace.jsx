@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { DndContext } from "@dnd-kit/core";
 import LeftPanel from "./LeftSideBar/LeftPanel";
 import Canvas from "./Canvas/Canvas";

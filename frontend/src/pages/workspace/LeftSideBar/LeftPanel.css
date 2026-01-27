@@ -6,6 +6,7 @@
   background: #fff;
   height: 100%;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 /* Tabs */
@@ -72,7 +73,6 @@
   border-radius: 10px;
   padding: 14px;
   text-align: center;
-  cursor: pointer;
 }
 
 .grid-item span {

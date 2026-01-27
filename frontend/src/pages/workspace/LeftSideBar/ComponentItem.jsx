@@ -16,11 +16,11 @@ export default function ComponentItem({ item }) {
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    cursor: "grab"
+    cursor: "grab",
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="grid-item">
+    <div ref={setNodeRef} style={{...style, zIndex : 100}} {...listeners} {...attributes} className="grid-item">
       <Icon size={22} />
       <span>{label}</span>
     </div>
