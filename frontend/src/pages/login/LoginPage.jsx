@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './LoginPage.css'
 import Button from '../../components/Button'
+import { Link } from 'react-router-dom';
 import { Eye } from 'lucide-react';
 import { EyeOff } from 'lucide-react';
 
@@ -81,7 +82,7 @@ const LoginPage = () => {
                         </form>
                     </div>
                 </div>
-                <p>Dont have account? <a href="">Create an account</a></p>
+                <p>Dont have account? <Link to="/signup">Create an account</Link></p>
             </div>
         </>
     )
