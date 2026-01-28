@@ -1,12 +1,11 @@
 import { useDraggable } from "@dnd-kit/core";
-import { CSS } from "@dnd-kit/utilities";
 
 export default function ComponentItem({ item }) {
   const { id, icon: Icon, label } = item;
 
   // console.log(item); // full tag object uhm irukum
 
-  const { attributes, listeners, setNodeRef, transform } =
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id,
       data: {
@@ -15,12 +14,13 @@ export default function ComponentItem({ item }) {
     });
 
   const style = {
-    transform: CSS.Translate.toString(transform),
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
     cursor: "grab",
+    zIndex: isDragging ? 999 : 'auto'
   };
 
   return (
-    <div ref={setNodeRef} style={{...style, zIndex : 100}} {...listeners} {...attributes} className="grid-item">
+    <div ref={setNodeRef} style={{ ...style }} {...listeners} {...attributes} className="grid-item">
       <Icon size={22} />
       <span>{label}</span>
     </div>

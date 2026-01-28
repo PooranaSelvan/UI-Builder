@@ -1,5 +1,4 @@
 import {
-  Type,
   Image,
   Square,
   Link2,

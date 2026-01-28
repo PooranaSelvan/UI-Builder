@@ -12,7 +12,7 @@
 .canvas-drop-zone {
      background-color: white;
      border-radius: 12px;
-     height: 100%;
+     min-height: 100%;
 }
 
 .test-component:hover {
