@@ -101,8 +101,6 @@
   }
   
   /* Colors */
-  .list-item.orange .icon-box { background: #ffedd5; color: #f97316; }
-  .list-item.green .icon-box { background: #dcfce7; color: #22c55e; }
   .list-item.red {
     border: 2px solid #ef4444;
     color: #ef4444;
