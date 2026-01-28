@@ -1,0 +1,20 @@
+.work-canvas-wrapper {
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+     justify-content: center;
+     background-color: #E9EBEE;
+     height: 100%;
+     width: 65%;
+     padding: 50px;
+     overflow-y: scroll;
+}
+.canvas-drop-zone {
+     background-color: white;
+     border-radius: 12px;
+     min-height: 100%;
+}
+
+.test-component:hover {
+     border: 2px solid deepskyblue;
+}
