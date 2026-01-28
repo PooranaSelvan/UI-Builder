@@ -1,6 +1,7 @@
 .left-panel {
-  width: 300px;
-  padding: 16px;
+  height: 100%;
+  width: 16%;
+  padding: 20px;
   border-right: 1px solid #e5e7eb;
   background: #fff;
 }

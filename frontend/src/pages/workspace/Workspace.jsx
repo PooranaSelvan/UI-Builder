@@ -31,6 +31,21 @@ const Workspace = () => {
       return;
     }
 
+
+    // Adding Child
+    if (isFromSidebar && over.id !== "canvas") {
+      const componentData = active.data.current.component;
+
+      const newChild = {
+        ...componentData,
+        id: `${componentData.id}-${uuidv4()}`,
+        children: [],
+      };
+
+      setComponents((prev) => addChildToComponent(prev, over.id, newChild));
+      return;
+    }
+
     setComponents((items) => {
       const oldIndex = items.findIndex((i) => i.id === active.id); // where dragged from
       const newIndex = items.findIndex((i) => i.id === over.id); // where it putted
@@ -43,11 +58,30 @@ const Workspace = () => {
   };
 
 
-  console.log(components);
+  const addChildToComponent = (items, parentId, newChild) => {
+    return items.map((item) => {
+      if (item.id === parentId) {
+        return {...item, children: [...(item.children || []), newChild]};
+      }
+
+      if (item.children?.length) {
+        return {
+          ...item,
+          children: addChildToComponent(item.children, parentId, newChild),
+        };
+      }
+
+      return item;
+    });
+  };
+
+
+
+  // console.log(components);
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div style={{ display: "flex", height: "93vh" }}>
+      <div style={{ display: "flex", height: "93vh", overflow: "hidden" }}>
         <LeftPanel />
         <Canvas components={components} />
       </div>

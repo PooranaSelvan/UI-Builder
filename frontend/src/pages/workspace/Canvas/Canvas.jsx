@@ -22,7 +22,7 @@ const Canvas = ({ components }) => {
 
   return (
     <div className="work-canvas-wrapper">
-      <div ref={setNodeRef} className="canvas-drop-zone" style={{ flex: 1, padding: 20, background: isOver ? "#eaf7ff" : "white", border: isOver ? "2px dashed black" : "", }}>
+      <div ref={setNodeRef} className="canvas-drop-zone" style={{ flex: 1, padding: "20px", background: isOver ? "#eaf7ff" : "white", border: isOver ? "2px dashed black" : "", }}>
 
         {components.length === 0 && (
           <p style={{ color: "#999", textAlign: "center" }}>Drag components here</p>
@@ -33,6 +33,8 @@ const Canvas = ({ components }) => {
             <SortableItem key={ele.id} ele={ele} />
           ))}
         </SortableContext>
+
+        <div id="canvas-end" style={{ height: 80, border: "2px dashed transparent"}}/>
       </div>
     </div>
   );

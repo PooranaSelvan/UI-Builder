@@ -16,7 +16,8 @@ export default function ComponentItem({ item }) {
   const style = {
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
     cursor: "grab",
-    zIndex: isDragging ? 999 : 'auto'
+    zIndex: isDragging ? 999 : 'auto',
+    backgroundColor : isDragging ? "#f0f0f0" : ""
   };
 
   return (

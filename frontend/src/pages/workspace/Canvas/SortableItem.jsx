@@ -1,12 +1,21 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import React from "react";
+import "./work-canvas.css";
+import { useDroppable } from "@dnd-kit/core";
 
 const SortableItem = ({ ele }) => {
      const { id, tag, content, defaultProps, children } = ele;
-     const { setNodeRef, attributes, listeners, transform, transition, isOver } = useSortable({ id }); 
+     const { setNodeRef, attributes, listeners, transform, transition } = useSortable({ id });
 
-     console.log(listeners, defaultProps);
+     // console.log(listeners, defaultProps, attributes);
+
+     const { setNodeRef: setDropRef, isOver } = useDroppable({
+          id: id,
+          data: {
+               type: "component",
+          },
+     });
 
      const style = {
           transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
@@ -26,8 +35,12 @@ const SortableItem = ({ ele }) => {
      };
 
      return (
-          <div ref={setNodeRef} style={style} id={id} {...attributes} {...listeners}>
-               {renderComponent()}
+          <div ref={(node) => { setNodeRef(node); setDropRef(node); }} style={style} {...attributes} {...listeners}>
+               {React.createElement(tag, defaultProps, children?.length ? children.map((child) => (
+                    <SortableItem key={child.id} ele={child} />
+               ))
+                    : content
+               )}
           </div>
      );
 };
