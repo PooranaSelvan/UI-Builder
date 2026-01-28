@@ -46,7 +46,7 @@ const Workspace = () => {
   console.log(components);
 
   return (
-    <DndContext  ntext onDragEnd={handleDragEnd}>
+    <DndContext onDragEnd={handleDragEnd}>
       <div style={{ display: "flex", height: "93vh" }}>
         <LeftPanel />
         <Canvas components={components} />
