@@ -8,6 +8,7 @@ import SignUp from './pages/signup/SignUp';
 import LeftPanel from './pages/workspace/LeftSideBar/LeftPanel';
 import Canvas from './pages/workspace/Canvas/Canvas';
 import Workspace from './pages/workspace/Workspace';
+import RightSideBar from './pages/workspace/RightSideBar/RightSideBar';
 
 function App() {
 
