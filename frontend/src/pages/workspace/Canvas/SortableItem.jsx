@@ -3,10 +3,12 @@ import { CSS } from "@dnd-kit/utilities";
 import React from "react";
 import "./work-canvas.css";
 import { useDroppable } from "@dnd-kit/core";
+import { VOID_TAGS } from "../utils/voidTags";
 
 const SortableItem = ({ ele }) => {
      const { id, tag, content, defaultProps, children } = ele;
      const { setNodeRef, attributes, listeners, transform, transition } = useSortable({ id });
+     const isVoid = typeof tag === "string" && VOID_TAGS.has(tag);
 
      // console.log(listeners, defaultProps, attributes);
 
@@ -15,6 +17,7 @@ const SortableItem = ({ ele }) => {
           data: {
                type: "component",
           },
+          disabled: isVoid
      });
 
      const style = {
@@ -24,22 +27,12 @@ const SortableItem = ({ ele }) => {
           marginBottom: 10
      };
 
-     const renderComponent = () => {
-          const childrenElements = children?.length ? children.map((child) => child.content) : content;
-
-          if (typeof tag === "string") {
-               return React.createElement(tag, defaultProps, childrenElements);
-          }
-
-          return React.createElement(tag, defaultProps);
-     };
-
      return (
           <div ref={(node) => { setNodeRef(node); setDropRef(node); }} style={style} {...attributes} {...listeners}>
-               {React.createElement(tag, defaultProps, children?.length ? children.map((child) => (
-                    <SortableItem key={child.id} ele={child} />
-               ))
-                    : content
+               {isVoid ? (
+                    React.createElement(tag, defaultProps)
+               ) : (
+                    React.createElement(tag, defaultProps, children?.length ? children.map((child) => (<SortableItem key={child.id} ele={child} /> )) : content)
                )}
           </div>
      );
