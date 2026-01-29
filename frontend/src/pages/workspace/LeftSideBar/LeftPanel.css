@@ -83,3 +83,19 @@
   border-radius: 8px;
   background: #f3f4f6;
 }
+
+
+/* Resize */
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  background: transparent;
+}
+
+.resize-handle:hover {
+  background:var(--primary);
+}
