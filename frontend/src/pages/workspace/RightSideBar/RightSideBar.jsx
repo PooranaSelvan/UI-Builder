@@ -25,7 +25,6 @@ const RightSideBar = () => {
     const [color, setColor] = useState('#dc2626');
     return (
         <main>
-            <div className='sample'>jfso</div>
             <aside className="right-side-main-bar">
                 <div className="button-flex">
                     {["properties", "style", "resources"].map((tab) => (

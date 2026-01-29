@@ -19,10 +19,6 @@ main {
     display: flex;
 }
 
-.sample {
-    width: 81%;
-}
-
 .right-side-main-bar {
     width: 19%;
     height: 100%;
