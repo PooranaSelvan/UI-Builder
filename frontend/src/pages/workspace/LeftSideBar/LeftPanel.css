@@ -78,22 +78,6 @@
   font-size: 13px;
 }
 
-/* List */
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.list-item {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  cursor: pointer;
-}
-
 .icon-box {
   padding: 10px;
   border-radius: 8px;
