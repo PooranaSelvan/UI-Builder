@@ -11,7 +11,7 @@ const Workspace = () => {
   const handleDragEnd = (event) => {
     const { active, over } = event;
     // active - current dragging
-    // over - dropped
+    // over - current dropped
 
     if (!over) return;
     const isFromSidebar = !!active.data.current?.component; // to check whether from sidebar or sortable
@@ -36,16 +36,14 @@ const Workspace = () => {
     if (isFromSidebar && over.id !== "canvas") {
       const componentData = active.data.current.component;
 
-      const newChild = {
-        ...componentData,
-        id: `${componentData.id}-${uuidv4()}`,
-        children: [],
-      };
+      const newChild = {...componentData, id: `${componentData.id}-${uuidv4()}`, children: []};
 
       setComponents((prev) => addChildToComponent(prev, over.id, newChild));
       return;
     }
 
+
+    // Moving Inside the Canvas Area
     setComponents((items) => {
       const oldIndex = items.findIndex((i) => i.id === active.id); // where dragged from
       const newIndex = items.findIndex((i) => i.id === over.id); // where it putted

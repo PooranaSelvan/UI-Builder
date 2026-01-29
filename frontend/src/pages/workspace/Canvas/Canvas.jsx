@@ -7,19 +7,6 @@ import SortableItem from "./SortableItem";
 const Canvas = ({ components }) => {
   const { setNodeRef, isOver } = useDroppable({ id: "canvas" });
 
-  const renderComponent = (ele) => {
-    const { tag, content, defaultProps, children } = ele;
-
-    const childrenElements = children?.length ? children.map((childEle) => renderComponent(childEle)) : content;
-
-    if (typeof tag === "string") {
-      let Tag = tag;
-      return <Tag {...defaultProps}>{childrenElements}</Tag>;
-    }
-
-    return React.createElement(tag, defaultProps);
-  };
-
   return (
     <div className="work-canvas-wrapper">
       <div ref={setNodeRef} className="canvas-drop-zone" style={{ flex: 1, padding: "20px", background: isOver ? "#eaf7ff" : "white", border: isOver ? "2px dashed black" : "", }}>
