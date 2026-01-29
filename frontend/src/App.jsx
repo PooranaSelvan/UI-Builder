@@ -5,12 +5,14 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import ErrorPage from './pages/error/ErrorPage';
 import LoginPage from './pages/login/LoginPage';
 import SignUp from './pages/signup/SignUp';
+import RightSideBar from './pages/workspace/RightSideBar/RightSideBar';
 
 function App() {
 
   return (
     <>
-      <BrowserRouter>
+      <RightSideBar></RightSideBar>
+      {/* <BrowserRouter>
         <Navbar />  
         <Routes>
           <Route path='/' element={<HomePage />} />
@@ -18,7 +20,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path='/login' element={<LoginPage />} />
         </Routes>
-      </BrowserRouter>
+      </BrowserRouter> */}
     </>
   )
 }
