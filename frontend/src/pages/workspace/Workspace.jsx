@@ -4,6 +4,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 import LeftPanel from "./LeftSideBar/LeftPanel";
 import Canvas from "./Canvas/Canvas";
 import { v4 as uuidv4 } from "uuid";
+import RightSideBar from "./RightSideBar/RightSideBar";
 
 const Workspace = () => {
   const [components, setComponents] = useState([]);
@@ -84,6 +85,7 @@ const Workspace = () => {
       <div style={{ display: "flex", height: "93vh", overflow: "hidden" }}>
         <LeftPanel />
         <Canvas components={components} />
+        <RightSideBar />
       </div>
     </DndContext>
   );
