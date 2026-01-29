@@ -11,8 +11,7 @@ function App() {
 
   return (
     <>
-      <RightSideBar></RightSideBar>
-      {/* <BrowserRouter>
+      <BrowserRouter>
         <Navbar />  
         <Routes>
           <Route path='/' element={<HomePage />} />
@@ -20,7 +19,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path='/login' element={<LoginPage />} />
         </Routes>
-      </BrowserRouter> */}
+      </BrowserRouter>
     </>
   )
 }
