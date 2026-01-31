@@ -1,10 +1,15 @@
 .left-panel {
+  position: relative;
   height: 100%;
-  width: 16%;
-  padding: 20px;
+  background: #ffffff;
   border-right: 1px solid #e5e7eb;
-  background: #fff;
+  padding: 16px;
+  /* overflow-y: auto; */
+  flex-shrink: 0;
+  width: 16%;
+  transition: all 0.07s ease-in-out;
 }
+
 
 /* Tabs */
 .panel-tabs {
@@ -82,4 +87,19 @@
   padding: 10px;
   border-radius: 8px;
   background: #f3f4f6;
+}
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 50;
+  touch-action: none;
+  user-select: none;
+}
+
+.resize-handle:hover {
+  background: #ef4444;
 }

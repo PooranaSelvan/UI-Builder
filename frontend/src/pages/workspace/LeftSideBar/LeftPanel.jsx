@@ -2,35 +2,41 @@ import "./LeftPanel.css";
 import { components } from "../utils/ComponentsData";
 import ComponentItem from "./ComponentItem";
 import { Search } from "lucide-react";
-import { useState,useRef } from "react";
+import { useState, useRef } from "react";
 
 export default function LeftPanel() {
-  const [width, setWidth] = useState(280); 
+  const [widthPercent, setWidthPercent] = useState(16);
   const isResizing = useRef(false);
 
-  // const startResize = () => {
-  //   isResizing.current = true;
-  //   document.body.style.userSelect = "none"; 
-  //   document.addEventListener("mousemove", resize);
-  //   document.addEventListener("mouseup", stopResize);
-  // };
+  const handlePointerDown = (e) => {
+    isResizing.current = true;
+    e.target.setPointerCapture(e.pointerId);
+  };
 
-  // const resize = (e) => {
-  //   if (!isResizing.current){
-  //     return;
-  //   } 
-  //   const newWidth = Math.min(Math.max(e.clientX, 220), 300);
-  //   setWidth(newWidth);
-  // };
+  const handlePointerMove = (e) => {
+    if (!isResizing.current) return;
 
-  // const stopResize = () => {
-  //   isResizing.current = false;
-  //   document.body.style.userSelect = "auto";
-  //   document.removeEventListener("mousemove", resize);
-  //   document.removeEventListener("mouseup", stopResize);
-  // };
+    const screenWidth = window.innerWidth;
+    let newPercent = (e.clientX / screenWidth) * 100;
+
+    newPercent = Math.min(16, Math.max(12, newPercent));
+    setWidthPercent(newPercent);
+  };
+
+  const handlePointerUp = (e) => {
+    isResizing.current = false;
+    e.target.releasePointerCapture(e.pointerId);
+  };
+
   return (
-    <aside className="left-panel">
+    <aside className="left-panel" style={{ width: `${widthPercent}%` }}>
+      <div
+        className="resize-handle"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+      />
+
       <div className="panel-tabs">
         <button className="tab active">Components</button>
         <button className="tab">Layers</button>
@@ -50,7 +56,14 @@ export default function LeftPanel() {
           {section.type === "grid" && (
             <div className="grid">
               {section.items.map((item) => (
-                <ComponentItem key={item.id} id={item.id} icon={item.icon} label={item.label} tag={item.tag} item={item} />
+                <ComponentItem
+                  key={item.id}
+                  id={item.id}
+                  icon={item.icon}
+                  label={item.label}
+                  tag={item.tag}
+                  item={item}
+                />
               ))}
             </div>
           )}
