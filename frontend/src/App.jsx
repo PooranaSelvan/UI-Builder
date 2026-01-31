@@ -9,6 +9,7 @@ import LeftPanel from './pages/workspace/LeftSideBar/LeftPanel';
 import Canvas from './pages/workspace/Canvas/Canvas';
 import Workspace from './pages/workspace/Workspace';
 import RightSideBar from './pages/workspace/RightSideBar/RightSideBar';
+import ComponentEditor from './pages/component-editor/ComponentEditor';
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
             <Route path="leftpanel" element={<LeftPanel />} />
             <Route path="temp" element={<Canvas />} />
           </Route>
+          <Route path='/component-editor' element={<ComponentEditor />} />
         </Routes>
       </BrowserRouter>
     </>
