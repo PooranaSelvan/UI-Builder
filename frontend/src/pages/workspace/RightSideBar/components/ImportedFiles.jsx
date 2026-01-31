@@ -8,39 +8,12 @@ import {
 } from "lucide-react";
 import "./ImportedFile.css";
 
-const files = [
-  {
-    id: 1,
-    name: "sales_data_2024.csv",
-    size: "1.2 MB",
-    meta: "2,450 rows",
-    type: "csv",
-    status: "done"
-  },
-  {
-    id: 2,
-    name: "user_analytics.json",
-    size: "856 KB",
-    meta: "1,024 records",
-    type: "json",
-    status: "done",
-    actions: true
-  },
-  {
-    id: 3,
-    name: "inventory_report.xlsx",
-    status: "uploading",
-    progress: 65,
-    type: "xlsx"
-  }
-];
-
-export default function ImportedFiles() {
+export default function ImportedFiles({ files }) {
   return (
     <div className="imported-files">
       <div className="imported-header">
         <div className="title">
-          <Folder size={16} color="red"/>
+          <Folder size={16} color="red" />
           <span>Imported Files</span>
           <span className="count">{files.length}</span>
         </div>

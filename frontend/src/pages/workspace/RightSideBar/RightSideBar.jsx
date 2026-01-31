@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import "./RightSideBar.css";
 import "../../../index.css"
-import { Settings } from 'lucide-react';
+import { Icon, Settings } from 'lucide-react';
 import { ChevronDown } from 'lucide-react';
 import { Zap } from 'lucide-react';
 import { LayoutDashboard } from 'lucide-react';
@@ -18,11 +18,20 @@ import { Database } from 'lucide-react';
 import { Webhook } from 'lucide-react';
 import { Pencil } from 'lucide-react';
 import { Cloud } from 'lucide-react';
+import { MoveLeft, MoveRight, MoveDown, MoveUp } from 'lucide-react';
 import ImportedFiles from './components/ImportedFiles';
 
 const RightSideBar = () => {
     const [activeTab, setActiveTab] = useState("properties");
-    const [color, setColor] = useState('#dc2626');
+    const [activeButton, setActiveButton] = useState('row');
+    const [opacity, setOpacity] = useState(100);
+    const [font, setFont] = useState(16);
+    const [files, setFiles] = useState([]);
+    const [styles, setStyles] = useState({
+        backgroundColor: "#ffffff",
+        borderColor: "#dc2626",
+        textColor: "#000000"
+    });
     return (
         <main>
             <aside className="right-side-main-bar">
@@ -114,18 +123,28 @@ const RightSideBar = () => {
                                     </select>
                                 </div>
                             </div>
-                            <Heading icon={<Columns3 />} children={'Flex Layout'} />
+                            <Heading icon={<Columns3 size={18} />} children={'Flex Layout'} />
                             <div className="four-button">
                                 <div className="btn-box">
-                                    <button className="active">→</button>
-                                    <button>←</button>
-                                    <button>↓</button>
-                                    <button>↑</button>
+                                    {[
+                                        { id: "row", icon: <MoveRight /> },
+                                        { id: "row-reverse", icon: <MoveLeft /> },
+                                        { id: "column", icon: <MoveDown /> },
+                                        { id: "column-reverse", icon: <MoveUp /> }
+                                    ].map(({ id, icon }) => (
+                                        <button
+                                            key={id}
+                                            className={activeButton === id ? "active" : ""}
+                                            onClick={() => setActiveButton(id)}
+                                        >
+                                            {icon}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
                             <div className="double-input">
                                 <div className='input-child'>
-                                    <label htmlFor="">Display</label>
+                                    <label htmlFor="">Justify Content</label>
                                     <select>
                                         <option>flex-start</option>
                                         <option>center</option>
@@ -136,7 +155,7 @@ const RightSideBar = () => {
                                     </select>
                                 </div>
                                 <div className='input-child'>
-                                    <label htmlFor="">Position</label>
+                                    <label htmlFor="">Align items</label>
                                     <select>
                                         <option>stretch</option>
                                         <option selected="">center</option>
@@ -146,15 +165,7 @@ const RightSideBar = () => {
                                     </select>
                                 </div>
                             </div>
-                            <div className="slider-input">
-                                <div className="slider-header">
-                                    <label>Gap</label>
-                                </div>
-                                <div className="slider-main">
-                                    <input type="range" />
-                                    <span className="slider-value">16px</span>
-                                </div>
-                            </div>
+                            <SliderInput label={'font size'} value={font} min={0} max={48} unit='px' onChange={setFont} />
                             <Heading icon={<Space size={18} />} children={'Spacing'} />
                             <div className="spacing-content">
                                 <FourSideInput label={'Padding'} names={['top', 'Right', 'Bottom', 'Left']} />
@@ -163,21 +174,13 @@ const RightSideBar = () => {
                             <Heading icon={<PaintbrushVertical size={18} />} children={'Background'} />
                             <div className='background-content'>
                                 <label htmlFor="">Background color</label>
-                                <div className="color-pallette">
-                                    <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
-                                    <div className="color-box">
-                                        <input className='color-input' type="text" value={color} id='color-input' contentEditable='true' />
-                                    </div>
-                                </div>
-                                <div className="slider-input">
-                                    <div className="slider-header">
-                                        <label>opacity</label>
-                                    </div>
-                                    <div className="slider-main">
-                                        <input type="range" />
-                                        <span className="slider-value">100%</span>
-                                    </div>
-                                </div>
+                                <ColorPalette
+                                    value={styles.backgroundColor}
+                                    onChange={(v) =>
+                                        setStyles((p) => ({ ...p, backgroundColor: v }))
+                                    }
+                                />
+                                <SliderInput label={'opacity'} value={opacity} min={0} max={100} unit='%' onChange={setOpacity} />
                                 <div className="background-image">
                                     <label htmlFor="">Background Image</label>
                                     <div className="image-input">
@@ -192,7 +195,7 @@ const RightSideBar = () => {
                                 <div className="three-input">
                                     <div>
                                         <label htmlFor="">Width</label>
-                                        <input type="text" />
+                                        <input type="text" value={'1px'} />
                                     </div>
                                     <div>
                                         <label htmlFor="">Style</label>
@@ -206,7 +209,7 @@ const RightSideBar = () => {
                                     </div>
                                     <div>
                                         <label htmlFor="">Color</label>
-                                        <input type="text" />
+                                        <input type="text" value={'#E5E7EB'} />
                                     </div>
                                 </div>
                                 <FourSideInput label={'Border Radius'} names={['Top left', 'Top Right', 'Bottom Right', 'Bottom Left']} />
@@ -233,12 +236,12 @@ const RightSideBar = () => {
                                 </div>
                                 <div className="color">
                                     <label htmlFor="" id='text-color'>Text color</label>
-                                    <div className="color-pallette">
-                                        <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
-                                        <div className="color-box">
-                                            <input className='color-input' type="text" value={color} id='color-input' contentEditable='true' />
-                                        </div>
-                                    </div>
+                                    <ColorPalette
+                                        value={styles.textColor}
+                                        onChange={(v) =>
+                                            setStyles((p) => ({ ...p, textColor: v }))
+                                        }
+                                    />
                                 </div>
                                 <div className="double-input">
                                     <div className='input-child'>
@@ -261,12 +264,12 @@ const RightSideBar = () => {
                                 <FourSideInput label={'Box shadow'} names={['x', 'y', 'spread', 'blur']} />
                                 <div className="color">
                                     <label htmlFor="" id='text-color'>Shadow color</label>
-                                    <div className="color-pallette">
-                                        <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
-                                        <div className="color-box">
-                                            <input className='color-input' type="text" value={color} id='color-input' contentEditable='true' />
-                                        </div>
-                                    </div>
+                                    <ColorPalette
+                                        value={styles.borderColor}
+                                        onChange={(v) =>
+                                            setStyles((p) => ({ ...p, borderColor: v }))
+                                        }
+                                    />
                                 </div>
                                 <div className="three-input">
                                     <div>
@@ -294,35 +297,8 @@ const RightSideBar = () => {
                     {activeTab === 'resources' && (
                         <div className="properties-content">
                             <Heading icon={<FileUp size={18} />} children={'External Data Source'} />
-                            <div className='upload-import'>
-                                <div className="upload-section">
-                                    <label className="section-title">UPLOAD FILE</label>
-                                    <div className="upload-box">
-                                        <UploadCloud size={28} />
-                                        <p>
-                                            Drop files here or <span>browse</span>
-                                        </p>
-                                        <small>CSV, JSON (Max 10MB)</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="divider">
-                                <div></div>
-                                <span>OR</span>
-                                <div></div>
-                            </div>
-                            <div className="import-section">
-                                <label className="section-title">IMPORT FROM URL</label>
-
-                                <div className="import-row">
-                                    <div className="url-input">
-                                        <Link2 size={14} />
-                                        <input placeholder="https://example.com/data.csv" />
-                                    </div>
-                                    <button className="fetch-btn">Fetch</button>
-                                </div>
-                            </div>
-                            <ImportedFiles />
+                            {/* <FileUpload />
+                            <ImportedFiles /> */}
                             <Heading icon={<Database size={18} />} children={'Database Connection'} />
                             <div className="data-source">
                                 <label htmlFor="">Data source</label>
@@ -418,6 +394,84 @@ const FourSideInput = ({ label, values = [16, 16, 16, 16], names }) => {
                 </div>
             </div>
         </div>
+    );
+};
+
+const ColorPalette = ({ value, onChange }) => {
+    return (
+        <div className="color-pallette">
+            <input
+                type="color"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            />
+            <div className="color-box">
+                <input
+                    className="color-input"
+                    type="text"
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                />
+            </div>
+        </div>
+    );
+};
+
+const SliderInput = ({ label, value, onChange, min = 0, max = 100, step = 1, unit = '' }) => {
+    return (
+        <>
+            <div className="slider-input">
+                <div className="slider-header">
+                    <label>{label}</label>
+                </div>
+                <div className="slider-main">
+                    <input type="range" min={min} max={max} step={step} onChange={(e) => onChange(Number(e.target.value))} />
+                    <span className="slider-value">{value}{unit}</span>
+                </div>
+            </div>
+        </>
+    )
+}
+
+const FileUpload = ({onFilesAdded}) => {
+    const inputRef = useRef(null);
+    const handleFiles = (fileList) => {
+        const newFiles = Array.from(fileList).map((file) => ({
+            id: crypto.randomUUID(),
+            name: file.name,
+            size: `${(file.size / 1024).toFixed(1)} KB`,
+            meta: "—",
+            type: file.name.split(".").pop(),
+            status: "done",
+            actions: true
+        }));
+
+        setFiles((prev) => [...prev, ...newFiles]);
+    };
+
+
+    return (
+        <>
+            <input
+                ref={inputRef}
+                type="file"
+                multiple
+                style={{ display: "none" }}
+                onChange={(e) => onFilesAdded(e.target.files)}
+            />
+
+            <div
+                className="upload-box"
+                onClick={() => inputRef.current.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                    e.preventDefault();
+                    onFilesAdded(e.dataTransfer.files);
+                }}
+            >
+                Drop files here or <span>browse</span>
+            </div>
+        </>
     );
 };
 

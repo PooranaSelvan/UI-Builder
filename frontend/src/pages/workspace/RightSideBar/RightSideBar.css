@@ -139,6 +139,7 @@ main {
     width: 100%;
     padding: 2%;
     margin-top: 4%;
+    background-color: white;
 }
 
 .input-child label {
@@ -326,28 +327,31 @@ main {
 }
 
 .color-pallette {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 2%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-pallette input[type="color"] {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
 }
 
 .color-box {
-    width: 90%;
-}
-
-.color-pallette input {
-    width: 9%;
-    border: none;
+  flex: 1;
 }
 
 .color-input {
-    padding: 1%;
-}
-
-#color-input {
-    width: 100%;
-    border: 1px solid gray;
+  width: 100%;
+  height: 36px;
+  padding: 6px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 12px;
 }
 
 .background-image label {
@@ -407,10 +411,18 @@ main {
 
 .three-input div input {
     width: 100%;
+    background-color: #F9FAFB;
+    outline: none;
+    padding: 4%;
+    border: 1px solid black;
+    border-radius: 5px;
 }
 
 .three-input div select {
     width: 100%;
+    padding: 4%;
+    border-radius: 5px;
+    background-color: #F9FAFB;
 }
 
 #text-color {
@@ -457,23 +469,27 @@ main {
 }
 
 .upload-box {
-    border: 2px dashed #d1d5db;
-    border-radius: 12px;
-    padding: 8%;
-    text-align: center;
-    background: #fafafa;
-    color: gray;
+  border: 2px dashed #d1d5db;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  background: #fafafa;
+}
+
+.upload-box:hover {
+  border-color: #dc2626;
+  background: #fff5f5;
+}
+
+.upload-box span {
+  color: #dc2626;
+  font-weight: 600;
 }
 
 .upload-box p {
     font-size: 13px;
     margin: 8px 0 4px;
-}
-
-.upload-box span {
-    color: #dc2626;
-    font-weight: 600;
-    cursor: pointer;
 }
 
 .upload-box small {
@@ -529,7 +545,7 @@ main {
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 3%;
-    background: #fff;
+    background: #F9FAFB;
 }
 
 .url-input input {
