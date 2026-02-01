@@ -4,13 +4,12 @@ import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableItem from "./SortableItem";
 
-const Canvas = ({ components }) => {
+const Canvas = ({ components, zoom }) => {
   const { setNodeRef, isOver } = useDroppable({ id: "canvas" });
 
   return (
     <div className="work-canvas-wrapper">
-      <div ref={setNodeRef} className="canvas-drop-zone" style={{ flex: 1, padding: "20px", background: isOver ? "#eaf7ff" : "white", border: isOver ? "2px dashed black" : "", }}>
-
+      <div ref={setNodeRef} className="canvas-drop-zone" style={{flex : 1, transform: `scale(${zoom})`, transformOrigin: "center", transition: "transform 0.3s ease-in-out", padding: "20px", background: isOver ? "#eaf7ff" : "white", border: isOver ? "2px dashed black" : ""}}>
         {components.length === 0 && (
           <p style={{ color: "#999", textAlign: "center" }}>Drag components here</p>
         )}
