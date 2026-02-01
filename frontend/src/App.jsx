@@ -10,6 +10,7 @@ import Canvas from './pages/workspace/Canvas/Canvas';
 import Workspace from './pages/workspace/Workspace';
 import RightSideBar from './pages/workspace/RightSideBar/RightSideBar';
 import ComponentEditor from './pages/component-editor/ComponentEditor';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
           </Route>
           <Route path='/component-editor' element={<ComponentEditor />} />
         </Routes>
+        <Toaster />
       </BrowserRouter>
     </>
   )

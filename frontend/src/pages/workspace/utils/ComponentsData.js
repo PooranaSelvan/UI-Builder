@@ -19,11 +19,25 @@ export const components = [
     type: "grid",
     items: [
       {
+        id: "container",
+        label: "Container",
+        icon: Square,
+        tag: "div",
+        rank: 1,
+        content: "Container",
+        defaultProps: {
+          className: "layout-container test-component", style: {
+            height: "500px"
+          }
+        },
+        children: []
+      },
+      {
         id: "row",
         label: "Row",
         icon: Grid,
         tag: "div",
-        rank: 1,
+        rank: 2,
         content: "Row",
         defaultProps: {
           className: "layout-row test-component",
@@ -38,7 +52,7 @@ export const components = [
         label: "Column",
         icon: Layout,
         tag: "div",
-        rank: 2,
+        rank: 3,
         content: "Column",
         defaultProps: {
           className: "layout-column test-component", style: {
@@ -46,21 +60,7 @@ export const components = [
           }
         },
         children: []
-      },
-      {
-        id: "container",
-        label: "Container",
-        icon: Square,
-        tag: "div",
-        rank: 3,
-        content: "Container",
-        defaultProps: {
-          className: "layout-container test-component", style: {
-            height: "500px"
-          }
-        },
-        children: []
-      },
+      }
     ]
   },
   {
