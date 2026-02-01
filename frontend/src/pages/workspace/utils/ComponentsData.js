@@ -23,6 +23,7 @@ export const components = [
         label: "Row",
         icon: Grid,
         tag: "div",
+        rank: 1,
         content: "Row",
         defaultProps: {
           className: "layout-row test-component",
@@ -37,6 +38,7 @@ export const components = [
         label: "Column",
         icon: Layout,
         tag: "div",
+        rank: 2,
         content: "Column",
         defaultProps: {
           className: "layout-column test-component", style: {
@@ -50,6 +52,7 @@ export const components = [
         label: "Container",
         icon: Square,
         tag: "div",
+        rank: 3,
         content: "Container",
         defaultProps: {
           className: "layout-container test-component", style: {
@@ -69,6 +72,7 @@ export const components = [
         label: "Heading",
         icon: Heading,
         tag: "h2",
+        rank: 4,
         content: "Heading Text",
         defaultProps: { className: "basic-heading test-component" }
       },
@@ -77,6 +81,7 @@ export const components = [
         label: "Paragraph",
         icon: AlignLeft,
         tag: "p",
+        rank: 4,
         content: "Paragraph text goes here. This is a sample paragraph that can be edited later.",
         defaultProps: { className: "basicparagraph test-component" }
       },
@@ -85,6 +90,7 @@ export const components = [
         label: "Image",
         icon: Image,
         tag: "img",
+        rank: 4,
         defaultProps: {
           className: "basic-image test-component",
           src: "https://placehold.co/200x200",
@@ -96,6 +102,7 @@ export const components = [
         label: "Button",
         icon: MousePointerClick,
         tag: "button",
+        rank: 4,
         content: "Click me",
         defaultProps: {
           className: "basic-button test-component",
@@ -107,6 +114,7 @@ export const components = [
         label: "Link",
         icon: Link2,
         tag: "a",
+        rank: 4,
         content: "Link",
         defaultProps: {
           className: "basic-link test-component",
@@ -118,6 +126,7 @@ export const components = [
         label: "Divider",
         icon: Minus,
         tag: "hr",
+        rank: 4,
         defaultProps: { className: "basic-divider test-component" }
       },
       {
@@ -125,6 +134,7 @@ export const components = [
         label: "Video",
         icon: Video,
         tag: "div",
+        rank: 4,
         content: "Video placeholder",
         defaultProps: { className: "basic-video test-component" }
       }
@@ -139,6 +149,7 @@ export const components = [
         label: "Input",
         icon: FormInput,
         tag: "input",
+        rank: 4,
         defaultProps: {
           className: "form-input test-component",
           type: "text",
@@ -150,6 +161,7 @@ export const components = [
         label: "Textarea",
         icon: AlignLeft,
         tag: "textarea",
+        rank: 4,
         defaultProps: {
           className: "form-textarea test-component",
           placeholder: "Enter your para here",
@@ -161,6 +173,7 @@ export const components = [
         label: "Select",
         icon: List,
         tag: "select",
+        rank: 4,
         defaultProps: {
           className: "form-select test-component"
         },

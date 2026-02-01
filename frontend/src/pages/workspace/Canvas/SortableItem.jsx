@@ -6,7 +6,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { VOID_TAGS } from "../utils/voidTags";
 
 const SortableItem = ({ ele }) => {
-     const { id, tag, content, defaultProps, children } = ele;
+     const { id, tag, content, defaultProps, children, rank } = ele;
      const { setNodeRef, attributes, listeners, transform, transition } = useSortable({ id });
      const isVoid = typeof tag === "string" && VOID_TAGS.has(tag);
 
@@ -15,6 +15,7 @@ const SortableItem = ({ ele }) => {
      const { setNodeRef: setDropRef, isOver } = useDroppable({
           id: id,
           data: {
+               rank,
                type: "component",
           },
           disabled: isVoid
