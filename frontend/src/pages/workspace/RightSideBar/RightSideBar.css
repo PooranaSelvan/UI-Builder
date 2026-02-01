@@ -63,7 +63,7 @@ main {
     align-items: center;
     justify-content: space-between;
     width: 98%;
-    margin-bottom: 3%;
+    margin-bottom: 5%;
 }
 
 .properties-toggle span {
@@ -112,11 +112,15 @@ main {
     font-size: 12px;
     border-radius: 5px;
     border: 1px solid gray;
+    background-color: #F9FAFB;
 }
 
 .properties-event div input {
     padding: 3%;
     color: gray;
+    background-color: #F9FAFB;
+    border-radius: 5px;
+    border: 1px solid gray;
 }
 
 .double-input {
@@ -139,7 +143,8 @@ main {
     width: 100%;
     padding: 2%;
     margin-top: 4%;
-    background-color: white;
+    background-color: #F9FAFB;
+    border: 1px solid gray;
 }
 
 .input-child label {
@@ -154,6 +159,8 @@ main {
     width: 100%;
     padding: 2%;
     margin-top: 4%;
+    background-color: #F9FAFB;
+    border: 1px solid gray;
 }
 
 .long-input {
@@ -166,6 +173,9 @@ main {
 .long-input input {
     padding: 1%;
     width: 78%;
+    background-color: #F9FAFB;
+    border: 1px solid gray;
+    border-radius: 5px;
 }
 
 .long-input label {
@@ -186,6 +196,9 @@ main {
 .long-input select {
     padding: 1%;
     width: 20%;
+    background-color: #F9FAFB;
+    border: 1px solid gray;
+    border-radius: 5px;
 }
 
 .four-button {
@@ -310,6 +323,7 @@ main {
     border-radius: 6px;
     text-align: center;
     font-size: 12px;
+    background-color: #F9FAFB;
 }
 
 .background-content {
@@ -339,6 +353,8 @@ main {
   padding: 0;
   border: none;
   cursor: pointer;
+  background-color: #F9FAFB;
+  border-radius: 5px;
 }
 
 .color-box {
@@ -373,6 +389,7 @@ main {
     width: 75%;
     border-radius: 5px;
     border: 1px solid #e5e7eb;
+    background-color: #F9FAFB;
     padding: 2%;
 }
 
@@ -470,10 +487,12 @@ main {
 
 .upload-box {
   border: 2px dashed #d1d5db;
-  padding: 20px;
+  padding: 15%;
   border-radius: 12px;
   text-align: center;
   cursor: pointer;
+  color: black;
+  font-size: 12px;
   background: #fafafa;
 }
 
@@ -553,6 +572,7 @@ main {
     outline: none;
     width: 100%;
     font-size: 13px;
+    background-color: #F9FAFB;
 }
 
 .fetch-btn {
@@ -592,6 +612,9 @@ main {
 .data-row input{
     border: none;
     width: 90%;
+    background-color: #F9FAFB;
+    border: 1px solid gray;
+    border-radius: 5px;
 }
 
 .data-row input:focus{
@@ -608,7 +631,7 @@ main {
   width: 100%;
   background: linear-gradient(180deg, #0f172a, #020617);
   border-radius: 10px;
-  padding: 10% 3%;
+  padding: 5% 3% 15% 3%;
   margin-top: 8px;
   font-family: "JetBrains Mono", monospace;
   margin-bottom: 4%;
@@ -629,27 +652,6 @@ main {
   font-size: 10px;
   color: #94a3b8;
   letter-spacing: 0.05em;
-}
-
-.refresh{
-    margin-bottom: 5%;
-}
-
-.refresh label{
-    font-size: 10px;
-    text-transform: uppercase;
-    font-weight: bold;
-    display: block;
-    color: gray;
-    margin-bottom: 3%;
-}
-
-.refresh select{
-    width: 100%;
-    background-color: #f3f4f6;
-    border-radius: 5px;
-    padding: 2%;
-    font-size: 12px;
 }
 
 .api-connection{

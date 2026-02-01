@@ -32,6 +32,21 @@ const RightSideBar = () => {
         borderColor: "#dc2626",
         textColor: "#000000"
     });
+    const handleFiles = (fileList) => {
+    const newFiles = Array.from(fileList).map((file) => ({
+        id: crypto.randomUUID(),
+        name: file.name,
+        size: `${(file.size / 1024).toFixed(1)} KB`,
+        meta: "—",
+        type: file.name.split(".").pop(),
+        status: "done",
+        actions: true
+    }));
+
+    setFiles((prev) => [...prev, ...newFiles]);
+    console.log("Uploaded files:", newFiles);
+
+};
     return (
         <main>
             <aside className="right-side-main-bar">
@@ -297,8 +312,8 @@ const RightSideBar = () => {
                     {activeTab === 'resources' && (
                         <div className="properties-content">
                             <Heading icon={<FileUp size={18} />} children={'External Data Source'} />
-                            {/* <FileUpload />
-                            <ImportedFiles /> */}
+                            <FileUpload onFilesAdded={handleFiles} />
+                            <ImportedFiles files={files} />
                             <Heading icon={<Database size={18} />} children={'Database Connection'} />
                             <div className="data-source">
                                 <label htmlFor="">Data source</label>
@@ -315,16 +330,6 @@ const RightSideBar = () => {
                                     SELECT revenue, month FROM sales_2024 LIMIT 10
                                 </pre>
                                 <span className="sql-badge">SQL</span>
-                            </div>
-                            <div className="refresh">
-                                <label htmlFor="">refresh interval</label>
-                                <select>
-                                    <option>Manual</option>
-                                    <option selected="">Every 30 seconds</option>
-                                    <option>Every minute</option>
-                                    <option>Every 5 minutes</option>
-                                    <option>Every hour</option>
-                                </select>
                             </div>
                             <Heading icon={<Webhook size={18} />} children={'API Connection'} />
                             <div className="api-connection">
@@ -395,6 +400,7 @@ const FourSideInput = ({ label, values = [16, 16, 16, 16], names }) => {
             </div>
         </div>
     );
+
 };
 
 const ColorPalette = ({ value, onChange }) => {
@@ -433,22 +439,10 @@ const SliderInput = ({ label, value, onChange, min = 0, max = 100, step = 1, uni
     )
 }
 
-const FileUpload = ({onFilesAdded}) => {
+
+
+const FileUpload = ({ onFilesAdded }) => {
     const inputRef = useRef(null);
-    const handleFiles = (fileList) => {
-        const newFiles = Array.from(fileList).map((file) => ({
-            id: crypto.randomUUID(),
-            name: file.name,
-            size: `${(file.size / 1024).toFixed(1)} KB`,
-            meta: "—",
-            type: file.name.split(".").pop(),
-            status: "done",
-            actions: true
-        }));
-
-        setFiles((prev) => [...prev, ...newFiles]);
-    };
-
 
     return (
         <>
