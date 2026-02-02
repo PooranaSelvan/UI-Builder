@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import RightSideBar from "./RightSideBar/RightSideBar";
 import toast from 'react-hot-toast';
 import Dock from "./components/Dock";
-
+import { components as componentLibrary } from "./utils/ComponentsData.js";
 
 const Workspace = () => {
   const [components, setComponents] = useState([]);
@@ -151,7 +151,7 @@ const Workspace = () => {
     }
 
     // Moving Inside the Canvas Area
-    setComponents((items) => {
+     setComponents((items) => {
       let oldIndex = items.findIndex((i) => i.id === active.id); // where dragged from
       let newIndex = items.findIndex((i) => i.id === over.id); // where it putted
 
@@ -255,7 +255,7 @@ const Workspace = () => {
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div style={{ display: "flex", height: "93vh", overflow: "hidden" }}>
-        <LeftPanel />
+        <LeftPanel components={componentLibrary}/>
         <Canvas components={components} zoom={zoom} selectedComponentId={selectedComponentId} onSelectComponent={(id) => setSelectedComponentId(id)} clearComponentSelection={clearComponentSelection} />
         <RightSideBar selectedComponent={selectedComponent} updateComponent={updateComponent} deleteComponent={deleteComponent} />
       </div>
