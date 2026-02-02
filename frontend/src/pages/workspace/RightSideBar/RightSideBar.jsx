@@ -82,7 +82,13 @@ const RightSideBar = () => {
                                 <Heading icon={<Zap size={18}></Zap>} title={'Events'} >
                                     <div className="properties-general properties-event">
                                         <div>
-                                            <input type="text" placeholder='click action' />
+                                            <select name="" id="">
+                                                <option value="">Navigation Actions</option>
+                                                <option value="">Visibility Actions</option>
+                                                <option value="">Style & Layout Actions</option>
+                                                <option value="">Content Actions</option>
+                                                <option value="">Animation Actions</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </Heading>
@@ -148,10 +154,10 @@ const RightSideBar = () => {
                                 <div className="four-button">
                                     <div className="btn-box">
                                         {[
-                                            { id: "row", icon: <MoveRight size={18} /> },
-                                            { id: "row-reverse", icon: <MoveLeft size={18} /> },
-                                            { id: "column", icon: <MoveDown size={18} /> },
-                                            { id: "column-reverse", icon: <MoveUp size={18} /> }
+                                            { id: "row", icon: <MoveRight size={16} /> },
+                                            { id: "row-reverse", icon: <MoveLeft size={16} /> },
+                                            { id: "column", icon: <MoveDown size={16} /> },
+                                            { id: "column-reverse", icon: <MoveUp size={16} /> }
                                         ].map(({ id, icon }) => (
                                             <button
                                                 key={id}
@@ -355,7 +361,7 @@ const RightSideBar = () => {
                                 <div className="api-connection">
                                     <div className="api-row">
                                         <div className='api-text'>
-                                            <span className='api-icon'><Cloud size={32} /></span>
+                                            <span className='api-icon'><Cloud size={28} /></span>
                                             <div>
                                                 <p>User API</p>
                                                 <p className='link'>https://api.users.com</p>

@@ -3,6 +3,8 @@
     height: 100%;
     width: 19%;
     background-color: white;
+    border: none;
+    padding: 0;
 }
 
 .right-side-main-bar {
@@ -130,16 +132,17 @@
     width: 100%;
     font-size: 12px;
     border-radius: 5px;
-    border: 1px solid gray;
+    border: 1px solid #E5E7EB;
     background-color: #F9FAFB;
 }
 
-.properties-event div input {
+.properties-event div select {
     padding: 3%;
     color: gray;
     background-color: #F9FAFB;
     border-radius: 5px;
-    border: 1px solid gray;
+    border: 1px solid #E5E7EB;
+    width: 100%;
 }
 
 .double-input {
@@ -163,7 +166,7 @@
     padding: 2%;
     margin-top: 4%;
     background-color: #F9FAFB;
-    border: 1px solid gray;
+    border: 1px solid #E5E7EB;
 }
 
 .input-child label {
@@ -179,7 +182,7 @@
     padding: 2%;
     margin-top: 4%;
     background-color: #F9FAFB;
-    border: 1px solid gray;
+    border: 1px solid #E5E7EB;
 }
 
 .long-input {
@@ -193,7 +196,7 @@
     padding: 1%;
     width: 78%;
     background-color: #F9FAFB;
-    border: 1px solid gray;
+    border: 1px solid #E5E7EB;
     border-radius: 5px;
     margin-bottom: 3%;
 }
@@ -217,7 +220,7 @@
     padding: 1%;
     width: 20%;
     background-color: #F9FAFB;
-    border: 1px solid gray;
+    border: 1px solid #E5E7EB;
     border-radius: 5px;
     margin-bottom: 3%;
 }
@@ -340,7 +343,7 @@
 .four-side-grid input {
     width: 100%;
     height: 32px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #E5E7EB;
     border-radius: 6px;
     text-align: center;
     font-size: 12px;
@@ -386,7 +389,7 @@
     width: 100%;
     height: 36px;
     padding: 6px 8px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #E5E7EB;
     border-radius: 6px;
     font-size: 16px;
 }
@@ -453,7 +456,7 @@
     background-color: #F9FAFB;
     outline: none;
     padding: 4%;
-    border: 1px solid black;
+    border: 1px solid #E5E7EB;
     border-radius: 5px;
 }
 
@@ -626,7 +629,7 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
-    border: 1px solid gray;
+    border: 1px solid #E5E7EB;
     padding: 2%;
     border-radius: 5px;
 }
@@ -678,7 +681,7 @@
 
 .api-connection {
     padding: 4%;
-    border: 1px solid #94a3b8;
+    border: 1px solid #E5E7EB;
     border-radius: 10px;
 }
 
