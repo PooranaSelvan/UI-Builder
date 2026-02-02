@@ -5,6 +5,7 @@ import LeftPanel from "./LeftSideBar/LeftPanel";
 import Canvas from "./Canvas/Canvas";
 import { v4 as uuidv4 } from "uuid";
 import RightSideBar from "./RightSideBar/RightSideBar";
+import { components as componentLibrary } from "./utils/ComponentsData.js";
 
 const Workspace = () => {
   const [components, setComponents] = useState([]);
@@ -53,7 +54,7 @@ const Workspace = () => {
 
 
     // Moving Inside the Canvas Area
-    setComponents((items) => {
+     setComponents((items) => {
       let oldIndex = items.findIndex((i) => i.id === active.id); // where dragged from
       let newIndex = items.findIndex((i) => i.id === over.id); // where it putted
 
@@ -88,7 +89,10 @@ const Workspace = () => {
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div style={{ display: "flex", height: "93vh", overflow: "hidden" }}>
-        <LeftPanel />
+        <LeftPanel
+          components={componentLibrary}
+        />
+
         <Canvas components={components} />
         <RightSideBar />
       </div>

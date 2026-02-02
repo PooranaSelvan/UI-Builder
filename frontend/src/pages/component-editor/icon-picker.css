@@ -1,0 +1,31 @@
+
+.icon-picker {
+    padding: 12px;
+  }
+  
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+  
+  .icon-btn {
+    border: 1px solid #ddd;
+    background: white;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  
+  .icon-btn.active {
+    border-color: dodgerblue;
+    background: #eaf4ff;
+  }
+  
+  .icon-picker{
+    padding: 12px;
+  }
+  .icon-grid{
+    display:grid;
+    grid-template-columns: repeat();
+  }

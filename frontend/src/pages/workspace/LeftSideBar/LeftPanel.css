@@ -98,8 +98,32 @@
   z-index: 50;
   touch-action: none;
   user-select: none;
-}
+}kkv                                       p
 
 .resize-handle:hover {
   background: #ef4444;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+
+.add-component-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: red;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
