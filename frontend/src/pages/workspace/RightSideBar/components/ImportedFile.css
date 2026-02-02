@@ -73,6 +73,7 @@
 .file-info strong {
   display: block;
   font-size: 13px;
+  color: black;
 }
 
 .file-info small {

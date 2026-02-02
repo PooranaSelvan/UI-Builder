@@ -154,10 +154,10 @@ const RightSideBar = () => {
                                 <div className="four-button">
                                     <div className="btn-box">
                                         {[
-                                            { id: "row", icon: <MoveRight size={16} /> },
-                                            { id: "row-reverse", icon: <MoveLeft size={16} /> },
-                                            { id: "column", icon: <MoveDown size={16} /> },
-                                            { id: "column-reverse", icon: <MoveUp size={16} /> }
+                                            { id: "row", icon: <MoveRight size={14} /> },
+                                            { id: "row-reverse", icon: <MoveLeft size={14} /> },
+                                            { id: "column", icon: <MoveDown size={14} /> },
+                                            { id: "column-reverse", icon: <MoveUp size={14} /> }
                                         ].map(({ id, icon }) => (
                                             <button
                                                 key={id}
@@ -252,7 +252,7 @@ const RightSideBar = () => {
                                     <div className="double-input">
                                         <div className='input-child'>
                                             <label htmlFor="">Font Size</label>
-                                            <input type="number" />
+                                            <input type="number" value={16}/>
                                         </div>
                                         <div className='input-child'>
                                             <label htmlFor="">Font Weight</label>
@@ -310,7 +310,7 @@ const RightSideBar = () => {
                                     <div className="three-input">
                                         <div>
                                             <label htmlFor="">Rotate</label>
-                                            <input type="text" />
+                                            <input type="text" value={'0deg'}/>
                                         </div>
                                         <div>
                                             <label htmlFor="">scale</label>
@@ -324,7 +324,7 @@ const RightSideBar = () => {
                                         </div>
                                         <div>
                                             <label htmlFor="">opacity</label>
-                                            <input type="text" />
+                                            <input type="text" value={1}/>
                                         </div>
                                     </div>
                                 </div>
