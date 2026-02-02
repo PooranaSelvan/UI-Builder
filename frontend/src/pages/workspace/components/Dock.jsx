@@ -13,7 +13,7 @@ const Dock = ({zoom, onZoomOut, onZoomIn, onReset }) => {
                <ZoomOut onClick={onZoomOut} disabled={!canZoomOut} />
                <input type="text" value={`${zoomPercentage}%`} readOnly />
                <ZoomIn onClick={onZoomIn} disabled={!canZoomIn} />
-               <div className="v-line" />
+               <div className="divider-line" />
                <RotateCw onClick={onReset} />
           </div>
      )

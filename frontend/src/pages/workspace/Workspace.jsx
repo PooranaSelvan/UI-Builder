@@ -12,15 +12,24 @@ import Dock from "./components/Dock";
 const Workspace = () => {
   const [components, setComponents] = useState([]);
   const [zoom, setZoom] = useState(1);
+  const [selectedComponentId, setSelectedComponentId] = useState(null);
 
 
   // Zoom Functions
   const handleZoomIn = () => {
-    setZoom((prev) => Math.min(prev + 0.25, 2));
+    setZoom(zoom + 0.25);
+
+    if (zoom >= 2) {
+      setZoom(1);
+    }
   };
 
   const handleZoomOut = () => {
-    setZoom((prev) => Math.max(prev - 0.25, 0.25));
+    setZoom(zoom + -0.25);
+
+    if (zoom <= 0) {
+      setZoom(1);
+    }
   }
 
   const handleReset = () => {
@@ -28,8 +37,24 @@ const Workspace = () => {
   }
 
 
+  const findComponentById = (items, id) => {
+    for (let ele of items) {
+      if (ele.id === id) {
+        return ele;
+      }
 
-  const toastErrorStyle = { borderRadius: '10px', background: 'var(--primary)', color: 'white' }
+      if (ele.children?.length) {
+        let element = findComponentById(ele.children, id);
+        if (element) return element;
+      }
+    }
+
+    return null;
+  }
+
+
+  const selectedComponent = selectedComponentId ? findComponentById(components, selectedComponentId) : null;
+  const toastErrorStyle = { borderRadius: '10px', background: 'var(--primary)', color: 'white' };
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
@@ -39,11 +64,16 @@ const Workspace = () => {
 
     // console.log(active, over);
 
+    setSelectedComponentId(null);
     if (!over) return;
+
+
+    if (active.id === over.id) return;
 
 
     const isFromSidebar = !!active.data.current?.component; // to check whether from sidebar or sortable
     const componentData = active.data.current?.component;
+    const isFromCanvas = !isFromSidebar && components.some(ele => ele.id === active.id);
 
 
     // Add from sidebar
@@ -54,15 +84,16 @@ const Workspace = () => {
 
     if (isFromSidebar && over.id === "canvas") {
       const componentData = active.data.current.component;
+      const newId = `${componentData.id}-${uuidv4()}`;
 
       setComponents((prev) => [
         ...prev,
         {
           ...componentData,
-          id: `${componentData.id}-${uuidv4()}`,
+          id: newId,
         },
       ]);
-
+      setSelectedComponentId(newId);
 
       return;
     }
@@ -88,10 +119,10 @@ const Workspace = () => {
 
     // Child Removing 
     if (!isFromSidebar && over.id === "canvas") {
-      setComponents((prev) => {
-        const { newComponent, child } = removeChild(prev, active.id);
+      setComponents((ele) => {
+        const { newComponent, child } = removeChild(ele, active.id);
 
-        if (!child) return prev;
+        if (!child) return ele;
 
         return [...newComponent, child];
       });
@@ -99,6 +130,25 @@ const Workspace = () => {
       return;
     }
 
+
+    // Adding a Child from Drop Zone
+    if (isFromCanvas && over.id !== "canvas") {
+      let currentComponent = components.find(ele => ele.id === active.id);
+      if (!currentComponent) return;
+
+
+      if (over.data.current?.rank && currentComponent.rank < over.data.current.rank) {
+        toast.error("You cannot place this component inside a smaller Component.", { style: { ...toastErrorStyle }, iconTheme: { primary: 'white', secondary: 'var(--primary)', } });
+        return;
+      }
+
+      setComponents((prev) => {
+        let balanceComponents = prev.filter(ele => ele.id !== active.id);
+
+        return addChildToComponent(balanceComponents, over.id, currentComponent);
+      });
+      return;
+    }
 
     // Moving Inside the Canvas Area
     setComponents((items) => {
@@ -148,14 +198,66 @@ const Workspace = () => {
   };
 
 
+  // Right SideBar Methods
+  const updateComponent = (id, updates) => {
+    let arr = [...structuredClone(components)];
+
+    while (arr.length > 0) {
+      let currentObj = arr.pop();
+
+      if (currentObj.id === id) {
+        Object.assign(currentObj, updates);
+        break;
+      }
+
+      if (currentObj.children?.length) {
+        arr.push(...currentObj.children);
+      }
+    }
+
+    setComponents(newItems);
+  };
+
+
+  const deleteComponent = () => {
+    if (!selectedComponentId) return;
+
+    let arr = [{ parent: null, items: structuredClone(components) }];
+
+    while (arr.length > 0) {
+      const { items } = arr.pop();
+
+      let itemIndex = items.findIndex(ele => ele.id === selectedComponentId);
+
+      if (itemIndex !== -1) {
+        items.splice(itemIndex, 1);
+        break;
+      }
+
+      items.forEach(item => {
+        if (item.children?.length) {
+          arr.push({ parent: item, items: item.children });
+        }
+      });
+    }
+
+    setComponents(newItems);
+    setSelectedComponentId(null);
+  };
+
+  const clearComponentSelection = () => {
+    setSelectedComponentId(null);
+  };
+
+
   // console.log(components);
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div style={{ display: "flex", height: "93vh", overflow: "hidden" }}>
         <LeftPanel />
-        <Canvas components={components} zoom={zoom} />
-        <RightSideBar />
+        <Canvas components={components} zoom={zoom} selectedComponentId={selectedComponentId} onSelectComponent={(id) => setSelectedComponentId(id)} clearComponentSelection={clearComponentSelection} />
+        <RightSideBar selectedComponent={selectedComponent} updateComponent={updateComponent} deleteComponent={deleteComponent} />
       </div>
       <Dock zoom={zoom} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
     </DndContext>

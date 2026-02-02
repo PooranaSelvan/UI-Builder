@@ -4,23 +4,24 @@ import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableItem from "./SortableItem";
 
-const Canvas = ({ components, zoom }) => {
+const Canvas = ({ components, zoom, selectedComponentId, onSelectComponent, clearComponentSelection }) => {
   const { setNodeRef, isOver } = useDroppable({ id: "canvas" });
 
+
   return (
-    <div className="work-canvas-wrapper">
-      <div ref={setNodeRef} className="canvas-drop-zone" style={{flex : 1, transform: `scale(${zoom})`, transformOrigin: "center", transition: "transform 0.3s ease-in-out", padding: "20px", background: isOver ? "#eaf7ff" : "white", border: isOver ? "2px dashed black" : ""}}>
+    <div className="work-canvas-wrapper" onClick={() => clearComponentSelection()}>
+      <div ref={setNodeRef} onClick={() => clearComponentSelection()} className="canvas-drop-zone" style={{flex : 1, transform: `scale(${zoom})`, transformOrigin: "top left", transition: "transform 0.3s ease-in-out", padding: "20px", background: isOver ? "#eaf7ff" : "white", border: isOver ? "2px dashed black" : ""}}>
         {components.length === 0 && (
           <p style={{ color: "#999", textAlign: "center" }}>Drag components here</p>
         )}
 
         <SortableContext items={components.map((c) => c.id)} strategy={verticalListSortingStrategy}>
           {components.map((ele) => (
-            <SortableItem key={ele.id} ele={ele} />
+            <SortableItem key={ele.id} ele={ele} isSelected={selectedComponentId === ele.id} selectedComponentId={selectedComponentId} onSelect={() => onSelectComponent(ele.id)} />
           ))}
         </SortableContext>
 
-        <div id="canvas-end" style={{ height: 80, border: "2px dashed transparent"}}/>
+        <div id="canvas-end" style={{ height: 80, border: "2px dashed transparent", pointerEvents : "none"}}/>
       </div>
     </div>
   );
