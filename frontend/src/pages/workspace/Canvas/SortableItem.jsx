@@ -5,7 +5,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { VOID_TAGS } from "../utils/voidTags";
 
 const SortableItem = ({ ele, isSelected, onSelect, selectedComponentId }) => {
-     const { id, tag, content, defaultProps, children, rank } = ele;
+     const { id, tag, content, defaultProps, children = [], rank } = ele;
      const { setNodeRef, attributes, listeners, transform, transition } = useSortable({ id });
      const isVoid = typeof tag === "string" && VOID_TAGS.has(tag);
 
@@ -39,7 +39,7 @@ const SortableItem = ({ ele, isSelected, onSelect, selectedComponentId }) => {
                {isVoid ? (
                     React.createElement(tag, defaultProps)
                ) : (
-                    React.createElement(tag, defaultProps, children?.length ? children.map((child) => (<SortableItem key={child.id} ele={child} isSelected={child.id === selectedComponentId} selectedComponentId={selectedComponentId} onSelect={() => onSelect(onSelect)} />)) : content)
+                    React.createElement(tag, defaultProps, children?.length > 0 ? children.map((child) => (<SortableItem key={child.id} ele={child} isSelected={child.id === selectedComponentId} selectedComponentId={selectedComponentId} onSelect={onSelect} />)) : content)
                )}
           </div>
      );
