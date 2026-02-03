@@ -23,15 +23,13 @@ const Workspace = () => {
       setZoom(1);
     }
   };
-
   const handleZoomOut = () => {
-    setZoom(zoom + -0.25);
+    setZoom(zoom - 0.25);
 
-    if (zoom <= 0) {
+    if (zoom <= 0.25) {
       setZoom(1);
     }
   }
-
   const handleReset = () => {
     setZoom(1);
   }
@@ -54,37 +52,27 @@ const Workspace = () => {
 
 
   const selectedComponent = selectedComponentId ? findComponentById(components, selectedComponentId) : null;
-  const toastErrorStyle = { borderRadius: '10px', background: 'var(--primary)', color: 'white' };
+  const toastErrorStyle = { style: { borderRadius: '10px', background: 'var(--primary)', color: 'white' }, iconTheme: { primary: 'white', secondary: 'var(--primary)' } };
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
-    // active - current dragging
-    // over - current dropped
-
-
-    // console.log(active, over);
 
     setSelectedComponentId(null);
-    if (!over) return;
-
-
-    if (active.id === over.id) return;
-
+    if (!over || active.id === over.id) return;
 
     const isFromSidebar = !!active.data.current?.component; // to check whether from sidebar or sortable
-    const componentData = active.data.current?.component;
-    const isFromCanvas = !isFromSidebar && components.some(ele => ele.id === active.id);
+    const isChild = isChildComponent(components, active.id);
 
 
-    // Add from sidebar
-    if (isFromSidebar && over.id === "canvas" && componentData?.rank === 4) {
-      toast.error("Basic elements must be inside a layout", { style: { ...toastErrorStyle }, iconTheme: { primary: 'white', secondary: 'var(--primary)', } });
-      return;
-    }
-
+    // Add Layout Components from sidebar
     if (isFromSidebar && over.id === "canvas") {
-      const componentData = active.data.current.component;
-      const newId = `${componentData.id}-${uuidv4()}`;
+      let componentData = active.data.current.component;
+
+      if (componentData?.rank === 4) {
+        toast.error("Basic elements must be inside a layout", toastErrorStyle);
+        return;
+      }
+      let newId = `${componentData.id}-${uuidv4()}`;
 
       setComponents((prev) => [
         ...prev,
@@ -99,14 +87,13 @@ const Workspace = () => {
     }
 
 
-    // Adding Child
+    // Adding Child Component directly from sidebar
     if (isFromSidebar && over.id !== "canvas") {
       let componentData = active.data.current.component;
-
       // console.log(componentData, over.data.current);
 
       if (over.data.current?.rank && componentData.rank < over.data.current.rank) {
-        toast.error("You cannot place this component inside a smaller Component.", { style: { ...toastErrorStyle }, iconTheme: { primary: 'white', secondary: 'var(--primary)', } });
+        toast.error("You cannot place this component inside a smaller Component.", toastErrorStyle);
         return;
       }
 
@@ -117,48 +104,48 @@ const Workspace = () => {
     }
 
 
-    // Child Removing 
-    if (!isFromSidebar && over.id === "canvas") {
-      setComponents((ele) => {
-        const { newComponent, child } = removeChild(ele, active.id);
+    // Checking is checking and from canvas to prevent adding directly
+    if (isChild && over.id === "canvas") {
+      toast.error("Child elements must inside a Layout Component", toastErrorStyle);
+      return;
+    }
 
-        if (!child) return ele;
 
-        return [...newComponent, child];
+    // Child Moving Inside Drop Zone
+    if (!isFromSidebar && over.id !== "canvas") {
+      let componentData = findComponentById(components, active.id);
+      if (!componentData) return;
+
+      setComponents(items => {
+        let newComponents;
+        let movingChild = componentData;
+
+        if (isChild) {
+          const { newComponent, child } = removeChild(items, active.id);
+          newComponents = newComponent;
+          movingChild = child;
+        } else {
+          newComponents = items.filter(item => item.id !== active.id);
+        }
+
+        return addChildToComponent(newComponents, over.id, movingChild);
       });
 
       return;
     }
 
 
-    // Adding a Child from Drop Zone
-    if (isFromCanvas && over.id !== "canvas") {
-      let currentComponent = components.find(ele => ele.id === active.id);
-      if (!currentComponent) return;
+    // Sorting Inside the Canvas Area
+    if (!isChild) {
+      setComponents((items) => {
+        let oldIndex = items.findIndex((i) => i.id === active.id); // where dragged from
+        let newIndex = items.findIndex((i) => i.id === over.id); // where it putted
 
+        if (oldIndex === -1 || newIndex === -1) return items;
 
-      if (over.data.current?.rank && currentComponent.rank < over.data.current.rank) {
-        toast.error("You cannot place this component inside a smaller Component.", { style: { ...toastErrorStyle }, iconTheme: { primary: 'white', secondary: 'var(--primary)', } });
-        return;
-      }
-
-      setComponents((prev) => {
-        let balanceComponents = prev.filter(ele => ele.id !== active.id);
-
-        return addChildToComponent(balanceComponents, over.id, currentComponent);
+        return arrayMove(items, oldIndex, newIndex); // immutable aa re-order pannum
       });
-      return;
     }
-
-    // Moving Inside the Canvas Area
-     setComponents((items) => {
-      let oldIndex = items.findIndex((i) => i.id === active.id); // where dragged from
-      let newIndex = items.findIndex((i) => i.id === over.id); // where it putted
-
-      if (oldIndex === -1 || newIndex === -1) return items;
-
-      return arrayMove(items, oldIndex, newIndex); // immutable aa re-order pannum
-    });
   };
 
 
@@ -179,28 +166,52 @@ const Workspace = () => {
     });
   };
 
-
   const removeChild = (items, childId) => {
     let child = null;
+    let newComponent = cloneComponents(items);
+    let arr = [newComponent];
 
-    const newComponent = items.map((item) => {
-      if (!item.children) return item;
+    while (arr.length > 0) {
+      let obj = arr.pop();
+      let index = obj.findIndex(child => child && child.id === childId);
 
-      let childIndex = item.children.findIndex((child) => child.id === childId);
-      if (childIndex === -1) return item;
+      if (index !== -1) {
+        child = obj[index];
+        obj.splice(index, 1);
+        break;
+      }
 
-      child = item.children[childIndex];
-
-      return { ...item, children: item.children.filter((child) => child.id !== childId) };
-    });
+      obj.forEach(item => {
+        if (item.children?.length) {
+          arr.push(item.children);
+        }
+      });
+    }
 
     return { newComponent, child };
   };
 
 
-  // Right SideBar Methods
+  // To Check a Element is a Child Element
+  const isChildComponent = (items, id) => {
+    for (let item of items) {
+      if (item.children?.some(child => child.id === id)) {
+        return true;
+      }
+
+      if (item.children?.length) {
+        if (isChildComponent(item.children, id)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+
+  // Right SideBar Methods - Gowtham
   const updateComponent = (id, updates) => {
-    let arr = [...structuredClone(components)];
+    let arr = [...cloneComponents(components)];
 
     while (arr.length > 0) {
       let currentObj = arr.pop();
@@ -215,14 +226,13 @@ const Workspace = () => {
       }
     }
 
-    setComponents(newItems);
+    setComponents(arr);
   };
-
 
   const deleteComponent = () => {
     if (!selectedComponentId) return;
 
-    let arr = [{ parent: null, items: structuredClone(components) }];
+    let arr = [{ parent: null, items: cloneComponents(components) }];
 
     while (arr.length > 0) {
       const { items } = arr.pop();
@@ -241,7 +251,7 @@ const Workspace = () => {
       });
     }
 
-    setComponents(newItems);
+    setComponents(arr);
     setSelectedComponentId(null);
   };
 
@@ -250,12 +260,33 @@ const Workspace = () => {
   };
 
 
+
+  const cloneComponents = (obj) => {
+    if (obj === null || typeof obj !== "object") {
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(cloneComponents);
+    }
+
+    const clonedObj = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        clonedObj[key] = cloneComponents(obj[key]);
+      }
+    }
+
+    return clonedObj;
+  };
+
+
   // console.log(components);
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div style={{ display: "flex", height: "93vh", overflow: "hidden" }}>
-        <LeftPanel components={componentLibrary}/>
+        <LeftPanel components={componentLibrary} />
         <Canvas components={components} zoom={zoom} selectedComponentId={selectedComponentId} onSelectComponent={(id) => setSelectedComponentId(id)} clearComponentSelection={clearComponentSelection} />
         <RightSideBar selectedComponent={selectedComponent} updateComponent={updateComponent} deleteComponent={deleteComponent} />
       </div>
