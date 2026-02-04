@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import "./RightSideBar.css";
 import "../../../index.css"
 import { Icon, Settings } from 'lucide-react';
@@ -22,17 +22,15 @@ import { Cloud } from 'lucide-react';
 import { MoveLeft, MoveRight, MoveDown, MoveUp } from 'lucide-react';
 import ImportedFiles from './components/ImportedFiles';
 
+const UNITS = ["px", "%", "rem", "em", "auto"];
+
 const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) => {
     const [activeTab, setActiveTab] = useState("properties");
     const [activeButton, setActiveButton] = useState('row');
     // const [opacity, setOpacity] = useState(100);
     const [font, setFont] = useState(16);
     const [files, setFiles] = useState([]);
-    const [styles, setStyles] = useState({
-        backgroundColor: "#ffffff",
-        borderColor: "#dc2626",
-        textColor: "#000000"
-    });
+
     const handleFiles = (fileList) => {
         const newFiles = Array.from(fileList).map((file) => ({
             id: crypto.randomUUID(),
@@ -59,7 +57,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     }
 
     return (
-        <aside className='right-panel'>
+        <aside className='right-panel' onMouseOver={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
             <div className="right-side-main-bar">
                 <div className="button-flex">
                     {["properties", "style", "resources"].map((tab) => (
@@ -84,7 +82,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.id = e.target.value;
                                                 });
-                                            }}/>
+                                            }} />
                                         </div>
                                         <div>
                                             <label htmlFor="">Chart type</label>
@@ -137,40 +135,24 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </select>
                                     </div>
                                 </div>
-                                <div className='long-input'>
-                                    <label>Width</label>
-                                    <div>
-                                        <input type="text" placeholder='100%' defaultValue={selectedComponent.defaultProps.style.width} onChange={(e) => {
-                                            updateComponent(selectedComponent.id, (node) => {
-                                                node.defaultProps.style.width = e.target.value;
-                                            })
-                                        }}/>
-                                        <select>
-                                            <option>px</option>
-                                            <option selected="">%</option>
-                                            <option>rem</option>
-                                            <option>em</option>
-                                            <option>vw</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className='long-input'>
-                                    <label>Height</label>
-                                    <div>
-                                        <input type="text" placeholder='auto' defaultValue={selectedComponent.defaultProps.style.height} onChange={(e) => {
-                                            updateComponent(selectedComponent.id, (node) => {
-                                                node.defaultProps.style.width = e.target.value
-                                            })
-                                        }}/>
-                                        <select >
-                                            <option>px</option>
-                                            <option>%</option>
-                                            <option>rem</option>
-                                            <option>em</option>
-                                            <option selected="">auto</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                <SizeInput
+                                    label="Width"
+                                    value={selectedComponent.defaultProps.style.width}
+                                    onChange={(v) =>
+                                        updateComponent(selectedComponent.id, (node) => {
+                                            node.defaultProps.style.width = v;
+                                        })
+                                    }
+                                />
+                                <SizeInput
+                                    label="Height"
+                                    value={selectedComponent.defaultProps.style.height}
+                                    onChange={(v) =>
+                                        updateComponent(selectedComponent.id, (node) => {
+                                            node.defaultProps.style.height = v;
+                                        })
+                                    }
+                                />
                             </Heading>
                             <Heading icon={<Columns3 size={18} />} title={'Flex Layout'} >
                                 <div className="four-button">
@@ -218,8 +200,50 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                             </Heading>
                             <Heading icon={<Space size={18} />} title={'Spacing'} >
                                 <div className="spacing-content">
-                                    <FourSideInput label={'Padding'} names={['top', 'Right', 'Bottom', 'Left']} />
-                                    <FourSideInput label={'Margin'} names={['top', 'Right', 'Bottom', 'Left']} />
+                                    <FourSideInput
+                                        label="Padding"
+                                        names={["Top", "Right", "Bottom", "Left"]}
+                                        values={[
+                                            selectedComponent.defaultProps.style.paddingTop ?? 0,
+                                            selectedComponent.defaultProps.style.paddingRight ?? 0,
+                                            selectedComponent.defaultProps.style.paddingBottom ?? 0,
+                                            selectedComponent.defaultProps.style.paddingLeft ?? 0,
+                                        ]}
+                                        onChange={(index, value) => {
+                                            updateComponent(selectedComponent.id, (node) => {
+                                                const map = [
+                                                    "paddingTop",
+                                                    "paddingRight",
+                                                    "paddingBottom",
+                                                    "paddingLeft",
+                                                ];
+
+                                                node.defaultProps.style[map[index]] = `${value}px`;
+                                            });
+                                        }}
+                                    />
+                                    <FourSideInput
+                                        label="Margin"
+                                        names={["Top", "Right", "Bottom", "Left"]}
+                                        values={[
+                                            selectedComponent.defaultProps.style.marginTop ?? 0,
+                                            selectedComponent.defaultProps.style.marginRight ?? 0,
+                                            selectedComponent.defaultProps.style.marginBottom ?? 0,
+                                            selectedComponent.defaultProps.style.marginLeft ?? 0,
+                                        ]}
+                                        onChange={(index, value) => {
+                                            updateComponent(selectedComponent.id, (node) => {
+                                                const map = [
+                                                    "marginTop",
+                                                    "marginRight",
+                                                    "marginBottom",
+                                                    "marginLeft",
+                                                ];
+
+                                                node.defaultProps.style[map[index]] = `${value}px`;
+                                            });
+                                        }}
+                                    />
                                 </div>
                             </Heading>
 
@@ -258,7 +282,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps.style.borderWidth = e.target.value;
                                                 })
-                                            }}/>
+                                            }} />
                                         </div>
                                         <div>
                                             <label htmlFor="">Style</label>
@@ -276,10 +300,31 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps.style.borderColor = e.target.value;
                                                 });
-                                            }}/>
+                                            }} />
                                         </div>
                                     </div>
-                                    <FourSideInput label={'Border Radius'} names={['Top left', 'Top Right', 'Bottom Right', 'Bottom Left']} />
+                                    <FourSideInput
+                                        label="Border Radius"
+                                        names={["Top Left", "Top Right", "Bottom Right", "Bottom Left"]}
+                                        values={[
+                                            selectedComponent.defaultProps.style.borderTopLeftRadius ?? 0,
+                                            selectedComponent.defaultProps.style.borderTopRightRadius ?? 0,
+                                            selectedComponent.defaultProps.style.borderBottomRightRadius ?? 0,
+                                            selectedComponent.defaultProps.style.borderBottomLeftRadius ?? 0,
+                                        ]}
+                                        onChange={(index, value) => {
+                                            updateComponent(selectedComponent.id, (node) => {
+                                                const map = [
+                                                    "borderTopLeftRadius",
+                                                    "borderTopRightRadius",
+                                                    "borderBottomRightRadius",
+                                                    "borderBottomLeftRadius",
+                                                ];
+
+                                                node.defaultProps.style[map[index]] = `${value}px`;
+                                            });
+                                        }}
+                                    />
                                 </div>
                             </Heading>
 
@@ -310,9 +355,11 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="color">
                                         <label htmlFor="" id='text-color'>Text color</label>
                                         <ColorPalette
-                                            value={styles.textColor}
+                                            value={selectedComponent.defaultProps.style.color}
                                             onChange={(v) =>
-                                                setStyles((p) => ({ ...p, textColor: v }))
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps.style.color = v;
+                                                })
                                             }
                                         />
                                     </div>
@@ -328,7 +375,11 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                         <div className='input-child'>
                                             <label htmlFor="">Line Height</label>
-                                            <input type="text" defaultValue = {selectedComponent.defaultProps.style.lineHeight} />
+                                            <input type="text" defaultValue={selectedComponent.defaultProps.style.lineHeight} onChange={(e) => {
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps.style.lineHeight = e.target.value;
+                                                })
+                                            }} />
                                         </div>
                                     </div>
                                 </div>
@@ -337,13 +388,47 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
                             <Heading icon={<TableRowsSplit size={18} />} title={'Effects'}>
                                 <div className="effects-content">
-                                    <FourSideInput label={'Box shadow'} names={['x', 'y', 'spread', 'blur']} />
+                                    <FourSideInput
+                                        label="Box Shadow"
+                                        names={["X", "Y", "Blur", "Spread"]}
+                                        values={[
+                                            selectedComponent.defaultProps.style.boxShadowX ?? 0,
+                                            selectedComponent.defaultProps.style.boxShadowY ?? 0,
+                                            selectedComponent.defaultProps.style.boxShadowBlur ?? 0,
+                                            selectedComponent.defaultProps.style.boxShadowSpread ?? 0,
+                                        ]}
+                                        onChange={(index, value) => {
+                                            updateComponent(selectedComponent.id, (node) => {
+                                                const shadow = {
+                                                    x: node.defaultProps.style.boxShadowX ?? 0,
+                                                    y: node.defaultProps.style.boxShadowY ?? 0,
+                                                    blur: node.defaultProps.style.boxShadowBlur ?? 0,
+                                                    spread: node.defaultProps.style.boxShadowSpread ?? 0,
+                                                    color: node.defaultProps.style.boxShadowColor ?? "rgba(0,0,0,0.25)",
+                                                };
+
+                                                const map = ["x", "y", "blur", "spread"];
+                                                shadow[map[index]] = value;
+
+                                                node.defaultProps.style.boxShadowX = shadow.x;
+                                                node.defaultProps.style.boxShadowY = shadow.y;
+                                                node.defaultProps.style.boxShadowBlur = shadow.blur;
+                                                node.defaultProps.style.boxShadowSpread = shadow.spread;
+
+                                                node.defaultProps.style.boxShadow =
+                                                    `${shadow.x}px ${shadow.y}px ${shadow.blur}px ${shadow.spread}px ${shadow.color}`;
+                                            });
+                                        }}
+                                    />
+
                                     <div className="color">
                                         <label htmlFor="" id='text-color'>Shadow color</label>
                                         <ColorPalette
                                             value={selectedComponent.defaultProps.style.shadowColor}
                                             onChange={(v) =>
-                                                setStyles((p) => ({ ...p, borderColor: v }))
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps.style.shadowColor = v;
+                                                })
                                             }
                                         />
                                     </div>
@@ -368,7 +453,11 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                         <div>
                                             <label htmlFor="">opacity</label>
-                                            <input type="text" value={1} />
+                                            <input type="text" value={selectedComponent.defaultProps.style.opacity} onChange={(e) => {
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps.style.opacity = e.target.value;
+                                                })
+                                            }} />
                                         </div>
                                     </div>
                                 </div>
@@ -465,8 +554,7 @@ const Heading = ({ icon, title, children, defaultOpen = true }) => {
     );
 };
 
-const FourSideInput = ({ label, values = [16, 16, 16, 16], names }) => {
-    const [top, right, bottom, left] = values;
+const FourSideInput = ({ label, values = [0, 0, 0, 0], names, onChange }) => {
     const labelNames = names;
 
     return (
@@ -474,29 +562,21 @@ const FourSideInput = ({ label, values = [16, 16, 16, 16], names }) => {
             <label className="four-side-title">{label}</label>
 
             <div className="four-side-grid">
-                <div>
-                    <span>{labelNames[0]}</span>
-                    <input value={top} />
-                </div>
-
-                <div>
-                    <span>{labelNames[1]}</span>
-                    <input value={right} />
-                </div>
-
-                <div>
-                    <span>{labelNames[2]}</span>
-                    <input value={bottom} />
-                </div>
-
-                <div>
-                    <span>{labelNames[3]}</span>
-                    <input value={left} />
-                </div>
+                {values.map((val, index) => (
+                    <div key={index}>
+                        <span>{labelNames[index]}</span>
+                        <input
+                            type="number"
+                            value={val}
+                            onChange={(e) =>
+                                onChange(index, e.target.value)
+                            }
+                        />
+                    </div>
+                ))}
             </div>
         </div>
     );
-
 };
 
 const ColorPalette = ({ value, onChange }) => {
@@ -562,6 +642,86 @@ const FileUpload = ({ onFilesAdded }) => {
                 Drop files here or <span>browse</span>
             </div>
         </>
+    );
+};
+
+const splitValue = (value = "") => {
+    if (!value || value === 'auto') {
+        return {
+            value: '',
+            unit: 'auto'
+        }
+    }
+
+    const match = value.match(/^(\d+)(px|%|rem|em)$/);
+    if (!match) {
+        return {
+            value: '',
+            unit: 'px'
+        }
+    }
+
+    return {
+        value: match[1],
+        unit: match[2]
+    }
+}
+
+const SizeInput = ({ label, value, onChange }) => {
+    const [state, setState] = useState(() => splitValue(value));
+    const { number, unit } = state;
+
+    useEffect(() => {
+        setState(splitValue(value));
+    }, [value]);
+
+    const update = (num, un) => {
+        if (un === "auto") {
+            onChange("auto");
+            return;
+        }
+
+        if (num === "") {
+            onChange("");
+            return;
+        }
+
+        onChange(`${num}${un}`);
+    };
+
+    return (
+        <div className="long-input">
+            <label>{label}</label>
+
+            <div>
+                <input
+                    type="number"
+                    value={number}
+                    disabled={unit === "auto"}
+                    placeholder="auto"
+                    onChange={(e) => {
+                        const val = e.target.value;
+                        setState((s) => ({ ...s, number: val }));
+                        update(val, unit);
+                    }}
+                />
+
+                <select
+                    value={unit}
+                    onChange={(e) => {
+                        const nextUnit = e.target.value;
+                        setState((s) => ({ ...s, unit: nextUnit }));
+                        update(number, nextUnit);
+                    }}
+                >
+                    {UNITS.map((u) => (
+                        <option key={u} value={u}>
+                            {u}
+                        </option>
+                    ))}
+                </select>
+            </div>
+        </div>
     );
 };
 

@@ -210,25 +210,6 @@ const Workspace = () => {
 
 
   // Right SideBar Methods - Gowtham
-  const updateComponent = (id, updates) => {
-    let arr = [...cloneComponents(components)];
-
-    while (arr.length > 0) {
-      let currentObj = arr.pop();
-
-      if (currentObj.id === id) {
-        Object.assign(currentObj, updates);
-        break;
-      }
-
-      if (currentObj.children?.length) {
-        arr.push(...currentObj.children);
-      }
-    }
-
-    setComponents(arr);
-  };
-
   const deleteComponent = () => {
     if (!selectedComponentId) return;
 
@@ -259,8 +240,6 @@ const Workspace = () => {
     setSelectedComponentId(null);
   };
 
-
-
   const cloneComponents = (obj) => {
     if (obj === null || typeof obj !== "object") {
       return obj;
@@ -279,6 +258,29 @@ const Workspace = () => {
 
     return clonedObj;
   };
+
+  const updateComponent = (id, updater) => {
+    setComponents(prev => {
+      const cloned = cloneComponents(prev);
+
+      const stack = [...cloned];
+
+      while (stack.length) {
+        const node = stack.pop();
+
+        if (node.id === id) {
+          updater(node);
+          break;
+        }
+
+        if (node.children?.length) {
+          stack.push(...node.children);
+        }
+      }
+
+      return cloned;
+    });
+  }
 
 
   // console.log(components);
