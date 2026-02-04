@@ -11,7 +11,7 @@ import {
     Link2
   } from "lucide-react";
   
-  export const basicComponents = [
+  export const BasicComponents = [
     {
       title: "Layout",
       type: "grid",

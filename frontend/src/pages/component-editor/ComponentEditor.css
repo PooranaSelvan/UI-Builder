@@ -1,0 +1,33 @@
+.component-editor-wrapper {
+    display: flex;
+    height: 93vh;
+    overflow: hidden;
+  }
+
+  
+
+  
+  
+  /* Button */
+  .save-component-btn {
+    padding: 8px 14px;
+    background: #e11d48;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  .save-component-btn:hover {
+    background: #be123c;
+  }
+
+  .save-component-btn:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+  
+  
+  
