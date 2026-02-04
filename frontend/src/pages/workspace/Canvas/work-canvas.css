@@ -23,13 +23,16 @@
 
 /* Component Style */
 .test-component:hover {
-     border: 2px dashed deepskyblue;
+     border: 2px solid deepskyblue;
+     border-radius: 12px;
 }
 
-/* 
-.layout-container, .layout-row, .layout-column {
-     background-color: #F3F4F6;
-     border: 2px dashed #c6c6c6;
-     border-radius: 12px;
-     padding: 20px;
-} */
+.component-drag {
+     position: absolute;
+     top: 10px;
+     right: 20px;
+     cursor: grab;
+}
+.component-drag:active {
+     cursor: grabbing;
+}
