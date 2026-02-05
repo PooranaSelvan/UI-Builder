@@ -24,7 +24,7 @@ export default function LeftPanel({ components }) {
     let newPercent = (e.clientX / screenWidth) * 100;
     newPercent = Math.min(16, Math.max(12, newPercent));
     setWidthPercent(newPercent);
-  };
+  };           
 
   const handlePointerUp = (e) => {
     isResizing.current = false;
@@ -34,14 +34,12 @@ export default function LeftPanel({ components }) {
   return (
     <>
       <aside className="left-panel" style={{ width: `${widthPercent}%` }}>
+        {/* RESIZE */}
         <div
           className="resize-handle"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-        />
-
-
+          onPointerUp={handlePointerUp}/>
 
         {/* TABS */}
         <div className="panel-tabs">
@@ -56,20 +54,8 @@ export default function LeftPanel({ components }) {
           <input placeholder="Search components..." />
         </div>
 
-        {/* COMPONENT LIST */}
-        {components.map((section) => (
-          <div key={section.title} className="panel-section">
-            <p className="section-heading">{section.title}</p>
-
-            <div className="grid">
-              {section.items.map((item) => (
-                <ComponentItem key={item.id} item={item} />
-              ))}
-            </div>
-          </div>
-        ))}
-        {/* PLUS ICON TO NAVIGATE */}
-        {!isComponentEditor && (
+          {/* PLUS ICON TO NAVIGATE */}
+          {!isComponentEditor && (
           <button
             className="add-component-btn"
             onClick={() => navigate("/component-editor")}
@@ -77,8 +63,21 @@ export default function LeftPanel({ components }) {
             <Plus size={18} />
           </button>
         )}
-      </aside>
 
+        {/* COMPONENT LIST */}
+        {components.map((section) => (
+          <div key={section.title} className="panel-section">
+            <p className="section-heading">{section.title}</p>
+
+            <div className="grid">
+              {section.items.map((item) => (
+                <ComponentItem key={item.id} item={item}    />
+              ))}
+            </div>
+          </div>
+        ))}
+   
+      </aside>
     </>
   );
 }

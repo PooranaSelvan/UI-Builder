@@ -7,7 +7,8 @@ import "./ComponentEditor.css";
 import LeftPanel from "../workspace/LeftSideBar/LeftPanel";
 import Canvas from "../workspace/Canvas/Canvas";
 import RightSideBar from "../workspace/RightSideBar/RightSideBar";
-
+import IconPicker from "./IconPicker";
+import { Search } from "lucide-react";
 import { BasicComponents } from "../workspace/utils/basicComponentsData";
 
 const ComponentEditor = () => {
@@ -16,14 +17,14 @@ const ComponentEditor = () => {
   const [components, setComponents] = useState([]);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
   const [savedComponents, setSavedComponents] = useState([]);
+  const [customIconName, setCustomIconName] = useState("Square");
+  const [showIconPicker, setShowIconPicker] = useState(false);
+  const [lastSavedComponentId, setLastSavedComponentId] = useState(null);
+
+
 
   /* ---------------- Helpers ---------------- */
 
-  const cloneComponents = (items) =>
-    items.map(item => ({
-      ...item,
-      children: item.children ? cloneComponents(item.children) : [],
-    }));
 
   const findComponentById = (items, id) => {
     for (let item of items) {
@@ -187,27 +188,134 @@ const ComponentEditor = () => {
     }
   };
 
+  const deleteComponent = () => {
+    if (!selectedComponentId) return;
+
+    let arr = [{ parent: null, items: cloneComponents(components) }];
+
+    while (arr.length > 0) {
+      const { items } = arr.pop();
+
+      let itemIndex = items.findIndex(ele => ele.id === selectedComponentId);
+
+      if (itemIndex !== -1) {
+        items.splice(itemIndex, 1);
+        break;
+      }
+
+      items.forEach(item => {
+        if (item.children?.length) {
+          arr.push({ parent: item, items: item.children });
+        }
+      });
+    }
+
+    setComponents(arr);
+    setSelectedComponentId(null);
+  };
+
+
+  const clearComponentSelection = () => {
+    setSelectedComponentId(null);
+  };
+
+  const cloneComponents = (obj) => {
+    if (obj === null || typeof obj !== "object") {
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(cloneComponents);
+    }
+
+    const clonedObj = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        clonedObj[key] = cloneComponents(obj[key]);
+      }
+    }
+
+    return clonedObj;
+  };
+
+  const updateComponent = (id, updater) => {
+    setComponents(prev => {
+      const cloned = cloneComponents(prev);
+
+      const stack = [...cloned];
+
+      while (stack.length) {
+        const node = stack.pop();
+
+        if (node.id === id) {
+          updater(node);
+          break;
+        }
+
+        if (node.children?.length) {
+          stack.push(...node.children);
+        }
+      }
+
+      return cloned;
+    });
+  }
+
   const saveSelectedComponent = () => {
     if (!selectedComponent) return;
+
+    const newId = `custom-${uuidv4()}`;
 
     const cleanComponent = (comp) => ({
       ...comp,
       id: `${comp.type}-${uuidv4()}`,
       isCustom: true,
+      iconName: customIconName,
       children: comp.children?.map(cleanComponent) || [],
     });
 
-    setSavedComponents((prev) => [
-      ...prev,
-      {
-        ...cleanComponent(selectedComponent),
-        isRootCustom: true,
-      },
-    ]);
+    const savedComponent = {
+      ...cleanComponent(selectedComponent),
+      id: newId,
+      isRootCustom: true,
+      iconName: customIconName,
+    };
 
-    toast.success("Component saved successfully!");
+    setSavedComponents(prev => [...prev, savedComponent]);
+    setLastSavedComponentId(newId);
+    setShowIconPicker(true);
+
+    toast.success("Component saved! Choose an icon");
   };
 
+
+  const combinedComponents = [
+    ...BasicComponents,
+    ...(savedComponents.length
+      ? [
+        {
+          title: "Custom Components",
+          type: "grid",
+          items: savedComponents,
+        },
+      ]
+      : []),
+  ];
+
+  const handleIconSelect = (iconName) => {
+    setCustomIconName(iconName);
+
+    setSavedComponents(prev =>
+      prev.map(comp =>
+        comp.id === lastSavedComponentId
+          ? { ...comp, iconName }
+          : comp
+      )
+    );
+
+    setShowIconPicker(false);
+    toast.success("Icon updated!");
+  };
 
   /* ---------------- Render ---------------- */
 
@@ -216,19 +324,48 @@ const ComponentEditor = () => {
       <div className="component-editor-wrapper">
 
 
-        <LeftPanel components={BasicComponents} />
+        <div className="editor-top-bar">
+          <button
+            className="save-component-btn"
+            disabled={!selectedComponent}
+            onClick={saveSelectedComponent}>
+            Save Component
+          </button>
+        </div>
+
+        <div className="editor-body">
+          <LeftPanel components={combinedComponents} />
+
           <Canvas
             components={components}
             selectedComponentId={selectedComponentId}
             onSelectComponent={setSelectedComponentId}
-            clearComponentSelection={() => setSelectedComponentId(null)}
-          />
-        <RightSideBar selectedComponent={selectedComponent} />
+            clearComponentSelection={() => setSelectedComponentId(null)} />
 
+          <RightSideBar
+            selectedComponent={selectedComponent}
+            updateComponent={updateComponent}
+            deleteComponent={deleteComponent}/>
+        </div>
       </div>
+
+
+      {showIconPicker && (
+        <div className="icon-picker-wrapper">
+          <h4>Select an icon</h4>
+
+          <div className="search-box">
+            <Search size={16} />
+            <input placeholder="Search components..." />
+          </div>
+          <br />
+          <IconPicker
+            value={customIconName}
+            onChange={handleIconSelect} />
+        </div>
+      )}
     </DndContext>
   );
-
 };
 
 export default ComponentEditor;
