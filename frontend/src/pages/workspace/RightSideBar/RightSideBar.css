@@ -765,3 +765,38 @@
 .delete-button:hover{
     background-color: #FEF2F2;
 }
+
+.scale{
+    width: 100%;
+}
+
+.scale div{
+    width: 100%;
+}
+
+.scale div input{
+    width: 100%;
+    background-color: #F9FAFB;
+    outline: none;
+    padding: 4%;
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+}
+
+.scale div label{
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    color: gray;
+    margin-bottom: 3%;
+}
+
+.properties-class input{
+    padding: 2%;
+    width: 100%;
+    font-size: 12px;
+    border-radius: 5px;
+    border: 1px solid #e5e7eb;
+    background-color: #F9FAFB;
+}
