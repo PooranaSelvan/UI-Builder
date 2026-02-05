@@ -18,7 +18,7 @@ import { Link2 } from 'lucide-react';
 import { Database } from 'lucide-react';
 import { Webhook } from 'lucide-react';
 import { Pencil } from 'lucide-react';
-import { Cloud } from 'lucide-react';
+import { Cloud, Braces } from 'lucide-react';
 import { MoveLeft, MoveRight, MoveDown, MoveUp } from 'lucide-react';
 import ImportedFiles from './components/ImportedFiles';
 
@@ -78,7 +78,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="properties-general">
                                         <div>
                                             <label htmlFor="">Element Id</label>
-                                            <input type="text" placeholder='element_id' defaultValue={selectedComponent.id} onChange={(e) => {
+                                            <input type="text" placeholder='element_id' value={selectedComponent.id} onChange={(e) => {
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.id = e.target.value;
                                                 });
@@ -102,6 +102,17 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 <option value="">Animation Actions</option>
                                             </select>
                                         </div>
+                                    </div>
+                                </Heading>
+
+                                <Heading icon={<Braces size={18}></Braces>} title={'Class Name'}>
+                                    <div className="properties-class">
+                                        <input type="text" value={selectedComponent.defaultProps.className} onChange={(e) => {
+                                            updateComponent(selectedComponent.id, (node) => {
+                                                node.defaultProps ??= {};
+                                                node.defaultProps.className = e.target.value;
+                                            })
+                                        }} />
                                     </div>
                                 </Heading>
 
@@ -200,7 +211,13 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </select>
                                     </div>
                                 </div>
-                                <SliderInput label={'font size'} value={font} min={0} max={48} unit='px' onChange={setFont} />
+                                <SliderInput label={'font size'} value={parseFloat(selectedComponent.defaultProps?.style?.fontSize) || 16} min={0} max={64} unit='px' onChange={(v) => {
+                                    updateComponent(selectedComponent.id, (node) => {
+                                        node.defaultProps ??= {};
+                                        node.defaultProps.style ??= {};
+                                        node.defaultProps.style.fontSize = `${v}px`
+                                    })
+                                }} />
                             </Heading>
                             <Heading icon={<Space size={18} />} title={'Spacing'} >
                                 <div className="spacing-content">
@@ -310,7 +327,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                         <div>
                                             <label htmlFor="">Style</label>
-                                            <select value={selectedComponent.defaultProps.style.borderStyle} onChange={(e) => {
+                                            <select value={selectedComponent.defaultProps?.style?.borderStyle || "solid"} onChange={(e) => {
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps ??= {};
                                                     node.defaultProps.style ??= {};
@@ -380,7 +397,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                         <div className='input-child'>
                                             <label htmlFor="">Font Weight</label>
-                                            <select value={selectedComponent.defaultProps.style.fontWeight || 400} onChange={(e) => {
+                                            <select value={selectedComponent.defaultProps?.style?.fontWeight || 400} onChange={(e) => {
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps ??= {};
                                                     node.defaultProps.style ??= {};
@@ -415,7 +432,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="double-input">
                                         <div className='input-child'>
                                             <label htmlFor="">Text Align</label>
-                                            <select value={selectedComponent.defaultProps.style.textAlign || "left"} onChange={(e) => {
+                                            <select value={selectedComponent.defaultProps?.style?.textAlign || "left"} onChange={(e) => {
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps ??= {};
                                                     node.defaultProps.style ??= {};
@@ -496,57 +513,24 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             }
                                         />
                                     </div>
-                                    <div className="three-input">
-                                        <div>
-                                            <label>Rotate</label>
-                                            <input
-                                                type="number"
-                                                value={selectedComponent.defaultProps?.style?.rotate ?? 0}
-                                                onChange={(e) => {
-                                                    const val = Number(e.target.value);
+                                </div>
+                                <div className="scale">
+                                    <div>
+                                        <label>Scale</label>
+                                        <input
+                                            type="number"
+                                            step="0.1"
+                                            value={selectedComponent.defaultProps?.style?.scale ?? 1}
+                                            onChange={(e) => {
+                                                const val = Number(e.target.value);
 
-                                                    updateComponent(selectedComponent.id, (node) => {
-                                                        node.defaultProps ??= {};
-                                                        node.defaultProps.style ??= {};
-                                                        node.defaultProps.style.rotate = val;
-                                                    });
-                                                }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label>Scale</label>
-                                            <input
-                                                type="number"
-                                                step="0.1"
-                                                value={selectedComponent.defaultProps?.style?.scale ?? 1}
-                                                onChange={(e) => {
-                                                    const val = Number(e.target.value);
-
-                                                    updateComponent(selectedComponent.id, (node) => {
-                                                        node.defaultProps ??= {};
-                                                        node.defaultProps.style ??= {};
-                                                        node.defaultProps.style.scale = val;
-                                                    });
-                                                }}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label>Opacity</label>
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                max="100"
-                                                value={(selectedComponent.defaultProps?.style?.opacity ?? 1) * 100}
-                                                onChange={(e) => {
-                                                    updateComponent(selectedComponent.id, node => {
-                                                        node.defaultProps ??= {};
-                                                        node.defaultProps.style ??= {};
-                                                        node.defaultProps.style.opacity =
-                                                            Number(e.target.value) / 100;
-                                                    });
-                                                }}
-                                            />
-                                        </div>
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
+                                                    node.defaultProps.style.scale = val;
+                                                });
+                                            }}
+                                        />
                                     </div>
                                 </div>
 

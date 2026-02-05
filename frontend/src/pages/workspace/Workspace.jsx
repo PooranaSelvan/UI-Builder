@@ -238,26 +238,30 @@ const Workspace = () => {
   const deleteComponent = () => {
     if (!selectedComponentId) return;
 
-    let arr = [{ parent: null, items: cloneComponents(components) }];
+    const newComponents = cloneComponents(components);
 
-    while (arr.length > 0) {
-      const { items } = arr.pop();
+    let stack = [{ items: newComponents }];
 
-      let itemIndex = items.findIndex(ele => ele.id === selectedComponentId);
+    while (stack.length > 0) {
+      const { items } = stack.pop();
 
-      if (itemIndex !== -1) {
-        items.splice(itemIndex, 1);
+      const index = items.findIndex(
+        item => item.id === selectedComponentId
+      );
+
+      if (index !== -1) {
+        items.splice(index, 1);
         break;
       }
 
       items.forEach(item => {
         if (item.children?.length) {
-          arr.push({ parent: item, items: item.children });
+          stack.push({ items: item.children });
         }
       });
     }
 
-    setComponents(arr);
+    setComponents(newComponents);
     setSelectedComponentId(null);
   };
 
