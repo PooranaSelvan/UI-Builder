@@ -3,7 +3,6 @@ import "./work-canvas.css";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SortableItem from "./SortableItem";
-import DropZoneItem from "./DropZoneItem";
 
 const Canvas = ({ components, zoom, selectedComponentId, onSelectComponent, clearComponentSelection }) => {
   const { setNodeRef, isOver } = useDroppable({ id: "canvas" });
@@ -23,13 +22,8 @@ const Canvas = ({ components, zoom, selectedComponentId, onSelectComponent, clea
         )}
 
         <SortableContext items={components.map((c) => c.id)} strategy={verticalListSortingStrategy}>
-          <DropZoneItem position={0} />
-
-          {components.map((ele, index) => (
-            <>
-              <SortableItem key={ele.id} ele={ele} isSelected={selectedComponentId === ele.id} selectedComponentId={selectedComponentId} onSelect={onSelectComponent} />
-              <DropZoneItem position={index + 1} />
-            </>
+          {components.map((ele) => (
+            <SortableItem key={ele.id} ele={ele} isSelected={selectedComponentId === ele.id} selectedComponentId={selectedComponentId} onSelect={onSelectComponent} />
           ))}
         </SortableContext>
       </div>

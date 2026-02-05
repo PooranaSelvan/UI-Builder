@@ -68,14 +68,6 @@
   padding: 16px;
 }
 
-
-.test-component:hover {
-  border: 2px solid deepskyblue;
-  border-radius: 12px;
-  transition: border 0.15s ease;
-}
-
-
 .icon-picker-wrapper {
   position: fixed;
   right: 16px;

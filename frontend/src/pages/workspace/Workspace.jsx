@@ -60,88 +60,73 @@ const Workspace = () => {
     setSelectedComponentId(null);
     if (!over || active.id === over.id) return;
 
-    const isFromSidebar = !!active.data.current?.component; // to check whether from sidebar or sortable
+    const isFromSidebar = !!active.data.current?.component;
     const isChild = isChildComponent(components, active.id);
 
 
-    // Add in Specific Drop Zone
-    if (isFromSidebar && over.data.current?.type === "add-between") {
-      let componentData = active.data.current.component;
+    // From SideBar
+    if (isFromSidebar) {
+      const componentData = active.data.current.component;
 
-      if (componentData?.rank === 4) {
-        toast.error("Basic elements must be inside a layout", toastErrorStyle);
+      // From SideBar to Canvas -- Layout Components
+      if (over.id === "canvas") {
+        if (componentData?.rank === 4) {
+          toast.error("Basic elements must be inside a layout", toastErrorStyle);
+          return;
+        }
+
+        const newId = `${componentData.id}-${uuidv4()}`;
+
+        setComponents((prev) => [
+          ...prev,
+          {
+            ...componentData,
+            id: newId,
+          },
+        ]);
+        setSelectedComponentId(newId);
         return;
       }
 
-      let newId = `${componentData.id}-${uuidv4()}`;
-      let insertPosition = over.data.current.position;
-
-      setComponents((prev) => {
-        let newComponents = [...prev];
-        let newComponent = { ...componentData, id: newId };
-
-        newComponents.splice(insertPosition, 0, newComponent);
-        return newComponents;
-      });
-
-      setSelectedComponentId(newId);
-      return;
-    }
-
-
-    // Add Layout Components from sidebar
-    if (isFromSidebar && over.id === "canvas") {
-      let componentData = active.data.current.component;
-
-      if (componentData?.rank === 4) {
-        toast.error("Basic elements must be inside a layout", toastErrorStyle);
-        return;
-      }
-      let newId = `${componentData.id}-${uuidv4()}`;
-
-      setComponents((prev) => [
-        ...prev,
-        {
-          ...componentData,
-          id: newId,
-        },
-      ]);
-      setSelectedComponentId(newId);
-
-      return;
-    }
-
-
-    // Adding Child Component directly from sidebar
-    if (isFromSidebar && over.id !== "canvas") {
-      let componentData = active.data.current.component;
-      // console.log(componentData, over.data.current);
-
-      if (over.data.current?.rank && componentData.rank < over.data.current.rank) {
+      // From SideBar to Canvas -- Child Components
+      let overData = over.data.current;
+      if (overData?.rank && componentData.rank < overData.rank) {
         toast.error("You cannot place this component inside a smaller Component.", toastErrorStyle);
         return;
       }
 
       let newChild = { ...componentData, id: `${componentData.id}-${uuidv4()}`, children: [] };
 
-      setComponents((prev) => addChildToComponent(prev, over.id, newChild));
+      setComponents((items) => addChildToComponent(items, over.id, newChild));
       return;
     }
 
 
-    // Checking is checking and from canvas to prevent adding directly
+    // From Canvs Area
     if (isChild && over.id === "canvas") {
       toast.error("Child elements must inside a Layout Component", toastErrorStyle);
       return;
     }
 
+    // Re-Order Canvas Elements - Sorting
+    if (!isChild && components.some((c) => c.id === over.id)) {
+      setComponents((items) => {
+        const oldIndex = items.findIndex((i) => i.id === active.id);
+        const newIndex = items.findIndex((i) => i.id === over.id);
 
-    // Child Moving Inside Drop Zone
-    if (!isFromSidebar && over.id !== "canvas") {
-      let componentData = findComponentById(components, active.id);
+        if (oldIndex === -1 || newIndex === -1) return items;
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+      return;
+    }
+
+    // Putting Into Another Component
+    if (over.id !== "canvas") {
+      const componentData = findComponentById(components, active.id);
       if (!componentData) return;
 
-      setComponents(items => {
+      setComponents((items) => {
         let newComponents;
         let movingChild = componentData;
 
@@ -150,25 +135,10 @@ const Workspace = () => {
           newComponents = newComponent;
           movingChild = child;
         } else {
-          newComponents = items.filter(item => item.id !== active.id);
+          newComponents = items.filter((item) => item.id !== active.id);
         }
 
         return addChildToComponent(newComponents, over.id, movingChild);
-      });
-
-      return;
-    }
-
-
-    // Sorting Inside the Canvas Area
-    if (!isChild && !isFromSidebar && over.data.current?.type !== "add-between" && components.some(c => c.id === over.id)) {
-      setComponents((items) => {
-        let oldIndex = items.findIndex((i) => i.id === active.id); // where dragged from
-        let newIndex = items.findIndex((i) => i.id === over.id); // where it putted
-
-        if (oldIndex === -1 || newIndex === -1) return items;
-
-        return arrayMove(items, oldIndex, newIndex); // immutable aa re-order pannum
       });
     }
   };
