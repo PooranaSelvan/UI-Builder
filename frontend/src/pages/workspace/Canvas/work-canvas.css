@@ -23,16 +23,26 @@
 
 /* Component Style */
 .test-component:hover {
-     border: 2px solid deepskyblue;
-     border-radius: 12px;
+     border: 2px solid black;
 }
 
 .component-drag {
      position: absolute;
-     top: 10px;
-     right: 20px;
-     cursor: grab;
+     top: 5px;
+     right: 10px;
+     cursor:move;
 }
 .component-drag:active {
      cursor: grabbing;
+}
+
+
+/* In work-canvas.css */
+.drop-zone-between {
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.drop-zone-between:hover {
+  border-color: #ccc;
 }

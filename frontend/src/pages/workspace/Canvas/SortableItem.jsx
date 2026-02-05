@@ -17,7 +17,7 @@ const SortableItem = ({ ele, isSelected, onSelect, selectedComponentId }) => {
           onSelect(id);
      };
 
-     const { setNodeRef: setDropRef, isOver } = useDroppable({
+     const { setNodeRef: setDropRef } = useDroppable({
           id: id,
           data: {
                rank,
@@ -27,11 +27,9 @@ const SortableItem = ({ ele, isSelected, onSelect, selectedComponentId }) => {
      });
 
      const style = {
-          transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+          transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : "",
           transition,
-          border: isSelected ? "2px solid deepskyblue" : "none",
-          borderRadius: "12px",
-          marginBottom: 10,
+          border: isSelected ? "2px solid black" : "none",
           position : "relative"
      };
 
@@ -42,9 +40,11 @@ const SortableItem = ({ ele, isSelected, onSelect, selectedComponentId }) => {
                </div>
 
                {isVoid ? (
-                    React.createElement(tag, defaultProps)
+                    <div onClick={selectComponent}>
+                         {React.createElement(tag, defaultProps)}
+                    </div>
                ) : (
-                    React.createElement(tag, defaultProps, children?.length > 0 ? children.map((child) => (<SortableItem key={child.id} ele={child} isSelected={child.id === selectedComponentId} selectedComponentId={selectedComponentId} onSelect={onSelect} />)) : content)
+                    React.createElement(tag, {...defaultProps, onClick: selectComponent}, children?.length > 0 ? children.map((child) => (<SortableItem key={child.id} ele={child} isSelected={child.id === selectedComponentId} selectedComponentId={selectedComponentId} onSelect={onSelect} />)) : content)
                )}
           </div>
      );

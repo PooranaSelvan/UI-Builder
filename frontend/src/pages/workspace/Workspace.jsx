@@ -64,6 +64,31 @@ const Workspace = () => {
     const isChild = isChildComponent(components, active.id);
 
 
+    // Add in Specific Drop Zone
+    if (isFromSidebar && over.data.current?.type === "add-between") {
+      let componentData = active.data.current.component;
+
+      if (componentData?.rank === 4) {
+        toast.error("Basic elements must be inside a layout", toastErrorStyle);
+        return;
+      }
+
+      let newId = `${componentData.id}-${uuidv4()}`;
+      let insertPosition = over.data.current.position;
+
+      setComponents((prev) => {
+        let newComponents = [...prev];
+        let newComponent = { ...componentData, id: newId };
+
+        newComponents.splice(insertPosition, 0, newComponent);
+        return newComponents;
+      });
+
+      setSelectedComponentId(newId);
+      return;
+    }
+
+
     // Add Layout Components from sidebar
     if (isFromSidebar && over.id === "canvas") {
       let componentData = active.data.current.component;
@@ -136,7 +161,7 @@ const Workspace = () => {
 
 
     // Sorting Inside the Canvas Area
-    if (!isChild) {
+    if (!isChild && !isFromSidebar && over.data.current?.type !== "add-between" && components.some(c => c.id === over.id)) {
       setComponents((items) => {
         let oldIndex = items.findIndex((i) => i.id === active.id); // where dragged from
         let newIndex = items.findIndex((i) => i.id === over.id); // where it putted
