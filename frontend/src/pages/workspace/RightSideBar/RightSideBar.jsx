@@ -82,7 +82,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.id = e.target.value;
                                                 });
-                                            }} />
+                                            }} disabled />
                                         </div>
                                         <div>
                                             <label htmlFor="">Chart type</label>
@@ -119,8 +119,8 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <option selected="">Block</option>
                                             <option>Flex</option>
                                             <option>Grid</option>
-                                            <option>Inline</option>
-                                            <option>Inline-block</option>
+                                            {/* <option>Inline</option>
+                                            <option>Inline-block</option> */}
                                             <option>None</option>
                                         </select>
                                     </div>
@@ -137,18 +137,22 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                 </div>
                                 <SizeInput
                                     label="Width"
-                                    value={selectedComponent.defaultProps.style.width}
+                                    value={selectedComponent.defaultProps?.style?.width}
                                     onChange={(v) =>
                                         updateComponent(selectedComponent.id, (node) => {
+                                            node.defaultProps ??= {};
+                                            node.defaultProps.style ??= {};
                                             node.defaultProps.style.width = v;
                                         })
                                     }
                                 />
                                 <SizeInput
                                     label="Height"
-                                    value={selectedComponent.defaultProps.style.height}
+                                    value={selectedComponent.defaultProps?.style?.height}
                                     onChange={(v) =>
                                         updateComponent(selectedComponent.id, (node) => {
+                                            node.defaultProps ??= {};
+                                            node.defaultProps.style ??= {};
                                             node.defaultProps.style.height = v;
                                         })
                                     }
@@ -204,10 +208,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         label="Padding"
                                         names={["Top", "Right", "Bottom", "Left"]}
                                         values={[
-                                            selectedComponent.defaultProps.style.paddingTop ?? 0,
-                                            selectedComponent.defaultProps.style.paddingRight ?? 0,
-                                            selectedComponent.defaultProps.style.paddingBottom ?? 0,
-                                            selectedComponent.defaultProps.style.paddingLeft ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.paddingTop) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.paddingRight) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.paddingBottom) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.paddingLeft) || 0,
                                         ]}
                                         onChange={(index, value) => {
                                             updateComponent(selectedComponent.id, (node) => {
@@ -218,7 +222,12 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                     "paddingLeft",
                                                 ];
 
-                                                node.defaultProps.style[map[index]] = `${value}px`;
+                                                node.defaultProps ??= {};
+                                                node.defaultProps.style ??= {};
+
+                                                const actualValue = String(value).replace("px", "");
+
+                                                node.defaultProps.style[map[index]] = `${actualValue}px`;
                                             });
                                         }}
                                     />
@@ -226,10 +235,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         label="Margin"
                                         names={["Top", "Right", "Bottom", "Left"]}
                                         values={[
-                                            selectedComponent.defaultProps.style.marginTop ?? 0,
-                                            selectedComponent.defaultProps.style.marginRight ?? 0,
-                                            selectedComponent.defaultProps.style.marginBottom ?? 0,
-                                            selectedComponent.defaultProps.style.marginLeft ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.marginTop) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.marginRight) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.marginBottom) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.marginLeft) || 0,
                                         ]}
                                         onChange={(index, value) => {
                                             updateComponent(selectedComponent.id, (node) => {
@@ -240,7 +249,12 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                     "marginLeft",
                                                 ];
 
-                                                node.defaultProps.style[map[index]] = `${value}px`;
+                                                node.defaultProps ??= {};
+                                                node.defaultProps.style ??= {};
+
+                                                const actualValue = String(value).replace("px", "");
+
+                                                node.defaultProps.style[map[index]] = `${actualValue}px`;
                                             });
                                         }}
                                     />
@@ -251,16 +265,20 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                 <div className='background-content'>
                                     <label htmlFor="">Background color</label>
                                     <ColorPalette
-                                        value={selectedComponent.defaultProps.style.backgroundColor ?? "#000000"}
+                                        value={selectedComponent.defaultProps?.style?.backgroundColor ?? "#000000"}
                                         onChange={(v) =>
                                             updateComponent(selectedComponent.id, (node) => {
+                                                node.defaultProps ??= {};
+                                                node.defaultProps.style ??= {};
                                                 node.defaultProps.style.backgroundColor = v;
                                             })
                                         }
                                     />
-                                    <SliderInput label={'opacity'} value={(selectedComponent.defaultProps.style.opacity ?? 1) * 100} min={0} max={100} unit='%' onChange={(v) => {
+                                    <SliderInput label={'opacity'} value={Number((selectedComponent.defaultProps?.style?.opacity ?? 0.1) * 100).toFixed(0)} min={0} max={100} unit='%' onChange={(v) => {
                                         updateComponent(selectedComponent.id, (node) => {
-                                            node.defaultProps.style.opacity = v;
+                                            node.defaultProps ??= {};
+                                            node.defaultProps.style ??= {};
+                                            node.defaultProps.style.opacity = v / 100;
                                         });
                                     }} />
                                     <div className="background-image">
@@ -278,26 +296,40 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="three-input">
                                         <div>
                                             <label htmlFor="">Width</label>
-                                            <input type="text" value={selectedComponent.defaultProps.borderWidth} onChange={(e) => {
-                                                updateComponent(selectedComponent.id, (node) => {
-                                                    node.defaultProps.style.borderWidth = e.target.value;
-                                                })
-                                            }} />
+                                            <input
+                                                type="number"
+                                                value={parseFloat(selectedComponent.defaultProps?.style?.borderWidth || 0)}
+                                                onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.borderWidth = `${e.target.value}px`;
+                                                    });
+                                                }}
+                                            />
                                         </div>
                                         <div>
                                             <label htmlFor="">Style</label>
-                                            <select>
-                                                <option selected="">solid</option>
-                                                <option>dashed</option>
-                                                <option>dotted</option>
-                                                <option>double</option>
-                                                <option>none</option>
+                                            <select value={selectedComponent.defaultProps.style.borderStyle} onChange={(e) => {
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
+                                                    node.defaultProps.style.borderStyle = e.target.value;
+                                                })
+                                            }}>
+                                                <option value="solid">solid</option>
+                                                <option value="dashed">dashed</option>
+                                                <option value="dotted">dotted</option>
+                                                <option value="double">double</option>
+                                                <option value="none">none</option>
                                             </select>
                                         </div>
                                         <div>
                                             <label htmlFor="">Color</label>
-                                            <input type="text" value={selectedComponent.defaultProps.style.borderColor} onChange={(e) => {
+                                            <input type="text" value={selectedComponent.defaultProps?.style?.borderColor} onChange={(e) => {
                                                 updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
                                                     node.defaultProps.style.borderColor = e.target.value;
                                                 });
                                             }} />
@@ -305,12 +337,12 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     </div>
                                     <FourSideInput
                                         label="Border Radius"
-                                        names={["Top Left", "Top Right", "Bottom Right", "Bottom Left"]}
+                                        names={["Top", "Right", "Bottom", "Left"]}
                                         values={[
-                                            selectedComponent.defaultProps.style.borderTopLeftRadius ?? 0,
-                                            selectedComponent.defaultProps.style.borderTopRightRadius ?? 0,
-                                            selectedComponent.defaultProps.style.borderBottomRightRadius ?? 0,
-                                            selectedComponent.defaultProps.style.borderBottomLeftRadius ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.borderTopLeftRadius) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.borderTopRightRadius) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.borderBottomRightRadius) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.borderBottomLeftRadius) || 0,
                                         ]}
                                         onChange={(index, value) => {
                                             updateComponent(selectedComponent.id, (node) => {
@@ -321,7 +353,12 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                     "borderBottomLeftRadius",
                                                 ];
 
-                                                node.defaultProps.style[map[index]] = `${value}px`;
+                                                node.defaultProps ??= {};
+                                                node.defaultProps.style ??= {};
+
+                                                const actualValue = String(value).replace("px", "");
+
+                                                node.defaultProps.style[map[index]] = `${actualValue}px`;
                                             });
                                         }}
                                     />
@@ -333,31 +370,43 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="double-input">
                                         <div className='input-child'>
                                             <label htmlFor="">Font Size</label>
-                                            <input type="number" defaultValue={selectedComponent.defaultProps.style.fontSize} onChange={(e) => {
+                                            <input type="number" value={parseFloat(selectedComponent.defaultProps?.style?.fontSize) || 0} onChange={(e) => {
                                                 updateComponent(selectedComponent.id, (node) => {
-                                                    node.defaultProps.style.fontSize = e.target.value
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
+                                                    node.defaultProps.style.fontSize = `${e.target.value}px`
                                                 })
                                             }} />
                                         </div>
                                         <div className='input-child'>
                                             <label htmlFor="">Font Weight</label>
-                                            <select>
-                                                <option>100</option>
-                                                <option>300</option>
-                                                <option selected="">400</option>
-                                                <option>500</option>
-                                                <option>600</option>
-                                                <option>700</option>
-                                                <option>900</option>
+                                            <select value={selectedComponent.defaultProps.style.fontWeight || 400} onChange={(e) => {
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
+                                                    node.defaultProps.style.fontWeight = `${e.target.value}`
+                                                })
+                                            }}>
+                                                <option value="100">100</option>
+                                                <option value="200">200</option>
+                                                <option value="300">300</option>
+                                                <option value="400">400</option>
+                                                <option value="500">500</option>
+                                                <option value="600">600</option>
+                                                <option value="700">700</option>
+                                                <option value="800">800</option>
+                                                <option value="900">900</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div className="color">
                                         <label htmlFor="" id='text-color'>Text color</label>
                                         <ColorPalette
-                                            value={selectedComponent.defaultProps.style.color}
+                                            value={selectedComponent.defaultProps?.style?.color}
                                             onChange={(v) =>
                                                 updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
                                                     node.defaultProps.style.color = v;
                                                 })
                                             }
@@ -366,17 +415,25 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="double-input">
                                         <div className='input-child'>
                                             <label htmlFor="">Text Align</label>
-                                            <select>
-                                                <option selected="">left</option>
-                                                <option>center</option>
-                                                <option>right</option>
-                                                <option>justify</option>
+                                            <select value={selectedComponent.defaultProps.style.textAlign || "left"} onChange={(e) => {
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
+                                                    node.defaultProps.style.textAlign = e.target.value;
+                                                })
+                                            }}>
+                                                <option value="left">left</option>
+                                                <option value="center">center</option>
+                                                <option value="right">right</option>
+                                                <option value="justify">justify</option>
                                             </select>
                                         </div>
                                         <div className='input-child'>
                                             <label htmlFor="">Line Height</label>
-                                            <input type="text" defaultValue={selectedComponent.defaultProps.style.lineHeight} onChange={(e) => {
+                                            <input type="text" value={selectedComponent.defaultProps?.style?.lineHeight} onChange={(e) => {
                                                 updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
                                                     node.defaultProps.style.lineHeight = e.target.value;
                                                 })
                                             }} />
@@ -392,24 +449,25 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         label="Box Shadow"
                                         names={["X", "Y", "Blur", "Spread"]}
                                         values={[
-                                            selectedComponent.defaultProps.style.boxShadowX ?? 0,
-                                            selectedComponent.defaultProps.style.boxShadowY ?? 0,
-                                            selectedComponent.defaultProps.style.boxShadowBlur ?? 0,
-                                            selectedComponent.defaultProps.style.boxShadowSpread ?? 0,
+                                            selectedComponent.defaultProps?.style?.boxShadowX ?? 0,
+                                            selectedComponent.defaultProps?.style?.boxShadowY ?? 0,
+                                            selectedComponent.defaultProps?.style?.boxShadowBlur ?? 0,
+                                            selectedComponent.defaultProps?.style?.boxShadowSpread ?? 0,
                                         ]}
                                         onChange={(index, value) => {
                                             updateComponent(selectedComponent.id, (node) => {
                                                 const shadow = {
-                                                    x: node.defaultProps.style.boxShadowX ?? 0,
-                                                    y: node.defaultProps.style.boxShadowY ?? 0,
-                                                    blur: node.defaultProps.style.boxShadowBlur ?? 0,
-                                                    spread: node.defaultProps.style.boxShadowSpread ?? 0,
-                                                    color: node.defaultProps.style.boxShadowColor ?? "rgba(0,0,0,0.25)",
+                                                    x: node.defaultProps?.style?.boxShadowX ?? 0,
+                                                    y: node.defaultProps?.style?.boxShadowY ?? 0,
+                                                    blur: node.defaultProps?.style?.boxShadowBlur ?? 0,
+                                                    spread: node.defaultProps?.style?.boxShadowSpread ?? 0,
+                                                    color: node.defaultProps?.style?.boxShadowColor ?? "rgba(0,0,0,0.25)",
                                                 };
 
                                                 const map = ["x", "y", "blur", "spread"];
                                                 shadow[map[index]] = value;
-
+                                                node.defaultProps ??= {};
+                                                node.defaultProps.style ??= {};
                                                 node.defaultProps.style.boxShadowX = shadow.x;
                                                 node.defaultProps.style.boxShadowY = shadow.y;
                                                 node.defaultProps.style.boxShadowBlur = shadow.blur;
@@ -424,40 +482,70 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="color">
                                         <label htmlFor="" id='text-color'>Shadow color</label>
                                         <ColorPalette
-                                            value={selectedComponent.defaultProps.style.shadowColor}
+                                            value={selectedComponent.defaultProps?.style?.boxShadowColor || "#000000"}
                                             onChange={(v) =>
                                                 updateComponent(selectedComponent.id, (node) => {
-                                                    node.defaultProps.style.shadowColor = v;
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
+                                                    const shadow = node.defaultProps.style.boxShadow || "0px 4px 10px #000";
+                                                    const parts = shadow.split(" ");
+                                                    parts[parts.length - 1] = v;
+
+                                                    node.defaultProps.style.boxShadow = parts.join(" ");
                                                 })
                                             }
                                         />
                                     </div>
                                     <div className="three-input">
                                         <div>
-                                            <label htmlFor="">Rotate</label>
-                                            <input type="text" defaultValue={selectedComponent.defaultProps.style.rotate} onChange={(e) => {
-                                                updateComponent(selectedComponent.id, (node) => {
-                                                    node.defaultProps.style.rotate = e.target.value;
-                                                });
-                                            }} />
+                                            <label>Rotate</label>
+                                            <input
+                                                type="number"
+                                                value={selectedComponent.defaultProps?.style?.rotate ?? 0}
+                                                onChange={(e) => {
+                                                    const val = Number(e.target.value);
+
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.rotate = val;
+                                                    });
+                                                }}
+                                            />
                                         </div>
                                         <div>
-                                            <label htmlFor="">scale</label>
-                                            <select>
-                                                <option selected="">solid</option>
-                                                <option>dashed</option>
-                                                <option>dotted</option>
-                                                <option>double</option>
-                                                <option>none</option>
-                                            </select>
+                                            <label>Scale</label>
+                                            <input
+                                                type="number"
+                                                step="0.1"
+                                                value={selectedComponent.defaultProps?.style?.scale ?? 1}
+                                                onChange={(e) => {
+                                                    const val = Number(e.target.value);
+
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.scale = val;
+                                                    });
+                                                }}
+                                            />
                                         </div>
                                         <div>
-                                            <label htmlFor="">opacity</label>
-                                            <input type="text" value={selectedComponent.defaultProps.style.opacity} onChange={(e) => {
-                                                updateComponent(selectedComponent.id, (node) => {
-                                                    node.defaultProps.style.opacity = e.target.value;
-                                                })
-                                            }} />
+                                            <label>Opacity</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                max="100"
+                                                value={(selectedComponent.defaultProps?.style?.opacity ?? 1) * 100}
+                                                onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, node => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.opacity =
+                                                            Number(e.target.value) / 100;
+                                                    });
+                                                }}
+                                            />
                                         </div>
                                     </div>
                                 </div>
