@@ -1,7 +1,9 @@
 import { useDraggable } from "@dnd-kit/core";
+import * as LucideIcons from "lucide-react";
 
 export default function ComponentItem({ item }) {
-  const { id, icon: Icon, label } = item;
+  const { id, iconName, icon, label } = item;
+  const Icon = iconName ? LucideIcons[iconName] || LucideIcons.Square : icon || LucideIcons.Square;
 
   // console.log(item); // full tag object uhm irukum
 

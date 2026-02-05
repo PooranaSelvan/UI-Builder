@@ -1,28 +1,23 @@
-import { ICONS } from "./icons";
-import { useComponentContext } from "./ComponentContext";
-import "./icon-picker.css";
+import * as LucideIcons from "lucide-react";
 
-export default function IconPicker() {
-  const { customComponentDraft, setIcon } = useComponentContext();
-
+export default function IconPicker({ value, onChange }) {
   return (
-    <div className="icon-picker">
-      <h4>Select Icon</h4>
-
-      <div className="icon-grid">
-        {ICONS.map(([name, Icon]) => (
-          <button
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8 }}>
+      {Object.entries(LucideIcons)
+        .filter(([name]) => name[0] === name[0].toUpperCase())
+        .slice(0, 60)
+        .map(([name, Icon]) => (
+          <div
             key={name}
-            className={`icon-btn ${
-              customComponentDraft.iconName === name ? "active" : ""
-            }`}
-            onClick={() => setIcon(name)}
-            title={name}
-          >
-            <Icon size={20} />
-          </button>
+            onClick={() => onChange(name)}
+            style={{
+              padding: 6,
+              border: value === name ? "2px solid #000" : "1px solid #ddd",
+              cursor: "pointer"
+            }}>
+            <Icon size={18} />
+          </div>
         ))}
-      </div>
     </div>
   );
 }
