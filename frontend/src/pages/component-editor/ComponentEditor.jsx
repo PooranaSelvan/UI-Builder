@@ -11,6 +11,7 @@ import IconPicker from "./IconPicker";
 import { Search } from "lucide-react";
 import { BasicComponents } from "../workspace/utils/basicComponentsData";
 
+
 const ComponentEditor = () => {
   /* ---------------- State ---------------- */
 
@@ -20,7 +21,8 @@ const ComponentEditor = () => {
   const [customIconName, setCustomIconName] = useState("Square");
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [lastSavedComponentId, setLastSavedComponentId] = useState(null);
-
+  const [customComponentName, setCustomComponentName] = useState("");
+  const [showNameInput, setShowNameInput] = useState(false);
 
 
   /* ---------------- Helpers ---------------- */
@@ -263,31 +265,13 @@ const ComponentEditor = () => {
 
   const saveSelectedComponent = () => {
     if (!selectedComponent) return;
-
-    const newId = `custom-${uuidv4()}`;
-
-    const cleanComponent = (comp) => ({
-      ...comp,
-      id: `${comp.type}-${uuidv4()}`,
-      isCustom: true,
-      iconName: customIconName,
-      children: comp.children?.map(cleanComponent) || [],
-    });
-
-    const savedComponent = {
-      ...cleanComponent(selectedComponent),
-      id: newId,
-      isRootCustom: true,
-      iconName: customIconName,
-    };
-
-    setSavedComponents(prev => [...prev, savedComponent]);
-    setLastSavedComponentId(newId);
-    setShowIconPicker(true);
-
-    toast.success("Component saved! Choose an icon");
+  
+    setCustomComponentName("");
+    setCustomIconName("Square");
+  
+    setShowNameInput(true);
   };
-
+  
 
   const combinedComponents = [
     ...BasicComponents,
@@ -302,20 +286,44 @@ const ComponentEditor = () => {
       : []),
   ];
 
+  const handleNameSubmit = () => {
+    if (!customComponentName.trim()) return; 
+  
+    const newId = `custom-${uuidv4()}`;
+    setLastSavedComponentId(newId);
+  
+
+    setShowNameInput(false);
+    setShowIconPicker(true);
+  };
+  
+
   const handleIconSelect = (iconName) => {
     setCustomIconName(iconName);
-
-    setSavedComponents(prev =>
-      prev.map(comp =>
-        comp.id === lastSavedComponentId
-          ? { ...comp, iconName }
-          : comp
-      )
-    );
+  
+   
+    const cloneComponent = (comp) => JSON.parse(JSON.stringify(comp));
+  
+    const savedComponent = {
+      ...cloneComponent(selectedComponent),
+      id: lastSavedComponentId,     
+      label: customComponentName,    
+      iconName,                      
+      isRootCustom: true,           
+      children: selectedComponent.children || [], 
+    };
+  
+ 
+    setSavedComponents(prev => [...prev, savedComponent]);
+  
 
     setShowIconPicker(false);
-    toast.success("Icon updated!");
+    setCustomComponentName("");
+    setCustomIconName("Square");
+  
+    toast.success("Custom component saved!");
   };
+  
 
   /* ---------------- Render ---------------- */
 
@@ -350,20 +358,45 @@ const ComponentEditor = () => {
       </div>
 
 
-      {showIconPicker && (
-        <div className="icon-picker-wrapper">
-          <h4>Select an icon</h4>
+{showNameInput && (
+  <div className="custom-component-modal">
+    <h4>Name your component</h4>
+    <input
+      type="text"
+      placeholder="Enter component name..."
+      value={customComponentName}
+      onChange={(e) => setCustomComponentName(e.target.value)}
+    />
+    <button
+      disabled={!customComponentName.trim()}
+      onClick={handleNameSubmit}
+    >
+      Next: Choose Icon
+    </button>
+  </div>
+)}
 
-          <div className="search-box">
-            <Search size={16} />
-            <input placeholder="Search components..." />
-          </div>
-          <br />
-          <IconPicker
-            value={customIconName}
-            onChange={handleIconSelect} />
-        </div>
-      )}
+
+{showIconPicker && (
+  <div className="custom-component-modal">
+    <h4>Choose an icon for {customComponentName}</h4>
+
+    <div className="search-box">
+      <Search size={16} />
+      <input
+        placeholder="Search icons..."
+        value={customIconName}
+        onChange={(e) => setCustomIconName(e.target.value)}
+      />
+    </div>
+
+    <IconPicker
+      value={customIconName}
+      onChange={handleIconSelect}
+    />
+  </div>
+)}
+
     </DndContext>
   );
 };

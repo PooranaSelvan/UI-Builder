@@ -5,7 +5,7 @@ export default function IconPicker({ value, onChange }) {
     <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8 }}>
       {Object.entries(LucideIcons)
         .filter(([name]) => name[0] === name[0].toUpperCase())
-        .slice(0, 60)
+        .slice(0, 1900)
         .map(([name, Icon]) => (
           <div
             key={name}

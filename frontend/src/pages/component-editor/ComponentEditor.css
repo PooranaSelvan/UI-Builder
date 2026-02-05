@@ -1,4 +1,4 @@
-
+/* ---------------- Component Editor Wrapper ---------------- */
 .component-editor-wrapper {
   display: flex;
   flex-direction: column;
@@ -7,7 +7,7 @@
   background: #f9fafb;
 }
 
-
+/* ---------------- Top Bar ---------------- */
 .editor-top-bar {
   height: 48px;
   padding: 0 12px;
@@ -19,47 +19,12 @@
   flex-shrink: 0;
 }
 
-.save-component-btn {
-  padding: 6px 14px;
-  border-radius: 8px;
-  background: #2563eb; 
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
- 
-}
-
-.save-component-btn:hover:not(:disabled) {
-  background: #1d4ed8; 
-}
-
-.save-component-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-
+/* ---------------- Editor Body ---------------- */
 .editor-body {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
-
-
-
-.left-panel,
-.right-panel {
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
-}
-
-.right-panel {
-  border-right: none;
-  border-left: 1px solid #e5e7eb;
-}
-
 
 .canvas-wrapper {
   flex: 1;
@@ -68,69 +33,7 @@
   padding: 16px;
 }
 
-
-.test-component:hover {
-  border: 2px solid deepskyblue;
-  border-radius: 12px;
-  transition: border 0.15s ease;
-}
-
-
-.icon-picker-wrapper {
-  position: fixed;
-  right: 16px;
-  bottom: 100px;
-  width: 320px;
-  height: 420px;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  overflow-y: auto;
-  z-index: 1000;
-}
-
-.icon-picker-wrapper h4 {
-  margin: 0 0 8px 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #111827;
-}
-
-
-
-
-.icon-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-}
-
-
-.icon-item {
-  padding: 6px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
- 
-}
-
- 
-.icon-item:hover {
-  background: #eff6ff;
-  border-color: #2563eb;
-}
-
-
-.icon-item.selected {
-  background: #2563eb;
-  color: white;
-  border-color: #2563eb;
-}
-
+/* ---------------- Search Box ---------------- */
 .search-box {
   display: flex;
   align-items: center;
@@ -147,3 +50,129 @@
   width: 100%;
 }
 
+/* ---------------- Name Input Modal ---------------- */
+.custom-component-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  width: 320px;
+  max-width: 90%;
+  max-height: 80vh;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  z-index: 1200;
+}
+
+.custom-component-modal h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+}
+
+.custom-component-modal input[type="text"] {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+}
+
+/* ---------------- Icon Picker ---------------- */
+.custom-component-modal .icon-picker-wrapper {
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.custom-component-modal .icon-picker-wrapper h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+}
+
+.custom-component-modal .icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.custom-component-modal .icon-item {
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.custom-component-modal .icon-item svg {
+  width: 32px;
+  height: 32px;
+}
+
+.custom-component-modal .icon-item:hover {
+  background: #eff6ff;
+  border-color: #2563eb;
+}
+
+.custom-component-modal .icon-item.selected {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+
+/* ---------------- Search Box Inside Modal ---------------- */
+.custom-component-modal .search-box {
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+.save-component-btn,
+.custom-component-modal button {
+  background-color: #dc2626;
+  color: white;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.save-component-btn:hover:not(:disabled),
+.custom-component-modal button:hover:not(:disabled) {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.save-component-btn:disabled,
+.custom-component-modal button:disabled {
+  background-color: #fca5a5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
