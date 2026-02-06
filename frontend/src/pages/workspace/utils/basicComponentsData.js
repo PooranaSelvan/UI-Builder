@@ -116,7 +116,7 @@
           rank: 4,
           defaultProps: {
             className: "basic-textarea test-component",
-            rows: 3,
+            rows: 5,
             placeholder: "Enter text here"
           }
         },
@@ -150,16 +150,6 @@
           rank: 4,
           defaultProps: {
             className: "basic-divider test-component"
-          }
-        },
-        {
-          id: "icon",
-          label: "Icons",
-          icon: Star,
-          tag: "",
-          rank: 4,
-          defaultProps: {
-            className: "basic-icon test-component"
           }
         }
       ]
