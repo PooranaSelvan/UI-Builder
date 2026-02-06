@@ -20,6 +20,9 @@
 
 .empty{
     width: 19%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .error-text{
@@ -155,6 +158,24 @@
     border-radius: 5px;
     border: 1px solid #e5e7eb;
     width: 100%;
+}
+
+.event-form label{
+    display: block;
+    margin-bottom: 3px;
+    font-size: 10px;
+    color: gray;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.event-form input{
+    padding: 2%;
+    width: 100%;
+    font-size: 12px;
+    border-radius: 5px;
+    border: 1px solid #e5e7eb;
+    background-color: #F9FAFB;
 }
 
 .double-input {

@@ -20,10 +20,23 @@ import { Webhook } from 'lucide-react';
 import { Pencil } from 'lucide-react';
 import { Cloud, Braces } from 'lucide-react';
 import { MoveLeft, MoveRight, MoveDown, MoveUp } from 'lucide-react';
+import { Workflow } from 'lucide-react';
 import ImportedFiles from './components/ImportedFiles';
 import ImageUpload from './components/ImageUpload';
 
 const UNITS = ["px", "%", "rem", "em", "auto"];
+const EVENT_MAP = {
+    button: ["navigation", "visibility", "style"],
+    link: ["navigation", "style"],
+    menu: ["navigation", "visibility", "style"],
+    card: ["navigation", "visibility", "style"],
+    modal: ["visibility", "style"],
+    dropdown: ["visibility", "style"],
+    tooltip: ["visibility", "style"],
+    image: ["visibility", "style"],
+    text: ["visibility", "style"],
+    container: ["visibility", "style"]
+};
 
 const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) => {
     const [activeTab, setActiveTab] = useState("properties");
@@ -31,8 +44,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     // const [opacity, setOpacity] = useState(100);
     const [font, setFont] = useState(16);
     const [files, setFiles] = useState([]);
+    const [eventType, setEventType] = useState();
     const fileRef = useRef(null);
     const display = selectedComponent?.defaultProps?.style?.display || "block";
+    const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
 
     const handleFiles = (fileList) => {
         const newFiles = Array.from(fileList).map((file) => ({
@@ -97,15 +112,89 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                 <Heading icon={<Zap size={18}></Zap>} title={'Events'} >
                                     <div className="properties-general properties-event">
                                         <div>
-                                            <select name="" id="">
-                                                <option value="">Navigation Actions</option>
-                                                <option value="">Visibility Actions</option>
-                                                <option value="">Style & Layout Actions</option>
-                                                {/* <option value="">Content Actions</option>
-                                                <option value="">Animation Actions</option> */}
+                                            <select value={eventType} onChange={(e) => {
+                                                setEventType(e.target.value)
+                                            }}>
+                                                <option value="">Select Event</option>
+
+                                                {allowedEvents.includes("navigation") && (
+                                                    <option value="navigation">Navigation Actions</option>
+                                                )}
+
+                                                {allowedEvents.includes("visibility") && (
+                                                    <option value="visibility">Visibility Actions</option>
+                                                )}
+
+                                                {allowedEvents.includes("style") && (
+                                                    <option value="style">Style & Layout Actions</option>
+                                                )}
                                             </select>
                                         </div>
                                     </div>
+                                </Heading>
+
+                                <Heading icon={<Workflow size={18} />} title="Behavior">
+                                    {eventType === "navigation" && (
+                                        <div className="event-form">
+                                            <label>Target URL / Page</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Enter URL"
+                                                onChange={(e) =>
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.events ??= {};
+                                                        node.defaultProps.events.navigation = {
+                                                            type: "navigate",
+                                                            target: e.target.value,
+                                                        };
+                                                    })
+                                                }
+                                            />
+                                        </div>
+                                    )}
+
+                                    {eventType === "visibility" && (
+                                        <div className="event-form">
+                                            <label>Action</label>
+
+                                            <select
+                                                onChange={(e) =>
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.events ??= {};
+                                                        node.defaultProps.events.visibility = {
+                                                            action: e.target.value,
+                                                        };
+                                                    })
+                                                }
+                                            >
+                                                <option value="show">Show</option>
+                                                <option value="hide">Hide</option>
+                                                <option value="toggle">Toggle</option>
+                                            </select>
+                                        </div>
+                                    )}
+
+                                    {eventType === "style" && (
+                                        <div className="event-form">
+                                            <label>Hover Color</label>
+
+                                            <input
+                                                type="color"
+                                                onChange={(e) =>
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.events ??= {};
+                                                        node.defaultProps.events.style = {
+                                                            hoverColor: e.target.value,
+                                                        };
+                                                    })
+                                                }
+                                            />
+                                        </div>
+                                    )}
+
                                 </Heading>
 
                                 <Heading icon={<Braces size={18}></Braces>} title={'Class Name'}>
@@ -415,7 +504,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             node.defaultProps.style.opacity = v / 100;
                                         });
                                     }} />
-                                    <ImageUpload selectedComponent={selectedComponent} updateComponent={updateComponent}/>
+                                    <ImageUpload selectedComponent={selectedComponent} updateComponent={updateComponent} />
                                 </div>
                             </Heading>
 
