@@ -8,8 +8,9 @@ import LeftPanel from "../workspace/LeftSideBar/LeftPanel";
 import Canvas from "../workspace/Canvas/Canvas";
 import RightSideBar from "../workspace/RightSideBar/RightSideBar";
 import IconPicker from "./IconPicker";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { BasicComponents } from "../workspace/utils/basicComponentsData";
+import { ICONS, getIconByName } from "../workspace/utils/icons";
 
 
 const ComponentEditor = () => {
@@ -23,6 +24,7 @@ const ComponentEditor = () => {
   const [lastSavedComponentId, setLastSavedComponentId] = useState(null);
   const [customComponentName, setCustomComponentName] = useState("");
   const [showNameInput, setShowNameInput] = useState(false);
+  const [iconSearch, setIconSearch] = useState("");
 
 
   /* ---------------- Helpers ---------------- */
@@ -90,6 +92,7 @@ const ComponentEditor = () => {
 
     return { newTree: cloned, removedChild };
   };
+
 
   /* ---------------- Drag Logic ---------------- */
 
@@ -193,26 +196,30 @@ const ComponentEditor = () => {
   const deleteComponent = () => {
     if (!selectedComponentId) return;
 
-    let arr = [{ parent: null, items: cloneComponents(components) }];
+    const newComponents = cloneComponents(components);
 
-    while (arr.length > 0) {
-      const { items } = arr.pop();
+    let stack = [{ items: newComponents }];
 
-      let itemIndex = items.findIndex(ele => ele.id === selectedComponentId);
+    while (stack.length > 0) {
+      const { items } = stack.pop();
 
-      if (itemIndex !== -1) {
-        items.splice(itemIndex, 1);
+      const index = items.findIndex(
+        item => item.id === selectedComponentId
+      );
+
+      if (index !== -1) {
+        items.splice(index, 1);
         break;
       }
 
       items.forEach(item => {
         if (item.children?.length) {
-          arr.push({ parent: item, items: item.children });
+          stack.push({ items: item.children });
         }
       });
     }
 
-    setComponents(arr);
+    setComponents(newComponents);
     setSelectedComponentId(null);
   };
 
@@ -265,13 +272,13 @@ const ComponentEditor = () => {
 
   const saveSelectedComponent = () => {
     if (!selectedComponent) return;
-  
+
     setCustomComponentName("");
     setCustomIconName("Square");
-  
+
     setShowNameInput(true);
   };
-  
+
 
   const combinedComponents = [
     ...BasicComponents,
@@ -287,42 +294,51 @@ const ComponentEditor = () => {
   ];
 
   const handleNameSubmit = () => {
-    if (!customComponentName.trim()) return; 
-  
+    if (!customComponentName.trim()) return;
+
     const newId = `custom-${uuidv4()}`;
     setLastSavedComponentId(newId);
-  
+
 
     setShowNameInput(false);
     setShowIconPicker(true);
   };
-  
+
 
   const handleIconSelect = (iconName) => {
     setCustomIconName(iconName);
-  
-   
+
+
     const cloneComponent = (comp) => JSON.parse(JSON.stringify(comp));
-  
+
     const savedComponent = {
       ...cloneComponent(selectedComponent),
-      id: lastSavedComponentId,     
-      label: customComponentName,    
-      iconName,                      
-      isRootCustom: true,           
-      children: selectedComponent.children || [], 
+      id: lastSavedComponentId,
+      label: customComponentName,
+      iconName,
+      isRootCustom: true,
+      children: selectedComponent.children || [],
     };
-  
- 
+
+
     setSavedComponents(prev => [...prev, savedComponent]);
-  
+
 
     setShowIconPicker(false);
     setCustomComponentName("");
     setCustomIconName("Square");
-  
+
     toast.success("Custom component saved!");
   };
+
+  const handleAddJsonComponent = (newComponent) => {
+    setSavedComponents(prev => [
+      ...prev,
+      { ...newComponent, children: newComponent.children || [] }
+    ]);
+  };
+  
+
   
 
   /* ---------------- Render ---------------- */
@@ -342,7 +358,13 @@ const ComponentEditor = () => {
         </div>
 
         <div className="editor-body">
-          <LeftPanel components={combinedComponents} />
+          <LeftPanel components={combinedComponents} 
+          onAddJsonComponent={(newComp) => {
+    // Add the JSON component to savedComponents
+    const newId = `custom-${uuidv4()}`;
+    setSavedComponents(prev => [...prev, { ...newComp, id: newId }]);
+    toast.success("JSON component added!");
+  }}/>
 
           <Canvas
             components={components}
@@ -353,49 +375,64 @@ const ComponentEditor = () => {
           <RightSideBar
             selectedComponent={selectedComponent}
             updateComponent={updateComponent}
-            deleteComponent={deleteComponent}/>
+            deleteComponent={deleteComponent} />
         </div>
       </div>
 
 
-{showNameInput && (
-  <div className="custom-component-modal">
-    <h4>Name your component</h4>
-    <input
-      type="text"
-      placeholder="Enter component name..."
-      value={customComponentName}
-      onChange={(e) => setCustomComponentName(e.target.value)}
-    />
-    <button
-      disabled={!customComponentName.trim()}
-      onClick={handleNameSubmit}
-    >
-      Next: Choose Icon
-    </button>
-  </div>
-)}
+      {/* Component Name Modal */}
+      {showNameInput && (
+        <div className="custom-component-modal">
+          <div className="modal-header">
+            <h4>Name your component</h4>
+            <X size={20} className="modal-cancel-btn" onClick={() => setShowNameInput(false)} />
+          </div>
+          <input
+            type="text"
+            placeholder="Enter component name..."
+            value={customComponentName}
+            onChange={(e) => setCustomComponentName(e.target.value)}
+          />
+          <button
+            disabled={!customComponentName.trim()}
+            onClick={handleNameSubmit}
+          >
+            Next: Choose Icon
+          </button>
+        </div>
+      )}
 
+      {/* Icon Picker Modal */}
+      {showIconPicker && (
+        <div className="icon-picker-wrapper">
+          <div className="modal-header">
+            <h4>Choose an icon for {customComponentName || "your component"}</h4>
+            <X size={20} className="modal-cancel-btn" onClick={() => setShowIconPicker(false)} />
+          </div>
 
-{showIconPicker && (
-  <div className="custom-component-modal">
-    <h4>Choose an icon for {customComponentName}</h4>
+        
+          <div className="icon-picker-search">
+            <Search size={16} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search icons..."
+              value={iconSearch}
+              onChange={(e) => setIconSearch(e.target.value)}
+            />
+          </div>
 
-    <div className="search-box">
-      <Search size={16} />
-      <input
-        placeholder="Search icons..."
-        value={customIconName}
-        onChange={(e) => setCustomIconName(e.target.value)}
-      />
-    </div>
+  
+          <div className="icon-picker-grid">
+            <IconPicker
+              search={iconSearch}
+              value={customIconName}
+              onChange={handleIconSelect}
+              className="icon-picker-item"
+            />
+          </div>
+        </div>
+      )}
 
-    <IconPicker
-      value={customIconName}
-      onChange={handleIconSelect}
-    />
-  </div>
-)}
 
     </DndContext>
   );
