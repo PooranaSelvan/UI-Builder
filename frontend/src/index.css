@@ -53,8 +53,6 @@
 
 button {
   border: none;
-  color: white;
-  background: transparent;
   cursor: pointer;
 }
 
@@ -84,7 +82,6 @@ button {
   background-color: var(--red-100);
   color: var(--primary);
   border-radius: 8px;
-  box-shadow: var(--btn-shadow-normal);
 }
 
 .secondary-button:hover {
@@ -94,7 +91,6 @@ button {
 
 .secondary-button:active {
   background-color: var(--red-300);
-  color: white;
 }
 
 

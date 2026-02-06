@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import sirpamLogo from '../assets/sirpam-logo.svg';
 import "./navbar.css";
 import Button from './Button';
 import { NavLink } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Settings, User, LogOut } from 'lucide-react';
 
-const Navbar = () => {
+const Navbar = ({ isAuthenticated }) => {
   const [open, setOpen] = useState(false);
+  const [openDropDown, setDropDown] = useState(false);
+  let dropDownRef = useRef(null);
+
+
+  useEffect(() => {
+    const handleOutSideClick = (e) => {
+      if(dropDownRef.current && !dropDownRef.current.contains(e.target)){
+        setDropDown(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleOutSideClick);
+    return () => document.removeEventListener("mousedown", handleOutSideClick);
+  }, []);
+
+  // console.log(isAuthenticated);
 
   return (
     <div className='navbar'>
@@ -25,8 +41,33 @@ const Navbar = () => {
         <li><NavLink to='/templates' className='nav-btns'>Templates</NavLink></li>
       </ul>
       <div className='nav-flex desktop-navbar'>
-        <NavLink to='/login' className='nav-btn nav-btn-primary'>Login</NavLink>
-        <NavLink to='/signup' className='nav-btn primary-button'>Get Started</NavLink>
+        {isAuthenticated ? (
+          <>
+            <button className='nav-btn nav-btn-profile' onClick={(e) => {e.preventDefault(); setDropDown(!openDropDown)}}>
+              <Settings size={20} />
+              Settings
+            </button>
+
+            <div id="nav-dropdown" style={{display : openDropDown ? "flex" : "none", cursor : "pointer"}} ref={dropDownRef}>
+              <div id="nav-dropdown-wrapper">
+                <X id='nav-dropdown-close' onClick={() => setDropDown(!openDropDown)} />
+                <Button>
+                  <User />
+                  Profile
+                </Button>
+                <Button>
+                  <LogOut />
+                  Logout
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <NavLink to='/login' className='nav-btn nav-btn-primary'>Login</NavLink>
+            <NavLink to='/signup' className='nav-btn primary-button'>Get Started</NavLink>
+          </>
+        )}
       </div>
 
 

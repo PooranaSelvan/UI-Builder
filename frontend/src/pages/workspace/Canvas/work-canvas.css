@@ -23,7 +23,7 @@
 
 /* Component Style */
 .test-component:hover {
-     border: 2px solid black;
+     border: 2px solid var(--red-300);
 }
 
 .component-drag {

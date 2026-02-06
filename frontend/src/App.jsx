@@ -14,10 +14,12 @@ import { Toaster } from 'react-hot-toast';
 
 function App() {
 
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
   return (
     <>
       <BrowserRouter>
-        <Navbar />
+        <Navbar isAuthenticated={isAuthenticated} />
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path='*' element={<ErrorPage />} />

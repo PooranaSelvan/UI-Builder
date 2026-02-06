@@ -29,7 +29,7 @@ const SortableItem = ({ ele, isSelected, onSelect, selectedComponentId }) => {
      const style = {
           transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : "",
           transition,
-          border: isSelected ? "2px solid black" : "none",
+          border: isSelected ? "2px solid var(--red-300)" : "none",
           position : "relative"
      };
 

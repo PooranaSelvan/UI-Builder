@@ -27,6 +27,7 @@
      flex-wrap: wrap;
      align-items: center;
      gap: 20px;
+     position: relative;
 }
 
 li {
@@ -130,6 +131,67 @@ a {
      display: none;
 }
 
+
+/* Is Authenticated */
+.nav-btn-profile {
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+     justify-content: center;
+     gap: 10px;
+     background-color: var(--red-100);
+     color: var(--primary);
+     font-weight: 800;
+     letter-spacing: 0.3px;
+}
+
+#nav-dropdown {
+     position: absolute;
+     top: 50px;
+     right: 0px;
+     z-index: 20;
+     animation: dropdownFade 0.2s ease-out forwards;
+}
+
+#nav-dropdown-wrapper {
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+     justify-content: center;
+     flex-direction: column;
+     background-color: var(--red-100);
+     gap: 10px;
+     padding: 40px 30px;
+     border-radius: 12px;
+     position: relative;
+}
+#nav-dropdown button {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 10px;
+     padding: 10px 30px;
+     background: transparent;
+     background-color: var(--primary);
+     color: var(--red-100);
+     border-radius: 8px;
+}
+#nav-dropdown-close {
+     position: absolute;
+     top: 10px;
+     right: 10px;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* Active State of NavLink */
 a.active:not(.nav-heading):not(.nav-btn) {
