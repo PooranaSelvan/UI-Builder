@@ -13,16 +13,30 @@ import { Grid2x2 } from 'lucide-react';
 import { Type } from 'lucide-react';
 import { TableRowsSplit } from 'lucide-react';
 import { FileUp } from 'lucide-react';
-import { UploadCloud } from 'lucide-react';
+import { LayoutGrid } from 'lucide-react';
 import { Link2 } from 'lucide-react';
 import { Database } from 'lucide-react';
 import { Webhook } from 'lucide-react';
 import { Pencil } from 'lucide-react';
 import { Cloud, Braces } from 'lucide-react';
 import { MoveLeft, MoveRight, MoveDown, MoveUp } from 'lucide-react';
+import { Workflow } from 'lucide-react';
 import ImportedFiles from './components/ImportedFiles';
+import ImageUpload from './components/ImageUpload';
 
 const UNITS = ["px", "%", "rem", "em", "auto"];
+const EVENT_MAP = {
+    button: ["navigation", "visibility", "style"],
+    link: ["navigation", "style"],
+    menu: ["navigation", "visibility", "style"],
+    card: ["navigation", "visibility", "style"],
+    modal: ["visibility", "style"],
+    dropdown: ["visibility", "style"],
+    tooltip: ["visibility", "style"],
+    image: ["visibility", "style"],
+    text: ["visibility", "style"],
+    container: ["visibility", "style"]
+};
 
 const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) => {
     const [activeTab, setActiveTab] = useState("properties");
@@ -30,6 +44,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     // const [opacity, setOpacity] = useState(100);
     const [font, setFont] = useState(16);
     const [files, setFiles] = useState([]);
+    const [eventType, setEventType] = useState();
+    const fileRef = useRef(null);
+    const display = selectedComponent?.defaultProps?.style?.display || "block";
+    const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
 
     const handleFiles = (fileList) => {
         const newFiles = Array.from(fileList).map((file) => ({
@@ -94,15 +112,89 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                 <Heading icon={<Zap size={18}></Zap>} title={'Events'} >
                                     <div className="properties-general properties-event">
                                         <div>
-                                            <select name="" id="">
-                                                <option value="">Navigation Actions</option>
-                                                <option value="">Visibility Actions</option>
-                                                <option value="">Style & Layout Actions</option>
-                                                <option value="">Content Actions</option>
-                                                <option value="">Animation Actions</option>
+                                            <select value={eventType} onChange={(e) => {
+                                                setEventType(e.target.value)
+                                            }}>
+                                                <option value="">Select Event</option>
+
+                                                {allowedEvents.includes("navigation") && (
+                                                    <option value="navigation">Navigation Actions</option>
+                                                )}
+
+                                                {allowedEvents.includes("visibility") && (
+                                                    <option value="visibility">Visibility Actions</option>
+                                                )}
+
+                                                {allowedEvents.includes("style") && (
+                                                    <option value="style">Style & Layout Actions</option>
+                                                )}
                                             </select>
                                         </div>
                                     </div>
+                                </Heading>
+
+                                <Heading icon={<Workflow size={18} />} title="Behavior">
+                                    {eventType === "navigation" && (
+                                        <div className="event-form">
+                                            <label>Target URL / Page</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Enter URL"
+                                                onChange={(e) =>
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.events ??= {};
+                                                        node.defaultProps.events.navigation = {
+                                                            type: "navigate",
+                                                            target: e.target.value,
+                                                        };
+                                                    })
+                                                }
+                                            />
+                                        </div>
+                                    )}
+
+                                    {eventType === "visibility" && (
+                                        <div className="event-form">
+                                            <label>Action</label>
+
+                                            <select
+                                                onChange={(e) =>
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.events ??= {};
+                                                        node.defaultProps.events.visibility = {
+                                                            action: e.target.value,
+                                                        };
+                                                    })
+                                                }
+                                            >
+                                                <option value="show">Show</option>
+                                                <option value="hide">Hide</option>
+                                                <option value="toggle">Toggle</option>
+                                            </select>
+                                        </div>
+                                    )}
+
+                                    {eventType === "style" && (
+                                        <div className="event-form">
+                                            <label>Hover Color</label>
+
+                                            <input
+                                                type="color"
+                                                onChange={(e) =>
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.events ??= {};
+                                                        node.defaultProps.events.style = {
+                                                            hoverColor: e.target.value,
+                                                        };
+                                                    })
+                                                }
+                                            />
+                                        </div>
+                                    )}
+
                                 </Heading>
 
                                 <Heading icon={<Braces size={18}></Braces>} title={'Class Name'}>
@@ -124,25 +216,38 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                         <div className="properties-content">
                             <Heading icon={<LayoutDashboard size={18} />} title={'Layout'} >
                                 <div className="double-input">
-                                    <div className='input-child'>
-                                        <label htmlFor="">Display</label>
-                                        <select>
-                                            <option selected="">Block</option>
-                                            <option>Flex</option>
-                                            <option>Grid</option>
-                                            {/* <option>Inline</option>
-                                            <option>Inline-block</option> */}
-                                            <option>None</option>
+                                    <div className="input-child">
+                                        <label>Display</label>
+                                        <select
+                                            value={display}
+                                            onChange={(e) =>
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
+                                                    node.defaultProps.style.display = e.target.value;
+                                                })
+                                            }
+                                        >
+                                            <option value="block">Block</option>
+                                            <option value="flex">Flex</option>
+                                            <option value="grid">Grid</option>
+                                            <option value="none">None</option>
                                         </select>
                                     </div>
                                     <div className='input-child'>
                                         <label htmlFor="">Position</label>
-                                        <select>
-                                            <option selected="">Static</option>
-                                            <option>Relative</option>
-                                            <option>Absolute</option>
-                                            <option>Fixed</option>
-                                            <option>Sticky</option>
+                                        <select value={selectedComponent?.defaultProps?.style?.position || "static"} onChange={(e) => {
+                                            updateComponent(selectedComponent.id, (node) => {
+                                                node.defaultProps ??= {};
+                                                node.defaultProps.style ??= {};
+                                                node.defaultProps.style.position = e.target.value;
+                                            })
+                                        }}>
+                                            <option value="static">Static</option>
+                                            <option value="relative">Relative</option>
+                                            <option value="absolute">Absolute</option>
+                                            <option value="fixed">Fixed</option>
+                                            <option value="sticky">Sticky</option>
                                         </select>
                                     </div>
                                 </div>
@@ -169,56 +274,157 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     }
                                 />
                             </Heading>
-                            <Heading icon={<Columns3 size={18} />} title={'Flex Layout'} >
-                                <div className="four-button">
-                                    <div className="btn-box">
-                                        {[
-                                            { id: "row", icon: <MoveRight size={14} /> },
-                                            { id: "row-reverse", icon: <MoveLeft size={14} /> },
-                                            { id: "column", icon: <MoveDown size={14} /> },
-                                            { id: "column-reverse", icon: <MoveUp size={14} /> }
-                                        ].map(({ id, icon }) => (
-                                            <button
-                                                key={id}
-                                                className={activeButton === id ? "active" : ""}
-                                                onClick={() => setActiveButton(id)}
+                            {display === 'flex' && (
+                                <Heading icon={<Columns3 size={18} />} title={'Flex Layout'} >
+                                    <div className="four-button">
+                                        <div className="btn-box">
+                                            {[
+                                                { id: "row", icon: <MoveRight size={14} /> },
+                                                { id: "row-reverse", icon: <MoveLeft size={14} /> },
+                                                { id: "column", icon: <MoveDown size={14} /> },
+                                                { id: "column-reverse", icon: <MoveUp size={14} /> }
+                                            ].map(({ id, icon }) => (
+                                                <button
+                                                    key={id}
+                                                    className={selectedComponent.defaultProps?.style?.flexDirection === id ? "active" : ""}
+                                                    onClick={() => {
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.style ??= {};
+                                                            node.defaultProps.style.flexDirection = id;
+                                                        });
+                                                    }}
+                                                >
+                                                    {icon}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="double-input">
+                                        <div className='input-child'>
+                                            <label htmlFor="">Justify Content</label>
+                                            <select
+                                                value={selectedComponent.defaultProps?.style?.justifyContent || ""}
+                                                onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.justifyContent = e.target.value;
+                                                    });
+                                                }}
                                             >
-                                                {icon}
-                                            </button>
-                                        ))}
+                                                <option value="flex-start">flex-start</option>
+                                                <option value="center">center</option>
+                                                <option value="space-between">space-between</option>
+                                                <option value="space-around">space-around</option>
+                                                <option value="space-evenly">space-evenly</option>
+                                                <option value="flex-end">flex-end</option>
+                                            </select>
+                                        </div>
+                                        <div className='input-child'>
+                                            <label htmlFor="">Align items</label>
+                                            <select
+                                                value={selectedComponent.defaultProps?.style?.alignItems || ""}
+                                                onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.alignItems = e.target.value;
+                                                    });
+                                                }}
+                                            >
+                                                <option value="stretch">stretch</option>
+                                                <option value="center">center</option>
+                                                <option value="flex-start">flex-start</option>
+                                                <option value="flex-end">flex-end</option>
+                                                <option value="baseline">baseline</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="double-input">
-                                    <div className='input-child'>
-                                        <label htmlFor="">Justify Content</label>
-                                        <select>
-                                            <option>flex-start</option>
-                                            <option>center</option>
-                                            <option selected="">space-between</option>
-                                            <option>space-around</option>
-                                            <option>space-evenly</option>
-                                            <option>flex-end</option>
-                                        </select>
+                                </Heading>
+                            )}
+                            {display === 'grid' && (
+                                <Heading icon={<Grid2x2 size={18} />} title="Grid Layout">
+                                    <GridTemplateInput
+                                        label="Grid Columns"
+                                        value={selectedComponent.defaultProps?.style?.gridTemplateColumns}
+                                        onChange={(v) =>
+                                            updateComponent(selectedComponent.id, (node) => {
+                                                node.defaultProps ??= {};
+                                                node.defaultProps.style ??= {};
+                                                node.defaultProps.style.gridTemplateColumns = v;
+                                            })
+                                        }
+                                    />
+
+                                    <GridTemplateInput
+                                        label="Grid Rows"
+                                        value={selectedComponent.defaultProps?.style?.gridTemplateRows}
+                                        onChange={(v) =>
+                                            updateComponent(selectedComponent.id, (node) => {
+                                                node.defaultProps ??= {};
+                                                node.defaultProps.style ??= {};
+                                                node.defaultProps.style.gridTemplateRows = v;
+                                            })
+                                        }
+                                    />
+                                    <SliderInput
+                                        label="Gap"
+                                        value={parseFloat(selectedComponent.defaultProps?.style?.gap || 0)}
+                                        unit="px"
+                                        min={0}
+                                        max={100}
+                                        onChange={(v) =>
+                                            updateComponent(selectedComponent.id, (node) => {
+                                                node.defaultProps ??= {};
+                                                node.defaultProps.style ??= {};
+                                                node.defaultProps.style.gap = `${v}px`;
+                                            })
+                                        }
+                                    />
+                                    <div className="double-input">
+                                        <div className="input-child">
+                                            <label>Justify Items</label>
+                                            <select
+                                                value={selectedComponent.defaultProps?.style?.justifyItems || "stretch"}
+                                                onChange={(e) =>
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.justifyItems = e.target.value;
+                                                    })
+                                                }
+                                            >
+                                                <option value="start">start</option>
+                                                <option value="center">center</option>
+                                                <option value="end">end</option>
+                                                <option value="stretch">stretch</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="input-child">
+                                            <label>Align Items</label>
+                                            <select
+                                                value={selectedComponent.defaultProps?.style?.alignItems || "stretch"}
+                                                onChange={(e) =>
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.alignItems = e.target.value;
+                                                    })
+                                                }
+                                            >
+                                                <option value="start">start</option>
+                                                <option value="center">center</option>
+                                                <option value="end">end</option>
+                                                <option value="stretch">stretch</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div className='input-child'>
-                                        <label htmlFor="">Align items</label>
-                                        <select>
-                                            <option>stretch</option>
-                                            <option selected="">center</option>
-                                            <option>flex-start</option>
-                                            <option>flex-end</option>
-                                            <option>baseline</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <SliderInput label={'font size'} value={parseFloat(selectedComponent.defaultProps?.style?.fontSize) || 16} min={0} max={64} unit='px' onChange={(v) => {
-                                    updateComponent(selectedComponent.id, (node) => {
-                                        node.defaultProps ??= {};
-                                        node.defaultProps.style ??= {};
-                                        node.defaultProps.style.fontSize = `${v}px`
-                                    })
-                                }} />
-                            </Heading>
+                                </Heading>
+                            )}
+
+
                             <Heading icon={<Space size={18} />} title={'Spacing'} >
                                 <div className="spacing-content">
                                     <FourSideInput
@@ -298,13 +504,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             node.defaultProps.style.opacity = v / 100;
                                         });
                                     }} />
-                                    <div className="background-image">
-                                        <label htmlFor="">Background Image</label>
-                                        <div className="image-input">
-                                            <input type="text" placeholder='(url...)' />
-                                            <button>Browse</button>
-                                        </div>
-                                    </div>
+                                    <ImageUpload selectedComponent={selectedComponent} updateComponent={updateComponent} />
                                 </div>
                             </Heading>
 
@@ -419,7 +619,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="color">
                                         <label htmlFor="" id='text-color'>Text color</label>
                                         <ColorPalette
-                                            value={selectedComponent.defaultProps?.style?.color}
+                                            value={selectedComponent.defaultProps?.style?.color || "#000000"}
                                             onChange={(v) =>
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps ??= {};
@@ -447,7 +647,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                         <div className='input-child'>
                                             <label htmlFor="">Line Height</label>
-                                            <input type="text" value={selectedComponent.defaultProps?.style?.lineHeight} onChange={(e) => {
+                                            <input type="number" value={selectedComponent.defaultProps?.style?.lineHeight || 1} onChange={(e) => {
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps ??= {};
                                                     node.defaultProps.style ??= {};
@@ -687,7 +887,20 @@ const SliderInput = ({ label, value, onChange, min = 0, max = 100, step = 1, uni
     )
 }
 
-
+const GridTemplateInput = ({ label, value, onChange }) => {
+    return (
+        <div className="long-input">
+            <label>{label}</label>
+            <input
+                className='grid-input'
+                type="text"
+                placeholder="e.g. repeat(3, 1fr)"
+                value={value || ""}
+                onChange={(e) => onChange(e.target.value)}
+            />
+        </div>
+    );
+};
 
 const FileUpload = ({ onFilesAdded }) => {
     const inputRef = useRef(null);
@@ -796,5 +1009,6 @@ const SizeInput = ({ label, value, onChange }) => {
         </div>
     );
 };
+
 
 export default RightSideBar
