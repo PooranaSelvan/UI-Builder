@@ -241,6 +241,10 @@
     outline: none;
 }
 
+.long-input .grid-input{
+    width: 100%;
+}
+
 .four-button {
     width: 100%;
 }
