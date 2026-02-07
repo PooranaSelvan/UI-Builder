@@ -31,21 +31,21 @@ const EVENT_MAP = {
     menu: ["navigation", "visibility", "style"],
     card: ["navigation", "visibility", "style"],
     modal: ["visibility", "style"],
-    dropdown: ["visibility", "style"],
+    select: ["visibility", "style"],
     tooltip: ["visibility", "style"],
-    image: ["visibility", "style"],
+    img: ["visibility", "style"],
     text: ["visibility", "style"],
-    container: ["visibility", "style"]
+    div: ["visibility", "style"]
 };
 
 const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) => {
     const [activeTab, setActiveTab] = useState("properties");
-    const [activeButton, setActiveButton] = useState('row');
+    // const [activeButton, setActiveButton] = useState('row');
     // const [opacity, setOpacity] = useState(100);
-    const [font, setFont] = useState(16);
+    // const [font, setFont] = useState(16);
     const [files, setFiles] = useState([]);
     const [eventType, setEventType] = useState();
-    const fileRef = useRef(null);
+    // const fileRef = useRef(null);
     const display = selectedComponent?.defaultProps?.style?.display || "block";
     const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
 
@@ -132,81 +132,73 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                     </div>
                                 </Heading>
+                                {eventType !== "" && (
+                                    <Heading icon={<Workflow size={18} />} title="Behavior">
+                                        {eventType === "navigation" && (
+                                            <div className="event-form">
+                                                <label>Target URL / Page</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Enter URL"
+                                                    onChange={(e) =>
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.events ??= {};
+                                                            node.defaultProps.events.navigation = {
+                                                                type: "navigate",
+                                                                target: e.target.value,
+                                                            };
+                                                        })
+                                                    }
+                                                />
+                                            </div>
+                                        )}
 
-                                <Heading icon={<Workflow size={18} />} title="Behavior">
-                                    {eventType === "navigation" && (
-                                        <div className="event-form">
-                                            <label>Target URL / Page</label>
-                                            <input
-                                                type="text"
-                                                placeholder="Enter URL"
-                                                onChange={(e) =>
-                                                    updateComponent(selectedComponent.id, (node) => {
-                                                        node.defaultProps ??= {};
-                                                        node.defaultProps.events ??= {};
-                                                        node.defaultProps.events.navigation = {
-                                                            type: "navigate",
-                                                            target: e.target.value,
-                                                        };
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    )}
+                                        {eventType === "visibility" && (
+                                            <div className="event-form">
+                                                <label>Action</label>
 
-                                    {eventType === "visibility" && (
-                                        <div className="event-form">
-                                            <label>Action</label>
+                                                <select
+                                                    onChange={(e) =>
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.events ??= {};
+                                                            node.defaultProps.events.visibility = {
+                                                                action: e.target.value,
+                                                            };
+                                                        })
+                                                    }
+                                                >
+                                                    <option value="show">Show</option>
+                                                    <option value="hide">Hide</option>
+                                                    <option value="toggle">Toggle</option>
+                                                </select>
+                                            </div>
+                                        )}
 
-                                            <select
-                                                onChange={(e) =>
-                                                    updateComponent(selectedComponent.id, (node) => {
-                                                        node.defaultProps ??= {};
-                                                        node.defaultProps.events ??= {};
-                                                        node.defaultProps.events.visibility = {
-                                                            action: e.target.value,
-                                                        };
-                                                    })
-                                                }
-                                            >
-                                                <option value="show">Show</option>
-                                                <option value="hide">Hide</option>
-                                                <option value="toggle">Toggle</option>
-                                            </select>
-                                        </div>
-                                    )}
+                                        {eventType === "style" && (
+                                            <div className="event-form">
+                                                <label>Hover Color</label>
 
-                                    {eventType === "style" && (
-                                        <div className="event-form">
-                                            <label>Hover Color</label>
+                                                <ColorPalette
+                                                    value={
+                                                        selectedComponent.defaultProps?.events?.style?.hoverColor || "#000000"
+                                                    }
+                                                    onChange={(color) =>
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.events ??= {};
+                                                            node.defaultProps.events.style ??= {};
 
-                                            <input
-                                                type="color"
-                                                onChange={(e) =>
-                                                    updateComponent(selectedComponent.id, (node) => {
-                                                        node.defaultProps ??= {};
-                                                        node.defaultProps.events ??= {};
-                                                        node.defaultProps.events.style = {
-                                                            hoverColor: e.target.value,
-                                                        };
-                                                    })
-                                                }
-                                            />
-                                        </div>
-                                    )}
+                                                            node.defaultProps.events.style.hoverColor = color;
+                                                        })
+                                                    }
+                                                />
+                                            </div>
+                                        )}
 
-                                </Heading>
-
-                                <Heading icon={<Braces size={18}></Braces>} title={'Class Name'}>
-                                    <div className="properties-class">
-                                        <input type="text" value={selectedComponent.defaultProps.className} onChange={(e) => {
-                                            updateComponent(selectedComponent.id, (node) => {
-                                                node.defaultProps ??= {};
-                                                node.defaultProps.className = e.target.value;
-                                            })
-                                        }} />
-                                    </div>
-                                </Heading>
+                                    </Heading>
+                                )}
 
                             </div>
                         </>
