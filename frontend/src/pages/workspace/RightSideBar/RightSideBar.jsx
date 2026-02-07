@@ -31,21 +31,21 @@ const EVENT_MAP = {
     menu: ["navigation", "visibility", "style"],
     card: ["navigation", "visibility", "style"],
     modal: ["visibility", "style"],
-    dropdown: ["visibility", "style"],
+    select: ["visibility", "style"],
     tooltip: ["visibility", "style"],
-    image: ["visibility", "style"],
+    img: ["visibility", "style"],
     text: ["visibility", "style"],
-    container: ["visibility", "style"]
+    div: ["visibility", "style"]
 };
 
 const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) => {
     const [activeTab, setActiveTab] = useState("properties");
-    const [activeButton, setActiveButton] = useState('row');
+    // const [activeButton, setActiveButton] = useState('row');
     // const [opacity, setOpacity] = useState(100);
-    const [font, setFont] = useState(16);
+    // const [font, setFont] = useState(16);
     const [files, setFiles] = useState([]);
     const [eventType, setEventType] = useState();
-    const fileRef = useRef(null);
+    // const fileRef = useRef(null);
     const display = selectedComponent?.defaultProps?.style?.display || "block";
     const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
 
@@ -180,15 +180,17 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <div className="event-form">
                                                 <label>Hover Color</label>
 
-                                                <input
-                                                    type="color"
-                                                    onChange={(e) =>
+                                                <ColorPalette
+                                                    value={
+                                                        selectedComponent.defaultProps?.events?.style?.hoverColor || "#000000"
+                                                    }
+                                                    onChange={(color) =>
                                                         updateComponent(selectedComponent.id, (node) => {
                                                             node.defaultProps ??= {};
                                                             node.defaultProps.events ??= {};
-                                                            node.defaultProps.events.style = {
-                                                                hoverColor: e.target.value,
-                                                            };
+                                                            node.defaultProps.events.style ??= {};
+
+                                                            node.defaultProps.events.style.hoverColor = color;
                                                         })
                                                     }
                                                 />
