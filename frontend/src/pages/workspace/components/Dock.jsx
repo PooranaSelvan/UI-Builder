@@ -1,6 +1,6 @@
 import React from 'react';
 import "./docs.css";
-import { ZoomIn, ZoomOut, RotateCw, Minimize2, Maximize2 } from 'lucide-react';
+import { ZoomIn, ZoomOut, Minimize2, Maximize2 } from 'lucide-react';
 
 const Dock = ({ zoom, onZoomOut, onZoomIn, onReset }) => {
      let zoomPercentage = Math.round(zoom * 100);
@@ -13,14 +13,17 @@ const Dock = ({ zoom, onZoomOut, onZoomIn, onReset }) => {
                <ZoomOut onClick={onZoomOut} disabled={!canZoomOut} />
                <input type="text" value={`${zoomPercentage}%`} readOnly />
                <ZoomIn onClick={onZoomIn} disabled={!canZoomIn} />
-               <div className="divider-line" />
-               {zoom < 1 ? (
-                    <Maximize2 onClick={onReset} />
-               ) : zoom === 1 ? (
-                    <RotateCw onClick={onReset} />
+               {zoom !== 1 && (zoom < 1 ? (
+                    <>
+                         <div className="divider-line" />
+                         <Maximize2 onClick={onReset} />
+                    </>
                ) : (
-                    <Minimize2 onClick={onReset} />
-               )}
+                    <>
+                         <div className="divider-line" />
+                         <Minimize2 onClick={onReset} />
+                    </>
+               ))}
           </div>
      )
 }
