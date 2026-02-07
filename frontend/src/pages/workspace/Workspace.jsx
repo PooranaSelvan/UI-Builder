@@ -11,11 +11,14 @@ import { components as componentLibrary } from "./utils/ComponentsData.js";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
 import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket } from 'lucide-react';
+import PreviewCanvas from "./preview/PreviewCanvas.jsx";
+
 
 const Workspace = () => {
   const [components, setComponents] = useState([]);
   const [zoom, setZoom] = useState(1);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
+  const [previewMode, setPreviewMode] = useState(false);
 
 
   // Zoom Functions
@@ -300,41 +303,47 @@ const Workspace = () => {
   // console.log(components);
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
-      <div style={{ display: "flex", height: "93vh", overflow: "hidden", position: "relative" }}>
-        <div className="workspace-topbar">
-          <div className="workspace-topbar-screens">
-            <Button style={{background : "transparent"}} className="workspace-topbar-screen-btn">
-              <Smartphone />
-            </Button>
-            <Button style={{background : "transparent"}} className="workspace-topbar-screen-btn">
-              <Tablet />
-            </Button>
-            <Button style={{background : "transparent"}} className="workspace-topbar-screen-btn">
-              <MonitorCheck />
-            </Button>
-            <Button style={{background : "transparent"}} className="workspace-topbar-screen-btn">
-              <Fullscreen />
-            </Button>
-          </div>
-          <div className="divider-line" />
-          <div className="workspace-topbar-btns">
-            <Button className="secondary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }}>
-              <Eye size={20} />
-              Preview
-            </Button>
-            <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }}>
-              <Rocket size={20} />
-              Publish
-            </Button>
-          </div>
-        </div>
-        <LeftPanel components={componentLibrary} />
-        <Canvas components={components} zoom={zoom} selectedComponentId={selectedComponentId} onSelectComponent={(id) => setSelectedComponentId(id)} clearComponentSelection={clearComponentSelection} />
-        <RightSideBar selectedComponent={selectedComponent} updateComponent={updateComponent} deleteComponent={deleteComponent} />
-      </div>
-      <Dock zoom={zoom} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
-    </DndContext>
+    <>
+      {previewMode ? (
+        <PreviewCanvas components={components} />
+      ) : (
+        <DndContext onDragEnd={handleDragEnd}>
+          <div style={{ display: "flex", height: "93vh", overflow: "hidden", position: "relative" }}>
+            <div className="workspace-topbar">
+              <div className="workspace-topbar-screens">
+                <Button style={{ background: "transparent" }} className="workspace-topbar-screen-btn">
+                  <Smartphone />
+                </Button>
+                <Button style={{ background: "transparent" }} className="workspace-topbar-screen-btn">
+                  <Tablet />
+                </Button>
+                <Button style={{ background: "transparent" }} className="workspace-topbar-screen-btn">
+                  <MonitorCheck />
+                </Button>
+                <Button style={{ background: "transparent" }} className="workspace-topbar-screen-btn">
+                  <Fullscreen />
+                </Button>
+              </div>
+              <div className="divider-line" />
+              <div className="workspace-topbar-btns">
+                <Button className="secondary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={() => setPreviewMode(!previewMode)}>
+                  <Eye size={20} />
+                  Preview
+                </Button>
+                <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }}>
+                  <Rocket size={20} />
+                  Publish
+                </Button>
+              </div>
+            </div>
+            <LeftPanel components={componentLibrary} />
+            <Canvas components={components} zoom={zoom} selectedComponentId={selectedComponentId} onSelectComponent={(id) => setSelectedComponentId(id)} clearComponentSelection={clearComponentSelection} />
+            <RightSideBar selectedComponent={selectedComponent} updateComponent={updateComponent} deleteComponent={deleteComponent} />
+          </div >
+          <Dock zoom={zoom} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
+        </DndContext >
+      )}
+    </>
   );
 };
 

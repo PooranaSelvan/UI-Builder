@@ -35,14 +35,3 @@
 .component-drag:active {
      cursor: grabbing;
 }
-
-
-/* In work-canvas.css */
-.drop-zone-between {
-  transition: all 0.2s ease;
-  border-radius: 4px;
-}
-
-.drop-zone-between:hover {
-  border-color: #ccc;
-}

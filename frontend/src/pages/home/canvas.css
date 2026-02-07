@@ -297,7 +297,7 @@
 
 
 /* Right Panel */
-.right-panel {
+.home-right-panel {
      width: 140px;
      background: rgba(15, 23, 42, 0.8);
      border-left: 1px solid #334155;
@@ -525,7 +525,7 @@
      .left-sidebar {
           display: none;
      }
-     .right-panel {
+     .home-right-panel {
           display: none;
      }
      .ring-container {

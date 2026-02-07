@@ -134,7 +134,7 @@ const HomePage = () => {
                   </div>
 
                   {/* Right Sidebar */}
-                  <div className="right-panel">
+                  <div className="home-right-panel">
                     <div className="panel-title">Properties</div>
                     <div className="property-group">
                       <div className="property-label">Background</div>
