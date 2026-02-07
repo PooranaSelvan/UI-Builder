@@ -179,6 +179,15 @@
     background-color: #F9FAFB;
 }
 
+.event-form select{
+    padding: 3%;
+    color: gray;
+    background-color: #F9FAFB;
+    border-radius: 5px;
+    border: 1px solid #e5e7eb;
+    width: 100%;
+}
+
 .double-input {
     display: flex;
     width: 100%;
