@@ -52,6 +52,12 @@ function FileRow({ file }) {
           </small>
         )}
 
+        {file.content && (
+          <pre className="file-preview">
+            {file.content.slice(0, 200)}
+          </pre>
+        )}
+
         {file.status === "uploading" && (
           <>
             <div className="progress-bar">
