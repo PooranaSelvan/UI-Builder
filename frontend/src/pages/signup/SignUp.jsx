@@ -1,10 +1,10 @@
 import React from 'react';
-import Navbar from '../../components/Navbar';
 import Button from '../../components/Button';
 import { Link } from 'react-router-dom';
 import './SignUp.css';
 import { Eye, EyeOff, User, Mail, Lock, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
+import axios from "axios";
 
 const SignUp = () => {
   const [showPassword, setPassword] = useState(false);

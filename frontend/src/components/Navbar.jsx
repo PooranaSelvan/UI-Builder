@@ -4,8 +4,10 @@ import "./navbar.css";
 import Button from './Button';
 import { NavLink } from 'react-router-dom';
 import { Menu, X, Settings, User, LogOut } from 'lucide-react';
+import toast from 'react-hot-toast';
+import axios from "axios";
 
-const Navbar = ({ isAuthenticated }) => {
+const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
   const [open, setOpen] = useState(false);
   const [openDropDown, setDropDown] = useState(false);
   let dropDownRef = useRef(null);
@@ -13,7 +15,7 @@ const Navbar = ({ isAuthenticated }) => {
 
   useEffect(() => {
     const handleOutSideClick = (e) => {
-      if(dropDownRef.current && !dropDownRef.current.contains(e.target)){
+      if (dropDownRef.current && !dropDownRef.current.contains(e.target)) {
         setDropDown(false);
       }
     }
@@ -22,7 +24,25 @@ const Navbar = ({ isAuthenticated }) => {
     return () => document.removeEventListener("mousedown", handleOutSideClick);
   }, []);
 
-  // console.log(isAuthenticated);
+
+  const handleLogin = () => {
+    window.location.href = `http://localhost:5000/auth/zoho/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+  }
+
+
+  const logoutHandler = async () => {
+    try {
+      let res = await axios.get("http://localhost:5000/auth/zoho/logout", { withCredentials: true });
+
+      console.log(res);
+
+      setIsAuthenticated(false);
+      toast.success(res.data.message);
+    } catch (err) {
+      setIsAuthenticated(true);
+      toast.error("Login Failed");
+    }
+  }
 
   return (
     <div className='navbar'>
@@ -43,19 +63,19 @@ const Navbar = ({ isAuthenticated }) => {
       <div className='nav-flex desktop-navbar'>
         {isAuthenticated ? (
           <>
-            <button className='nav-btn nav-btn-profile' onClick={(e) => {e.preventDefault(); setDropDown(!openDropDown)}}>
+            <button className='nav-btn nav-btn-profile' onClick={(e) => { e.preventDefault(); setDropDown(!openDropDown) }}>
               <Settings size={20} />
               Settings
             </button>
 
-            <div id="nav-dropdown" style={{display : openDropDown ? "flex" : "none", cursor : "pointer"}} ref={dropDownRef}>
+            <div id="nav-dropdown" style={{ display: openDropDown ? "flex" : "none", cursor: "pointer" }} ref={dropDownRef}>
               <div id="nav-dropdown-wrapper">
                 <X id='nav-dropdown-close' onClick={() => setDropDown(!openDropDown)} />
                 <Button>
                   <User />
                   Profile
                 </Button>
-                <Button>
+                <Button onClick={logoutHandler}>
                   <LogOut />
                   Logout
                 </Button>
@@ -64,8 +84,8 @@ const Navbar = ({ isAuthenticated }) => {
           </>
         ) : (
           <>
-            <NavLink to='/login' className='nav-btn nav-btn-primary'>Login</NavLink>
-            <NavLink to='/signup' className='nav-btn primary-button'>Get Started</NavLink>
+            <Button className='nav-btn nav-btn-primary' onClick={handleLogin}>Login</Button>
+            <Button className='nav-btn primary-button' onClick={handleLogin}>Get Started</Button>
           </>
         )}
       </div>
@@ -85,8 +105,8 @@ const Navbar = ({ isAuthenticated }) => {
           <NavLink to="/templates" onClick={() => setOpen(false)}>Templates</NavLink>
 
           <div className="mobile-actions">
-            <NavLink to='/login' className='nav-btn nav-btn-primary'>Login</NavLink>
-            <NavLink to='/signup' className='nav-btn primary-button'>Get Started</NavLink>
+            <Button className='nav-btn nav-btn-primary' onClick={handleLogin}>Login</Button>
+            <Button className='nav-btn primary-button' onClick={handleLogin}>Get Started</Button>
           </div>
         </div>
       )}

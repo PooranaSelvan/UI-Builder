@@ -301,6 +301,16 @@ const Workspace = () => {
   }
 
 
+  const handleNavigatePreview = () => {
+    if(components.length === 0){
+      toast.error("There is no Component Load Preview!", toastErrorStyle);  
+      return;
+    }
+
+    navigate("/preview");
+  }
+
+
   // console.log(components);
 
   return (
@@ -324,7 +334,7 @@ const Workspace = () => {
             </div>
             <div className="divider-line" />
             <div className="workspace-topbar-btns">
-              <Button className="secondary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={() => navigate("/preview")}>
+              <Button className="secondary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleNavigatePreview}>
                 <Eye size={20} />
                 Preview
               </Button>
