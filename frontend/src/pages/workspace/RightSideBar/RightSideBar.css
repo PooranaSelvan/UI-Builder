@@ -199,9 +199,32 @@
     color: gray;
 }
 
+.display-input{
+    width: 100%;
+}
+
+.display-input select{
+    border-radius: 5px;
+    width: 100%;
+    padding: 2%;
+    margin-top: 4%;
+    background-color: #F9FAFB;
+    border: 1px solid #e5e7eb;
+    outline: none;
+}
+
+.display-input label{
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 100%;
+    color: gray;
+}
+
 .input-child {
     width: 48%;
 }
+
 
 .input-child select {
     border-radius: 5px;
@@ -401,6 +424,10 @@
     background-color: #F9FAFB;
 }
 
+.four-side-grid input[type = "number"]{
+    text-align: center;
+}
+
 .background-content {
     width: 100%;
     margin-bottom: 7%;
@@ -482,6 +509,35 @@
 
 .border {
     width: 100%;
+}
+
+.border-properties{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2%;
+}
+
+.border-prop{
+    width: 48%;
+}
+
+.border-prop input{
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #e5e7eb;
+    background-color: #F9FAFB;
+    padding: 4%;
+}
+
+.border-prop select{
+    width: 100%;
+    padding: 4%;
+    border-radius: 5px;
+    background-color: #F9FAFB;
+    border: 1px solid #e5e7eb;
+    outline: none;
 }
 
 .three-input {
