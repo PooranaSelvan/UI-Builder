@@ -11,6 +11,11 @@ import { Toaster } from 'react-hot-toast';
 import PreviewCanvas from './pages/workspace/preview/PreviewCanvas';
 import { useEffect } from 'react';
 import axios from "axios";
+import ComponentEditorPreview from "./pages/component-editor/ComponentEditorPreview.jsx";
+import { ComponentEditorProvider } from "./context/ComponentEditorContext";
+import { CustomComponentsProvider } from "./context/CustomComponentsContext";
+
+
 
 function App() {
 
@@ -36,10 +41,17 @@ function App() {
 
     checkMe();
   }, []);
+  const hideNavbar = location.pathname.startsWith("/preview") || location.pathname.startsWith("/component-editor-preview");
 
   return (
+    <CustomComponentsProvider>
     <>
-      {!location.pathname.startsWith("/preview") && <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />}
+      {!hideNavbar && (
+        <Navbar
+          isAuthenticated={isAuthenticated}
+          setIsAuthenticated={setIsAuthenticated}
+        />
+      )}
       <Routes>
         <Route path='/' element={<HomePage />} />
         <Route path='*' element={<ErrorPage />} />
@@ -47,10 +59,27 @@ function App() {
         <Route path='/login' element={<LoginPage />} />
         <Route path="/workspace" element={<Workspace />} />
         <Route path="/preview" element={<PreviewCanvas />} />
-        <Route path='/component-editor' element={<ComponentEditor />} />
+        <Route
+          path="/component-editor"
+          element={
+            <ComponentEditorProvider>
+              <ComponentEditor />
+            </ComponentEditorProvider>
+          }
+        />
+
+        <Route
+          path="/component-editor-preview"
+          element={
+            <ComponentEditorProvider>
+              <ComponentEditorPreview />
+            </ComponentEditorProvider>
+          }
+        />
       </Routes>
       <Toaster />
     </>
+    </CustomComponentsProvider>
   )
 }
 

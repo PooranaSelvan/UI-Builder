@@ -6,19 +6,21 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { X } from "lucide-react";
-import { ICONS, getIconByName } from "../utils/icons";
+import { getIconByName } from "../utils/icons";
+import { useCustomComponents } from "../../../context/CustomComponentsContext";
+
+
 
 export default function LeftPanel({ components, onAddJsonComponent, onEditSavedComponent, onRenameComponent, onChangeIcon, onDeleteComponent }) {
 
   const [showJsonModal, setShowJsonModal] = useState(false);
   const [jsonInput, setJsonInput] = useState("");
-
+  const { customComponents } = useCustomComponents();
   const location = useLocation();
   const isComponentEditor = location.pathname === "/component-editor";
   const [widthPercent, setWidthPercent] = useState(16);
   const isResizing = useRef(false);
   const navigate = useNavigate();
-
 
   const handlePointerDown = (e) => {
     isResizing.current = true;
@@ -37,6 +39,16 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
     isResizing.current = false;
     e.target.releasePointerCapture(e.pointerId);
   };
+
+  const customComponentSection = {
+    title: "Custom Components",
+    items: customComponents.map(comp => ({
+      ...comp,
+      icon: getIconByName(comp.iconName || "Square"),
+      rank: 999,
+    }))
+  };
+
 
   const handleSaveJsonComponent = () => {
     try {
@@ -71,19 +83,18 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
     }
   };
 
-
-
   return (
     <>
       <aside className="left-panel" style={{ width: `${widthPercent}%` }}>
-        <div className="left-panel-wrapper">
-          {/* RESIZE */}
-          <div
-            className="resize-handle"
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp} />
 
+        {/* RESIZE */}
+        <div
+          className="resize-handle"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp} />
+
+        <div className="left-panel-scroll">
           {/* TABS */}
           <div className="panel-tabs">
             <button className="tab active">Components</button>
@@ -92,38 +103,39 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
           <br />
 
           {/* SEARCH */}
-          <div className="search-box">
-            <Search size={16} />
-            <input placeholder="Search components..." />
+          <div className="search-row">
+            <div className="search-box">
+              <Search size={16} />
+              <input placeholder="Search components..." />
+            </div>
+
+            {!isComponentEditor && (
+              <button
+                className="add-near-search-btn"
+                onClick={() => navigate("/component-editor")}
+                title="Open Component Editor"
+              >
+                <Plus size={18} />
+              </button>
+            )}
           </div>
 
-          {/* PLUS ICON TO NAVIGATE */}
-          {!isComponentEditor && (
-            <button
-              className="add-component-btn"
-              onClick={() => navigate("/component-editor")}
-              title="Open Component Editor">
-              <Plus size={18} />
-            </button>
-          )}
 
           {/* COMPONENT LIST */}
-          {components.map((section) => (
+          {[...components, !isComponentEditor && customComponents.length > 0 && customComponentSection].filter(Boolean).map((section) => (
             <div key={section.title} className="panel-section">
               <p className="section-heading">{section.title}</p>
-
               <div className="grid">
                 {section.items.map((item) => (
                   <ComponentItem
                     key={item.id}
                     item={item}
-                    onEdit={item.isRootCustom ? onEditSavedComponent : undefined}
-                    onRename={item.isRootCustom ? onRenameComponent : undefined}
-                    onChangeIcon={item.isRootCustom ? onChangeIcon : undefined}
-                    onDelete={item.isRootCustom ? onDeleteComponent : undefined}
+                    onEditSavedComponent={onEditSavedComponent}
+                    onRenameComponent={onRenameComponent}
+                    onChangeIcon={onChangeIcon}
+                    onDeleteComponent={onDeleteComponent}
                   />
                 ))}
-
               </div>
             </div>
           ))}
@@ -132,9 +144,7 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
             <button
               className="add-json-component-btn"
               onClick={() => setShowJsonModal(true)}
-              title="Add Component from JSON"
-              style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 6 }}
-            >
+              title="Add Component from JSON">
               <Plus size={18} /> Add JSON Component
             </button>
           )}
@@ -170,8 +180,7 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
 
                 <button
                   className="json-save-btn"
-                  onClick={handleSaveJsonComponent}
-                >
+                  onClick={handleSaveJsonComponent}>
                   Save Component
                 </button>
               </div>
