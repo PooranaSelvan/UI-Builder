@@ -42,37 +42,61 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     // const [opacity, setOpacity] = useState(100);
     // const [font, setFont] = useState(16);
     const [files, setFiles] = useState([]);
+    const [apiUrl, setApiUrl] = useState("");
+    const [loadingApi, setLoadingApi] = useState(false);
     const [eventType, setEventType] = useState("");
     // const fileRef = useRef(null);
     const display = selectedComponent?.defaultProps?.style?.display || "block";
     const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
 
+    const fetchApiData = async () => {
+        if (!apiUrl) {
+            return;
+        }
+        try {
+            setLoadingApi(true);
+
+            const res = await fetch(apiUrl);
+            const data = await res.json();
+
+            console.log("Api data: ", data);
+
+            updateComponent(selectedComponent.id, (node) => {
+                node.content = JSON.stringify(data, null, 2);
+            })
+        } catch (err) {
+            console.log(err);
+            alert("Api fetch failed");
+        } finally {
+            setLoadingApi(false)
+        }
+    }
+
     const handleFiles = async (fileList) => {
         const file = fileList[0];
 
-        if (!file || !selectedComponent) return;
+        if (!file) return;
 
         const text = await file.text();
 
-        const parsedData = text
-            .split("\n")
-            .map(row => row.split(","));
+        const rows = text.split("\n").map(line => line.split(",").map(cell => cell.trim()));
+
+        const formattedText = rows.map(row => row.join(" - ")).join("\n");
 
         updateComponent(selectedComponent.id, (node) => {
-            node.data = parsedData;
+            node.content = formattedText;
         });
 
-        const newFiles = [{
+        const newFile = {
             id: crypto.randomUUID(),
             name: file.name,
             size: `${(file.size / 1024).toFixed(1)} KB`,
             type: file.name.split(".").pop(),
             status: "done",
             actions: true
-        }];
+        };
 
-        setFiles(prev => [...prev, ...newFiles]);
-        console.log(parsedData);
+        setFiles(prev => [...prev, newFile]);
     };
     console.log(selectedComponent)
 
@@ -112,9 +136,13 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 });
                                             }} disabled />
                                         </div>
-                                        <div>
-                                            <label htmlFor="">Chart type</label>
-                                            <input type="text" placeholder='type' />
+                                        <div className='content'>
+                                            <label htmlFor="">Content</label>
+                                            <input type="text" value={selectedComponent.content} onChange={(e) => {
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.content = e.target.value;
+                                                })
+                                            }} />
                                         </div>
                                     </div>
                                 </Heading>
@@ -217,24 +245,69 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                     {activeTab === 'style' && (
                         <div className="properties-content">
                             <Heading icon={<LayoutDashboard size={18} />} title={'Layout'} >
-                                <div className="display-input">
-                                    <label>Display</label>
-                                    <select
-                                        value={display}
-                                        onChange={(e) =>
+                                <div className="double-input">
+                                    <div className="input-child">
+                                        <label>Display</label>
+                                        <select
+                                            value={display}
+                                            onChange={(e) =>
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
+                                                    node.defaultProps.style.display = e.target.value;
+                                                })
+                                            }
+                                        >
+                                            <option value="block">Block</option>
+                                            <option value="flex">Flex</option>
+                                            <option value="grid">Grid</option>
+                                            <option value="none">None</option>
+                                        </select>
+                                    </div>
+                                    <div className='input-child'>
+                                        <label htmlFor="">Position</label>
+                                        <select value={selectedComponent?.defaultProps?.style?.position || "static"} onChange={(e) => {
                                             updateComponent(selectedComponent.id, (node) => {
                                                 node.defaultProps ??= {};
                                                 node.defaultProps.style ??= {};
-                                                node.defaultProps.style.display = e.target.value;
+                                                node.defaultProps.style.position = e.target.value;
                                             })
-                                        }
-                                    >
-                                        <option value="block">Block</option>
-                                        <option value="flex">Flex</option>
-                                        <option value="grid">Grid</option>
-                                        <option value="none">None</option>
-                                    </select>
+                                        }}>
+                                            <option value="static">Static</option>
+                                            <option value="relative">Relative</option>
+                                            <option value="absolute">Absolute</option>
+                                            <option value="fixed">Fixed</option>
+                                            <option value="sticky">Sticky</option>
+                                        </select>
+                                    </div>
                                 </div>
+                                <FourSideInput
+                                    label={'position value'}
+                                    names={["Top", "Right", "Bottom", "Left"]}
+                                    values={[
+                                        parseInt(selectedComponent.defaultProps?.style?.top || 0),
+                                        parseInt(selectedComponent.defaultProps?.style?.right) || 0,
+                                        parseInt(selectedComponent.defaultProps?.style?.bottom) || 0,
+                                        parseInt(selectedComponent.defaultProps?.style?.left) || 0,
+                                    ]}
+                                    onChange={(index, value) => {
+                                        updateComponent(selectedComponent.id, (node) => {
+                                            const map = [
+                                                "top",
+                                                "right",
+                                                "bottom",
+                                                "left",
+                                            ];
+
+                                            node.defaultProps ??= {};
+                                            node.defaultProps.style ??= {};
+
+                                            const actualValue = String(value).replace("px", "");
+
+                                            node.defaultProps.style[map[index]] = `${actualValue}px`;
+                                        })
+                                    }}
+                                />
                                 <SizeInput
                                     label="Width"
                                     value={selectedComponent.defaultProps?.style?.width}
@@ -489,6 +562,133 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         });
                                     }} />
                                     <ImageUpload selectedComponent={selectedComponent} updateComponent={updateComponent} />
+                                    <div className="three-input">
+                                        <div>
+                                            <label htmlFor="">bg-Repeat</label>
+                                            <select
+                                                value={selectedComponent.defaultProps?.style?.backgroundRepeat || 'repeat'}
+                                                onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.backgroundRepeat = e.target.value;
+                                                    })
+                                                }}
+                                            >
+                                                <option value="repeat">Repeat</option>
+                                                <option value="no-repeat">No-repeat</option>
+                                                <option value="repeat-X">Repeat-X</option>
+                                                <option value="repeat-Y">Repeat-Y</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label htmlFor="">bg-position</label>
+                                            <select
+                                                value={selectedComponent.defaultProps?.style?.backgroundPosition || 'center'}
+                                                onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ?? - {};
+                                                        node.defaultProps.style.backgroundPosition = e.target.value;
+                                                    })
+                                                }}
+                                            >
+                                                <option value="center">Center</option>
+                                                <option value="top">Top</option>
+                                                <option value="bottom">Bottom</option>
+                                                <option value="left">Left</option>
+                                                <option value="right">Right</option>
+
+                                                <option value="top left">Top Left</option>
+                                                <option value="top center">Top Center</option>
+                                                <option value="top right">Top Right</option>
+                                                <option value="center left">Center Left</option>
+                                                <option value="center right">Center Right</option>
+                                                <option value="bottom left">Bottom Left</option>
+                                                <option value="bottom center">Bottom Center</option>
+                                                <option value="bottom right">Bottom Right</option>
+
+                                                <option value="0% 0%">0% 0%</option>
+                                                <option value="50% 50%">50% 50%</option>
+                                                <option value="100% 100%">100% 100%</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label htmlFor="">bg-size</label>
+                                            <select
+                                                value={selectedComponent.defaultProps?.style?.backgroundSize || 'auto'}
+                                                onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.backgroundSize = e.target.value;
+                                                    })
+                                                }}
+                                            >
+                                                <option value="auto">Auto</option>
+                                                <option value="cover">Cover</option>
+                                                <option value="contain">Contain</option>
+                                                <option value="100% 100%">Stretch</option>
+                                                <option value="50%">50%</option>
+                                                <option value="75%">75%</option>
+                                                <option value="25%">25%</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="three-input">
+                                        <div>
+                                            <label htmlFor="">bg-origin</label>
+                                            <select
+                                                value={selectedComponent.defaultProps?.style?.backgroundOrigin || 'repeat'}
+                                                onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.backgroundOrigin = e.target.value;
+                                                    })
+                                                }}
+                                            >
+                                                <option value="padding-box">padding-box</option>
+                                                <option value="border-box">border-box</option>
+                                                <option value="content-box">content-box</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label htmlFor="">bg-clip</label>
+                                            <select
+                                                value={selectedComponent.defaultProps?.style?.backgroundClip || 'center'}
+                                                onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ?? - {};
+                                                        node.defaultProps.style.backgroundClip = e.target.value;
+                                                    })
+                                                }}
+                                            >
+                                                <option value="border-box">border-box</option>
+                                                <option value="padding-box">padding-box</option>
+                                                <option value="content-box">content-box</option>
+                                                <option value="text">text</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label htmlFor="">bg-attachment</label>
+                                            <select
+                                                value={selectedComponent.defaultProps?.style?.backgroundAttachment || 'auto'}
+                                                onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.style ??= {};
+                                                        node.defaultProps.style.backgroundAttachment = e.target.value;
+                                                    })
+                                                }}
+                                            >
+                                                <option value="scroll">scroll</option>
+                                                <option value="fixed">fixed</option>
+                                                <option value="local">local</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </Heading>
 
@@ -573,7 +773,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="double-input">
                                         <div className='input-child'>
                                             <label htmlFor="">Font Size</label>
-                                            <input type="number" value={parseFloat(selectedComponent.defaultProps?.style?.fontSize) || 16} onChange={(e) => {
+                                            <input type="number" max={72} value={parseFloat(selectedComponent.defaultProps?.style?.fontSize) || 16} onChange={(e) => {
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps ??= {};
                                                     node.defaultProps.style ??= {};
@@ -764,12 +964,28 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                     </div>
                                 </div>
-                                <button className='api-button'>Add new api</button>
+                                <div className="api-form">
+                                    <label>API Endpoint</label>
+
+                                    <input
+                                        type="text"
+                                        placeholder="https://api.example.com/data"
+                                        value={apiUrl}
+                                        onChange={(e) => setApiUrl(e.target.value)}
+                                    />
+
+                                    <button
+                                        className="api-button"
+                                        onClick={fetchApiData}
+                                    >
+                                        {loadingApi ? "Fetching..." : "Fetch Data"}
+                                    </button>
+                                </div>
                             </Heading>
                         </div>
                     )}
                 </div>
-            </div>
+            </div >
             <div className="delete-box">
                 <button
                     className="delete-button"

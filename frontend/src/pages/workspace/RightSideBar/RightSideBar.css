@@ -521,6 +521,16 @@
 
 .border-prop{
     width: 48%;
+    margin-bottom: 5%;
+}
+
+.border-prop label{
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    color: gray;
+    margin-bottom: 3%;
 }
 
 .border-prop input{
@@ -544,10 +554,11 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
+    margin-top: 5%;
 }
 
 .three-input div {
-    width: 30%;
+    width: 32%;
 }
 
 .three-input div label {
@@ -892,4 +903,31 @@
     border-radius: 5px;
     border: 1px solid #e5e7eb;
     background-color: #F9FAFB;
+}
+
+.api-form{
+    width: 100%;
+    margin-top: 5%;
+}
+
+.api-form label{
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    color: gray;
+    margin-bottom: 3%;
+}
+
+.api-form input{
+    width: 100%;
+    background-color: #F9FAFB;
+    outline: none;
+    padding: 4%;
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+}
+
+.content{
+    margin-top: 5%;
 }
