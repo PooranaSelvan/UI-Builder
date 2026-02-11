@@ -11,7 +11,7 @@ import IconPicker from "./IconPicker";
 import { Search, X, Eye } from "lucide-react";
 import { BasicComponents } from "../workspace/utils/basicComponentsData";
 import Button from "../../components/Button.jsx";
-import { useNavigate , useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ComponentEditorContext } from "../../context/ComponentEditorContext";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
 
@@ -123,13 +123,6 @@ const ComponentEditor = () => {
     },
   };
 
-  const location = useLocation();
-  useEffect(() => {
-    if (location.state?.fromWorkspace) {
-      toast.success("Welcome to Component Editor", { duration: 2500 });
-    }
-  }, [location.state]);
-  
 
   const handleDragEnd = ({ active, over }) => {
     setSelectedComponentId(null);
@@ -138,38 +131,38 @@ const ComponentEditor = () => {
     const isFromSidebar = !!active.data.current?.component;
     const isChild = isChildComponent(components, active.id);
 
-   /* Sidebar to Canvas */
-if (isFromSidebar && over.id === "canvas") {
-  const componentData = active.data.current.component;
+    /* Sidebar to Canvas */
+    if (isFromSidebar && over.id === "canvas") {
+      const componentData = active.data.current.component;
 
-  if (componentData.rank === 4) {
-    toast.error("Basic elements must be inside a layout", toastErrorStyle);
-    return;
-  }
+      if (componentData.rank === 4) {
+        toast.error("Basic elements must be inside a layout", toastErrorStyle);
+        return;
+      }
 
-  const clonedComponent = cloneComponentWithNewIds({
-    ...componentData,
-    isRootCustom: componentData.isRootCustom || false,
-    originalId: componentData.id,
-    defaultProps: { ...componentData.defaultProps },
-    label: componentData.label,
-    tag: componentData.tag,
-    iconName: componentData.iconName,
-  });
+      const clonedComponent = cloneComponentWithNewIds({
+        ...componentData,
+        isRootCustom: componentData.isRootCustom || false,
+        originalId: componentData.id,
+        defaultProps: { ...componentData.defaultProps },
+        label: componentData.label,
+        tag: componentData.tag,
+        iconName: componentData.iconName,
+      });
 
-  setComponents(prev => {
-    return [...prev, clonedComponent];
-  });
+      setComponents(prev => {
+        return [...prev, clonedComponent];
+      });
 
-  setSelectedComponentId(clonedComponent.id);
+      setSelectedComponentId(clonedComponent.id);
 
- 
-  if (componentData.isRootCustom && customComponents.some(c => c.id === componentData.id)) {
-    setEditingSavedComponentId(componentData.id);
-  }
 
-  return;
-}
+      if (componentData.isRootCustom && customComponents.some(c => c.id === componentData.id)) {
+        setEditingSavedComponentId(componentData.id);
+      }
+
+      return;
+    }
 
 
     /* Sidebar to Child */
@@ -315,16 +308,15 @@ if (isFromSidebar && over.id === "canvas") {
         prev.map(comp =>
           comp.id === editingSavedComponentId
             ? {
-                ...comp,
-                children: deepCloneWithoutIds(components),
-                defaultProps: comp.defaultProps || {},
-                tag: comp.tag || "div",
-                iconName: comp.iconName || "Square",
-              }
+              ...comp,
+              children: deepCloneWithoutIds(components),
+              defaultProps: comp.defaultProps || {},
+              tag: comp.tag || "div",
+              iconName: comp.iconName || "Square",
+            }
             : comp
         )
       );
-
       setComponents([]);
       setSelectedComponentId(null);
       setEditingSavedComponentId(null);
@@ -335,7 +327,7 @@ if (isFromSidebar && over.id === "canvas") {
     setCustomIconName("Square");
     setShowNameInput(true);
   };
-  
+
   const selectedComponent = selectedComponentId ? findComponentById(components, selectedComponentId) : null;
 
   const combinedComponents = [
@@ -497,7 +489,6 @@ if (isFromSidebar && over.id === "canvas") {
             onSelectComponent={setSelectedComponentId}
             clearComponentSelection={clearComponentSelection}
           />
-
 
           <RightSideBar
             selectedComponent={selectedComponent}
