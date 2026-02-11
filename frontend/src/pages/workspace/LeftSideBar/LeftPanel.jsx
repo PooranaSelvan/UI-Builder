@@ -22,7 +22,7 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    if (components.length > 0) {
+    if (components.length > 0){
       setOpenSections(prev => {
         const newSections = { ...prev };
         components.forEach(section => {
@@ -167,7 +167,7 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
             {!isComponentEditor && (
               <button
                 className="add-near-search-btn"
-                onClick={() => navigate("/component-editor", { state: { fromWorkspace: true } })}
+                onClick={() => navigate("/component-editor")}
                 title="Open Component Editor"
               >
                 <Plus size={18} />
@@ -206,8 +206,6 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
                   ))}
                 </div>
               )}
-
-
             </div>
           ))}
 
