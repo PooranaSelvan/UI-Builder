@@ -204,7 +204,7 @@ const Workspace = () => {
     }
 
     return { newComponent, child };
-  };git pull --no-rebase origin main
+  };
 
 
   // To Check a Element is a Child Element
