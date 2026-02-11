@@ -54,6 +54,17 @@ const Workspace = () => {
     return null;
   }
 
+  const cloneWithNewIds = (component) => {
+    const newId = `${component.id}-${uuidv4()}`;
+  
+    return {
+      ...component,
+      id: newId,
+      children: component.children?.map(cloneWithNewIds) || [],
+    };
+  };
+  
+
 
   const selectedComponent = selectedComponentId ? findComponentById(components, selectedComponentId) : null;
   const toastErrorStyle = { style: { borderRadius: '10px', background: 'var(--primary)', color: 'white' }, iconTheme: { primary: 'white', secondary: 'var(--primary)' } };
@@ -78,13 +89,15 @@ const Workspace = () => {
           toast.error("Basic elements must be inside a layout", toastErrorStyle);
           return;
         }
-
-        const newId = `${componentData.id}-${uuidv4()}`;
-
-        setComponents((items) => [...items, { ...componentData, id: newId }]);
-        setSelectedComponentId(newId);
+      
+        const clonedComponent = cloneWithNewIds(componentData);
+      
+        setComponents((prev) => [...prev, clonedComponent]);
+        setSelectedComponentId(clonedComponent.id);
+      
         return;
       }
+      
 
       // From SideBar to Canvas -- Child Components
       let overData = over.data.current;
@@ -93,7 +106,7 @@ const Workspace = () => {
         return;
       }
 
-      let newChild = { ...componentData, id: `${componentData.id}-${uuidv4()}`, children: [] };
+      let newChild = cloneWithNewIds(componentData);
 
       setComponents((items) => addChildToComponent(items, over.id, newChild));
       return;

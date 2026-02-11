@@ -59,16 +59,15 @@
 .add-near-search-btn {
   background: #ef4444;
   color: white;
+  margin-bottom: 8px;
   width: 36px;
   height: 36px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   flex-shrink: 0;
 }
 
@@ -253,4 +252,33 @@
 
 .json-save-btn:hover {
   background: #d32f2f;
+}
+
+
+
+/* ---------- Accordian View ---------- */
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.section-header:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+}
+
+.chevron {
+  transition: transform 0.2s ease;
+}
+
+.chevron.open {
+  transform: rotate(90deg);
 }

@@ -1,18 +1,15 @@
 import "./LeftPanel.css";
 import ComponentItem from "./ComponentItem";
 import { Search, Plus } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
-import { X } from "lucide-react";
+import { X, ChevronRight } from "lucide-react";
 import { getIconByName } from "../utils/icons";
 import { useCustomComponents } from "../../../context/CustomComponentsContext";
 
-
-
 export default function LeftPanel({ components, onAddJsonComponent, onEditSavedComponent, onRenameComponent, onChangeIcon, onDeleteComponent }) {
-
   const [showJsonModal, setShowJsonModal] = useState(false);
   const [jsonInput, setJsonInput] = useState("");
   const { customComponents } = useCustomComponents();
@@ -21,6 +18,32 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
   const [widthPercent, setWidthPercent] = useState(16);
   const isResizing = useRef(false);
   const navigate = useNavigate();
+  const [openSections, setOpenSections] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    if (components.length > 0) {
+      setOpenSections(prev => {
+        const newSections = { ...prev };
+        components.forEach(section => {
+          if (!(section.title in newSections)) {
+            newSections[section.title] = true;
+          }
+        });
+        return newSections;
+      });
+    }
+  }, [components]);
+
+
+  const toggleSection = (title) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [title]: !prev[title],
+    }));
+  };
+
+  /* ---------------- Resize Logic ---------------- */
 
   const handlePointerDown = (e) => {
     isResizing.current = true;
@@ -40,16 +63,8 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
     e.target.releasePointerCapture(e.pointerId);
   };
 
-  const customComponentSection = {
-    title: "Custom Components",
-    items: customComponents.map(comp => ({
-      ...comp,
-      icon: getIconByName(comp.iconName || "Square"),
-      rank: 999,
-    }))
-  };
 
-
+  /* ---------------- JSON Save ---------------- */
   const handleSaveJsonComponent = () => {
     try {
       const raw = JSON.parse(jsonInput);
@@ -83,22 +98,59 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
     }
   };
 
+  /* ---------------- Search Components ---------------- */
+  const filteredSections = components
+    .map((section) => {
+      const filteredItems = section.items.filter((item) =>
+        item.label.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      return {
+        ...section,
+        items: filteredItems,
+      };
+    })
+    .filter((section) => section.items.length > 0);
+
+  const filteredCustomSection = {
+    title: "Custom Components",
+    items: customComponents
+      .filter((comp) =>
+        comp.label.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .map((comp) => ({
+        ...comp,
+        icon: getIconByName(comp.iconName || "Square"),
+        rank: 999,
+      })),
+  };
+
+
+  const finalSections = [
+    ...filteredSections,
+    !isComponentEditor && filteredCustomSection.items.length > 0 ? filteredCustomSection : null,
+  ].filter(Boolean);
+
+
+
   return (
     <>
       <aside className="left-panel" style={{ width: `${widthPercent}%` }}>
-
-        {/* RESIZE */}
+        {/* RESIZE HANDLE */}
         <div
           className="resize-handle"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp} />
+          onPointerUp={handlePointerUp}
+        />
 
         <div className="left-panel-scroll">
           {/* TABS */}
           <div className="panel-tabs">
             <button className="tab active">Components</button>
-            <button className="tab" disabled>Layers</button>
+            <button className="tab" disabled>
+              Layers
+            </button>
           </div>
           <br />
 
@@ -106,13 +158,16 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
           <div className="search-row">
             <div className="search-box">
               <Search size={16} />
-              <input placeholder="Search components..." />
+              <input placeholder="Search components..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
 
             {!isComponentEditor && (
               <button
                 className="add-near-search-btn"
-                onClick={() => navigate("/component-editor")}
+                onClick={() => navigate("/component-editor", { state: { fromWorkspace: true } })}
                 title="Open Component Editor"
               >
                 <Plus size={18} />
@@ -120,52 +175,71 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
             )}
           </div>
 
-
-          {/* COMPONENT LIST */}
-          {[...components, !isComponentEditor && customComponents.length > 0 && customComponentSection].filter(Boolean).map((section) => (
+          {/* ACCORDION SECTIONS */}
+          {finalSections.map((section) => (
             <div key={section.title} className="panel-section">
-              <p className="section-heading">{section.title}</p>
-              <div className="grid">
-                {section.items.map((item) => (
-                  <ComponentItem
-                    key={item.id}
-                    item={item}
-                    onEditSavedComponent={onEditSavedComponent}
-                    onRenameComponent={onRenameComponent}
-                    onChangeIcon={onChangeIcon}
-                    onDeleteComponent={onDeleteComponent}
-                  />
-                ))}
+              {/* HEADER */}
+              <div
+                className="section-header"
+                onClick={() => toggleSection(section.title)}
+              >
+                <ChevronRight
+                  size={16}
+                  className={`chevron ${openSections[section.title] || searchTerm ? "open" : ""
+                    }`}
+                />
+                <span>{section.title}</span>
               </div>
+
+              {/* CONTENT */}
+              {(searchTerm || openSections[section.title]) && section.items.length > 0 && (
+                <div className="grid">
+                  {section.items.map(item => (
+                    <ComponentItem
+                      key={item.id}
+                      item={item}
+                      onEditSavedComponent={onEditSavedComponent}
+                      onRenameComponent={onRenameComponent}
+                      onChangeIcon={onChangeIcon}
+                      onDeleteComponent={onDeleteComponent}
+                    />
+                  ))}
+                </div>
+              )}
+
+
             </div>
           ))}
 
+          {searchTerm && finalSections.length === 0 && (
+            <p className="no-results">No components found</p>
+          )}
+
+          {/* ADD JSON BUTTON */}
           {isComponentEditor && (
             <button
               className="add-json-component-btn"
               onClick={() => setShowJsonModal(true)}
-              title="Add Component from JSON">
+            >
               <Plus size={18} /> Add JSON Component
             </button>
           )}
+        </div>
 
-          {showJsonModal && (
-            <div className="json-component-modal">
-              {/* MODAL BOX */}
-              <div className="json-modal-box">
-                <div className="modal-header">
-                  <h4>Add Component via JSON</h4>
-                  <X
-                    size={18}
-                    className="modal-cancel-btn"
-                    onClick={() => setShowJsonModal(false)}
-                  />
-                </div>
+        {/* JSON MODAL */}
+        {showJsonModal && (
+          <div className="json-component-modal">
+            <div className="json-modal-box">
+              <div className="modal-header">
+                <h4>Add Component via JSON</h4>
+                <X size={18} onClick={() => setShowJsonModal(false)} />
+              </div>
 
-                <textarea
-                  value={jsonInput}
-                  onChange={(e) => setJsonInput(e.target.value)}
-                  placeholder={`Sample JSON:
+              <textarea
+                value={jsonInput}
+                onChange={(e) => setJsonInput(e.target.value)}
+                className="json-textarea"
+                placeholder={`Sample JSON:
 {
   "id": "my-component",
   "label": "My Component",
@@ -175,18 +249,14 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
   "defaultProps": { "className": "my-component test-component" },
   "children": []
 }`}
-                  className="json-textarea"
-                />
+              />
 
-                <button
-                  className="json-save-btn"
-                  onClick={handleSaveJsonComponent}>
-                  Save Component
-                </button>
-              </div>
+              <button className="json-save-btn" onClick={handleSaveJsonComponent}>
+                Save Component
+              </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </aside>
     </>
   );
