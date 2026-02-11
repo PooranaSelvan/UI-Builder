@@ -14,7 +14,7 @@ import axios from "axios";
 import ComponentEditorPreview from "./pages/component-editor/ComponentEditorPreview.jsx";
 import { ComponentEditorProvider } from "./context/ComponentEditorContext";
 import { CustomComponentsProvider } from "./context/CustomComponentsContext";
-
+import Dashboard from "./pages/dashboard/Dashboard.jsx";
 
 
 function App() {
@@ -76,6 +76,7 @@ function App() {
             </ComponentEditorProvider>
           }
         />
+        <Route path='/dashboard' element={<Dashboard />} />
       </Routes>
       <Toaster />
     </>

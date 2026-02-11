@@ -98,7 +98,6 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
         setFiles(prev => [...prev, newFile]);
     };
-    console.log(selectedComponent)
 
     if (!selectedComponent) {
         return (

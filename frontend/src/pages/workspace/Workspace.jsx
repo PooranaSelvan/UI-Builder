@@ -11,6 +11,7 @@ import { components as componentLibrary } from "./utils/ComponentsData.js";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
 import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket } from 'lucide-react';
+import useFetch from "../../hooks/useFetch.jsx";
 
 
 const Workspace = () => {
@@ -18,6 +19,7 @@ const Workspace = () => {
   const [zoom, setZoom] = useState(1);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
 
+  const baseUrl = import.meta.url.VITE_SITE_TYPE === "development" ? "http://localhost:5000/" : "http://production.backend.url";
 
   // Zoom Functions
   const handleZoomIn = () => {

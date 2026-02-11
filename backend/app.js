@@ -6,6 +6,9 @@ import axios from "axios";
 import cors from "cors";
 import { generateToken, verifyUser } from "./utils/generateToken.js";
 import cookieParser from "cookie-parser";
+import componentRoutes from "./routes/componentRoutes.js";
+
+
 
 const PORT = 5000;
 const app = express();
@@ -29,6 +32,7 @@ app.get("/", (req, res) => {
 
 // User Routes
 app.use("/users/", userRoutes);
+app.use("/components/", componentRoutes);
 // app.use("/auth/", authRoutes);
 
 app.get("/checkme", verifyUser, (req, res) => {
@@ -75,7 +79,6 @@ app.get("/auth/zoho/callback", async (req, res) => {
 
                return;
           } else {
-               console.log(profileRes.status);
                res.status(404).json({ message: "Authentication Failed!" });
           }
      } catch (err) {
