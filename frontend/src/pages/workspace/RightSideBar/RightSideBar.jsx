@@ -1,14 +1,15 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import "./RightSideBar.css";
 import "../../../index.css"
 import { Icon, Settings } from 'lucide-react';
+import { v4 as uuidv4 } from "uuid";
 import { ChevronDown } from 'lucide-react';
 import { ChevronUp } from 'lucide-react';
 import { Zap } from 'lucide-react';
 import { LayoutDashboard } from 'lucide-react';
 import { Columns3 } from 'lucide-react';
 import { Space } from 'lucide-react';
-import { PaintbrushVertical } from 'lucide-react';
+import { MountainSnow } from 'lucide-react';
 import { Grid2x2 } from 'lucide-react';
 import { Type } from 'lucide-react';
 import { TableRowsSplit } from 'lucide-react';
@@ -22,7 +23,10 @@ import { Workflow } from 'lucide-react';
 import ImportedFiles from './components/ImportedFiles';
 import ImageUpload from './components/ImageUpload';
 
+/*Used in the rendering of the select tag in the units for height, width */
 const UNITS = ["px", "%", "rem", "em", "auto"];
+
+/*used to render the required events according to the component is selected */
 const EVENT_MAP = {
     button: ["navigation", "visibility", "style"],
     link: ["navigation", "style"],
@@ -49,6 +53,24 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     const display = selectedComponent?.defaultProps?.style?.display || "block";
     const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
 
+    useEffect(() => {
+        if (!selectedComponent) {
+            return;
+        }
+
+        updateComponent(selectedComponent.id, (node) => {
+            node.defaultProps ??= {};
+            node.defaultProps.style ??= {};
+
+            if (!node.defaultProps.style.borderWidth || !node.defaultProps.style.borderStyle || !node.defaultProps.style.borderColor) {
+                node.defaultProps.style.borderWidth = '1px';
+                node.defaultProps.style.borderStyle = 'solid';
+                node.defaultProps.style.borderColor = '#000000'
+            }
+        })
+    }, [selectedComponent?.id]);
+
+    /*To fetch the data from the api that entered by the user */
     const fetchApiData = async () => {
         if (!apiUrl) {
             return;
@@ -59,13 +81,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
             const res = await fetch(apiUrl);
             const data = await res.json();
 
-            console.log("Api data: ", data);
-
             updateComponent(selectedComponent.id, (node) => {
                 node.content = JSON.stringify(data, null, 2);
             })
         } catch (err) {
-            console.log(err);
             alert("Api fetch failed");
         } finally {
             setLoadingApi(false)
@@ -88,8 +107,9 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
         });
 
         const newFile = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             name: file.name,
+            /*Convert the input that come as bytes to kb */
             size: `${(file.size / 1024).toFixed(1)} KB`,
             type: file.name.split(".").pop(),
             status: "done",
@@ -98,8 +118,8 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
         setFiles(prev => [...prev, newFile]);
     };
-    console.log(selectedComponent)
 
+    /*Render the right panel only if a component is selected */
     if (!selectedComponent) {
         return (
             <aside className="right-side-main-bar empty">
@@ -136,14 +156,29 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 });
                                             }} disabled />
                                         </div>
-                                        <div className='content'>
-                                            <label htmlFor="">Content</label>
-                                            <input type="text" value={selectedComponent.content} onChange={(e) => {
-                                                updateComponent(selectedComponent.id, (node) => {
-                                                    node.content = e.target.value;
-                                                })
-                                            }} />
-                                        </div>
+                                        {selectedComponent.tag !== 'img' && (
+                                            <div className='content'>
+                                                <label htmlFor="">Content</label>
+                                                <input type="text" value={selectedComponent.content} onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.content = e.target.value;
+                                                    })
+                                                }} />
+                                            </div>
+                                        )}
+                                        {selectedComponent.tag === 'img' && (
+                                            <div className='content'>
+                                                <label htmlFor="">Source</label>
+                                                <input type="text" value={selectedComponent.defaultProps?.src} onChange={(e) => {
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        /*Check for wheather the object is present in the selected component if not it will create the object and then store the data */
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.src = e.target.value;
+                                                    })
+                                                }} />
+                                            </div>
+                                        )}
+
                                     </div>
                                 </Heading>
 
@@ -250,13 +285,25 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         <label>Display</label>
                                         <select
                                             value={display}
-                                            onChange={(e) =>
+                                            onChange={(e) => {
+                                                let value = e.target.value
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps ??= {};
                                                     node.defaultProps.style ??= {};
-                                                    node.defaultProps.style.display = e.target.value;
+
+                                                    let className = node.defaultProps.className;
+
+                                                    if (value === 'none') {
+                                                        if (!className.includes('hidden')) {
+                                                            node.defaultProps.className = className + " hidden";
+                                                            node.defaultProps.style.opacity = 0.2
+                                                        }
+                                                    } else {
+                                                        node.defaultProps.className = className.replace('hidden', "").trim();
+                                                        node.defaultProps.style.opacity = 1;
+                                                    }
                                                 })
-                                            }
+                                            }}
                                         >
                                             <option value="block">Block</option>
                                             <option value="flex">Flex</option>
@@ -397,6 +444,36 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 <option value="baseline">baseline</option>
                                             </select>
                                         </div>
+                                    </div>
+                                    <SizeInput
+                                        label={'Gap'}
+                                        value={selectedComponent.defaultProps?.style?.gap || 0}
+                                        onChange={(v) => {
+                                            updateComponent(selectedComponent.id, (node) => {
+                                                node.defaultProps ??= {};
+                                                node.defaultProps.style ??= {};
+                                                node.defaultProps.style.gap = v;
+                                            })
+                                        }}
+                                    />
+                                    <div className='wrap-input'>
+                                        <label htmlFor="">Align items</label>
+                                        <select
+                                            value={selectedComponent.defaultProps?.style?.alignItems || ""}
+                                            onChange={(e) => {
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
+                                                    node.defaultProps.style.alignItems = e.target.value;
+                                                });
+                                            }}
+                                        >
+                                            <option value="stretch">stretch</option>
+                                            <option value="center">center</option>
+                                            <option value="flex-start">flex-start</option>
+                                            <option value="flex-end">flex-end</option>
+                                            <option value="baseline">baseline</option>
+                                        </select>
                                     </div>
                                 </Heading>
                             )}
@@ -541,7 +618,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                 </div>
                             </Heading>
 
-                            <Heading icon={<PaintbrushVertical size={18} />} title={'Background'}>
+                            <Heading icon={<MountainSnow size={18} />} title={'Background'}>
                                 <div className='background-content'>
                                     <label htmlFor="">Background color</label>
                                     <ColorPalette
@@ -700,7 +777,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <input
                                                 type="number"
                                                 min={0}
-                                                value={parseFloat(selectedComponent.defaultProps?.style?.borderWidth || 1)}
+                                                value={parseFloat(selectedComponent.defaultProps?.style?.borderWidth) || 1}
                                                 onChange={(e) => {
                                                     updateComponent(selectedComponent.id, (node) => {
                                                         node.defaultProps ??= {};
@@ -712,7 +789,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                         <div className='border-prop'>
                                             <label htmlFor="">Style</label>
-                                            <select value={selectedComponent.defaultProps?.style?.borderStyle || "solid"} onChange={(e) => {
+                                            <select value={selectedComponent.defaultProps?.style?.borderStyle ?? "solid"} onChange={(e) => {
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps ??= {};
                                                     node.defaultProps.style ??= {};
@@ -728,12 +805,12 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                     </div>
                                     <ColorPalette
-                                        value={selectedComponent.defaultProps?.style?.color || "#000000"}
+                                        value={selectedComponent.defaultProps?.style?.borderColor || "#000000"}
                                         onChange={(v) =>
                                             updateComponent(selectedComponent.id, (node) => {
                                                 node.defaultProps ??= {};
                                                 node.defaultProps.style ??= {};
-                                                node.defaultProps.style.color = v;
+                                                node.defaultProps.style.borderColor = v;
                                             })
                                         }
                                     />
@@ -1060,7 +1137,7 @@ const ColorPalette = ({ value, onChange }) => {
         <div className="color-pallette">
             <input
                 type="color"
-                defaultValue={value}
+                value={value}
                 onChange={(e) => onChange(e.target.value)}
             />
             <div className="color-box">

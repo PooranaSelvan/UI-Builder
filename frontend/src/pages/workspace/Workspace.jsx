@@ -225,33 +225,23 @@ const Workspace = () => {
 
   // Right SideBar Methods - Gowtham
   const deleteComponent = () => {
-    if (!selectedComponentId) return;
+    const cloned = cloneComponents(components);
 
-    const newComponents = cloneComponents(components);
-
-    let stack = [{ items: newComponents }];
-
-    while (stack.length > 0) {
-      const { items } = stack.pop();
-
-      const index = items.findIndex(
-        item => item.id === selectedComponentId
-      );
+    const remove = (items) => {
+      const index = items.findIndex(i => i.id === selectedComponentId);
 
       if (index !== -1) {
         items.splice(index, 1);
-        break;
+        return true;
       }
 
-      items.forEach(item => {
-        if (item.children?.length) {
-          stack.push({ items: item.children });
-        }
-      });
-    }
+      return items.some(item =>
+        item.children && remove(item.children)
+      );
+    };
 
-    setComponents(newComponents);
-    setSelectedComponentId(null);
+    remove(cloned);
+    setComponents(cloned);
   };
 
   const clearComponentSelection = () => {
@@ -278,32 +268,33 @@ const Workspace = () => {
   };
 
   const updateComponent = (id, updater) => {
-    setComponents(prev => {
-      const cloned = cloneComponents(prev);
+    setComponents(existingComponent => {
+      const cloneStructure = cloneComponents(existingComponent);
+      updateNodeById(cloneStructure, id, updater);
+      return cloneStructure;
+    })
+  }
 
-      const stack = [...cloned];
-
-      while (stack.length) {
-        const node = stack.pop();
-
-        if (node.id === id) {
-          updater(node);
-          break;
-        }
-
-        if (node.children?.length) {
-          stack.push(...node.children);
-        }
+  const updateNodeById = (nodes, id, updater) => {
+    for (const node of nodes) {
+      if (node.id === id) {
+        updater(node);
+        return true
       }
 
-      return cloned;
-    });
+      if (node.children && node.children.length) {
+        if (updateNodeById(node.children, id, updater)) {
+          return true;
+        }
+      }
+    }
+    return false
   }
 
 
   const handleNavigatePreview = () => {
-    if(components.length === 0){
-      toast.error("There is no Component Load Preview!", toastErrorStyle);  
+    if (components.length === 0) {
+      toast.error("There is no Component Load Preview!", toastErrorStyle);
       return;
     }
 
