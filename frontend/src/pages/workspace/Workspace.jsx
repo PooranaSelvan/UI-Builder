@@ -11,15 +11,12 @@ import { components as componentLibrary } from "./utils/ComponentsData.js";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
 import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
-import { ComponentContext } from "../../context/ComponentContext.jsx";
 
 
 const Workspace = () => {
-  const { components, setComponents } = useContext(ComponentContext);
+  const [ components, setComponents ] = useState([]);
   const [zoom, setZoom] = useState(1);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
-  let navigate = useNavigate();
 
 
   // Zoom Functions
@@ -48,7 +45,7 @@ const Workspace = () => {
         return ele;
       }
 
-      if (ele.children?.length) {
+      if (ele.children && ele.children.length > 0) {
         let element = findComponentById(ele.children, id);
         if (element) return element;
       }
@@ -56,6 +53,17 @@ const Workspace = () => {
 
     return null;
   }
+
+  const cloneWithNewIds = (component) => {
+    const newId = `${component.id}-${uuidv4()}`;
+  
+    return {
+      ...component,
+      id: newId,
+      children: component.children?.map(cloneWithNewIds) || [],
+    };
+  };
+  
 
 
   const selectedComponent = selectedComponentId ? findComponentById(components, selectedComponentId) : null;
@@ -81,19 +89,15 @@ const Workspace = () => {
           toast.error("Basic elements must be inside a layout", toastErrorStyle);
           return;
         }
-
-        const newId = `${componentData.id}-${uuidv4()}`;
-
-        setComponents((prev) => [
-          ...prev,
-          {
-            ...componentData,
-            id: newId,
-          },
-        ]);
-        setSelectedComponentId(newId);
+      
+        const clonedComponent = cloneWithNewIds(componentData);
+      
+        setComponents((prev) => [...prev, clonedComponent]);
+        setSelectedComponentId(clonedComponent.id);
+      
         return;
       }
+      
 
       // From SideBar to Canvas -- Child Components
       let overData = over.data.current;
@@ -102,7 +106,7 @@ const Workspace = () => {
         return;
       }
 
-      let newChild = { ...componentData, id: `${componentData.id}-${uuidv4()}`, children: [] };
+      let newChild = cloneWithNewIds(componentData);
 
       setComponents((items) => addChildToComponent(items, over.id, newChild));
       return;
@@ -142,7 +146,7 @@ const Workspace = () => {
 
     // Putting Into Another Component
     if (over.id !== "canvas") {
-      const componentData = findComponentById(components, active.id);
+      let componentData = findComponentById(components, active.id);
       if (!componentData) return;
 
       setComponents((items) => {
@@ -169,11 +173,8 @@ const Workspace = () => {
         return { ...item, children: [...(item.children || []), newChild] };
       }
 
-      if (item.children?.length) {
-        return {
-          ...item,
-          children: addChildToComponent(item.children, parentId, newChild),
-        };
+      if (item.children && item.children.length > 0) {
+        return { ...item, children: addChildToComponent(item.children, parentId, newChild) };
       }
 
       return item;
@@ -196,24 +197,24 @@ const Workspace = () => {
       }
 
       obj.forEach(item => {
-        if (item.children?.length) {
+        if (item.children && item.children.length > 0) {
           arr.push(item.children);
         }
       });
     }
 
     return { newComponent, child };
-  };
+  };git pull --no-rebase origin main
 
 
   // To Check a Element is a Child Element
   const isChildComponent = (items, id) => {
     for (let item of items) {
-      if (item.children?.some(child => child.id === id)) {
+      if (item.children && item.children.some(child => child.id === id)) {
         return true;
       }
 
-      if (item.children?.length) {
+      if (item.children && item.children.length > 0) {
         if (isChildComponent(item.children, id)) {
           return true;
         }
@@ -294,11 +295,13 @@ const Workspace = () => {
 
   const handleNavigatePreview = () => {
     if (components.length === 0) {
-      toast.error("There is no Component Load Preview!", toastErrorStyle);
+      toast.error("There is no Components Load Preview!", toastErrorStyle);
       return;
     }
 
-    navigate("/preview");
+    window.open("/preview", "_blank");
+
+    localStorage.setItem("previewComponents", JSON.stringify(components));
   }
 
 

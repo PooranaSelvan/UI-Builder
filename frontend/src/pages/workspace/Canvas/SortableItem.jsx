@@ -3,7 +3,6 @@ import React from "react";
 import "./work-canvas.css";
 import { useDroppable } from "@dnd-kit/core";
 import { VOID_TAGS } from "../utils/voidTags";
-import { GripHorizontal } from 'lucide-react';
 
 const SortableItem = ({ ele, isSelected, onSelect, selectedComponentId }) => {
      const { id, tag, content, defaultProps, children = [], rank } = ele;
@@ -34,11 +33,7 @@ const SortableItem = ({ ele, isSelected, onSelect, selectedComponentId }) => {
      };
 
      return (
-          <div ref={(node) => { setNodeRef(node); setDropRef(node) }} style={style} {...attributes} onClick={selectComponent}>
-               <div {...listeners} className="component-drag" onClick={(e) => e.stopPropagation()}>
-                    <GripHorizontal size={22} />
-               </div>
-
+          <div ref={(node) => { setNodeRef(node); setDropRef(node) }} style={style} {...attributes} onDoubleClick={selectComponent} {...listeners}>
                {isVoid ? (
                     <div onClick={selectComponent}>
                          {React.createElement(tag, defaultProps)}

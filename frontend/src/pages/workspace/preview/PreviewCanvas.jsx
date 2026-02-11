@@ -1,25 +1,24 @@
 import React, { useContext } from 'react';
 import { VOID_TAGS } from "../utils/voidTags.js";
-import { ComponentContext } from '../../../context/ComponentContext.jsx';
 
 const PreviewCanvas = () => {
-     let { components } = useContext(ComponentContext);
+     let components = JSON.parse(localStorage.getItem("previewComponents")) || [];
 
      const renderComponents = (arr) => {
-          let components = arr.map(ele => {
+          let res = arr.map(ele => {
                const { id, tag, content, defaultProps, children = [] } = ele;
                let { res, style } = getEventProps(defaultProps.events, defaultProps.style);
                let props = { key: id, ...defaultProps, ...res, style };
                delete props.events;
 
                if (typeof tag === "string" && VOID_TAGS.has(tag)) {
-                    return React.createElement(tag, { key: id, ...{ ...props, className: removeClass(defaultProps?.className, ["test-component", "component-drag"]) } });
+                    return React.createElement(tag, { key: id, ...{ ...props, className: removeClass(defaultProps?.className, ["test-component"]) } });
                }
 
-               return React.createElement(tag, { key: id, ...{ ...props, className: removeClass(defaultProps?.className, ["test-component", "component-drag"]) } }, children?.length > 0 ? renderComponents(children) : content);
+               return React.createElement(tag, { key: id, ...{ ...props, className: removeClass(defaultProps?.className, ["test-component"]) } }, children?.length > 0 ? renderComponents(children) : content);
           });
 
-          return components;
+          return res;
      };
 
      const removeClass = (className = "", remove = []) => {
@@ -39,13 +38,13 @@ const PreviewCanvas = () => {
                     }
 
 
-                    if(events.visibility?.action === "hide") {
+                    if (events.visibility?.action === "hide") {
                          style.display = "none";
                     }
-                    if(events.visibility?.action === "show") {
+                    if (events.visibility?.action === "show") {
                          style.display = "block";
                     }
-                    if(events.visibility?.action === "toggle") {
+                    if (events.visibility?.action === "toggle") {
                          style.display = style.display === "block" ? "none" : "block";
                     }
                }
@@ -66,6 +65,13 @@ const PreviewCanvas = () => {
 
 
           return { res, style };
+     }
+
+
+     if (components.length === 0) {
+          return (
+               <div>There is No Components to Preview!</div>
+          );
      }
 
 

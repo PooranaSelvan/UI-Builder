@@ -48,28 +48,36 @@ const ComponentEditorPreview = () => {
     const res = {};
     const style = { ...baseStyle };
 
-    // click actions
-    if (events.navigation || events.visibility) {
-      res.onClick = () => {
-        if (events.navigation?.type === "navigate") {
-          window.location.href = events.navigation.target;
-        }
-        if (events.visibility?.action === "hide") style.display = "none";
-        if (events.visibility?.action === "show") style.display = "block";
-        if (events.visibility?.action === "toggle") {
-          style.display = style.display === "block" ? "none" : "block";
-        }
-      };
-    }
+  // Navigation & Visibility
+  if (events.navigation || events.visibility) {
+    res.onClick = () => {
+         if (events.navigation?.type === "navigate") {
+              window.location.href = events.navigation.target;
+         }
 
-    // hover
-    if (events.style?.hoverColor) {
-      const original = baseStyle?.backgroundColor || "";
-      res.onMouseEnter = (e) =>
-        (e.currentTarget.style.backgroundColor = events.style.hoverColor);
-      res.onMouseLeave = (e) =>
-        (e.currentTarget.style.backgroundColor = original);
+         if(events.visibility?.action === "hide") {
+              style.display = "none";
+         }
+         if(events.visibility?.action === "show") {
+              style.display = "block";
+         }
+         if(events.visibility?.action === "toggle") {
+              style.display = style.display === "block" ? "none" : "block";
+         }
     }
+}
+
+   // Hover
+   if (events.style?.hoverColor) {
+    let originalColor = baseStyle?.backgroundColor;
+
+    res.onMouseEnter = (e) => {
+         e.currentTarget.style.backgroundColor = events.style.hoverColor;
+    };
+    res.onMouseLeave = (e) => {
+         e.currentTarget.style.backgroundColor = originalColor || "";
+    };
+}
 
     return { res, style };
   };

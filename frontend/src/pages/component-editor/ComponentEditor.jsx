@@ -11,13 +11,9 @@ import IconPicker from "./IconPicker";
 import { Search, X, Eye } from "lucide-react";
 import { BasicComponents } from "../workspace/utils/basicComponentsData";
 import Button from "../../components/Button.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation } from "react-router-dom";
 import { ComponentEditorContext } from "../../context/ComponentEditorContext";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
-
-
-
-
 
 const ComponentEditor = () => {
   /* ---------------- State ---------------- */
@@ -32,7 +28,6 @@ const ComponentEditor = () => {
   const [iconSearch, setIconSearch] = useState("");
   const [editingSavedComponentId, setEditingSavedComponentId] = useState(null);
   let navigate = useNavigate();
-
 
 
   /* ---------------- Helpers ---------------- */
@@ -98,12 +93,13 @@ const ComponentEditor = () => {
   };
 
   const cloneComponentWithNewIds = (component) => {
+    const newId = `${component.id}-${uuidv4()}`;
     return {
       ...component,
-      id: `${component.id}-${uuidv4()}`,
+      id: newId,
       children: component.children
         ? component.children.map(child => cloneComponentWithNewIds(child))
-        : []
+        : [],
     };
   };
 
@@ -117,7 +113,6 @@ const ComponentEditor = () => {
     setSelectedComponentId(cloned.id);
   };
 
-
   /* ---------------- Drag Logic ---------------- */
 
   const toastErrorStyle = {
@@ -128,11 +123,13 @@ const ComponentEditor = () => {
     },
   };
 
+  const location = useLocation();
   useEffect(() => {
-    toast.success("Welcome to Component Editor", {
-      duration: 2500,
-    });
-  }, []);
+    if (location.state?.fromWorkspace) {
+      toast.success("Welcome to Component Editor", { duration: 2500 });
+    }
+  }, [location.state]);
+  
 
   const handleDragEnd = ({ active, over }) => {
     setSelectedComponentId(null);
@@ -141,22 +138,38 @@ const ComponentEditor = () => {
     const isFromSidebar = !!active.data.current?.component;
     const isChild = isChildComponent(components, active.id);
 
-    /* Sidebar to Canvas */
-    if (isFromSidebar && over.id === "canvas") {
-      const componentData = active.data.current.component;
+   /* Sidebar to Canvas */
+if (isFromSidebar && over.id === "canvas") {
+  const componentData = active.data.current.component;
 
-      if (componentData.rank === 4) {
-        toast.error("Basic elements must be inside a layout", toastErrorStyle);
-        return;
-      }
+  if (componentData.rank === 4) {
+    toast.error("Basic elements must be inside a layout", toastErrorStyle);
+    return;
+  }
 
-      const clonedComponent = cloneComponentWithNewIds(componentData);
+  const clonedComponent = cloneComponentWithNewIds({
+    ...componentData,
+    isRootCustom: componentData.isRootCustom || false,
+    originalId: componentData.id,
+    defaultProps: { ...componentData.defaultProps },
+    label: componentData.label,
+    tag: componentData.tag,
+    iconName: componentData.iconName,
+  });
 
-      setComponents(prev => [...prev, clonedComponent]);
-      setSelectedComponentId(clonedComponent.id);
-      return;
-    }
+  setComponents(prev => {
+    return [...prev, clonedComponent];
+  });
 
+  setSelectedComponentId(clonedComponent.id);
+
+ 
+  if (componentData.isRootCustom && customComponents.some(c => c.id === componentData.id)) {
+    setEditingSavedComponentId(componentData.id);
+  }
+
+  return;
+}
 
 
     /* Sidebar to Child */
@@ -228,30 +241,23 @@ const ComponentEditor = () => {
 
   const deleteComponent = () => {
     if (!selectedComponentId) return;
-
     const newComponents = cloneComponents(components);
-
     let stack = [{ items: newComponents }];
-
     while (stack.length > 0) {
       const { items } = stack.pop();
-
       const index = items.findIndex(
         item => item.id === selectedComponentId
       );
-
       if (index !== -1) {
         items.splice(index, 1);
         break;
       }
-
       items.forEach(item => {
         if (item.children?.length) {
           stack.push({ items: item.children });
         }
       });
     }
-
     setComponents(newComponents);
     setSelectedComponentId(null);
   };
@@ -283,22 +289,17 @@ const ComponentEditor = () => {
   const updateComponent = (id, updater) => {
     setComponents(prev => {
       const cloned = cloneComponents(prev);
-
       const stack = [...cloned];
-
       while (stack.length) {
         const node = stack.pop();
-
         if (node.id === id) {
           updater(node);
           break;
         }
-
         if (node.children?.length) {
           stack.push(...node.children);
         }
       }
-
       return cloned;
     });
   }
@@ -311,20 +312,22 @@ const ComponentEditor = () => {
 
     if (editingSavedComponentId) {
       setCustomComponents(prev =>
-        prev.map(comp => {
-          if (comp.id !== editingSavedComponentId) return comp;
-
-          return {
-            ...comp,
-            children: deepCloneWithoutIds(components),
-          };
-        })
+        prev.map(comp =>
+          comp.id === editingSavedComponentId
+            ? {
+                ...comp,
+                children: deepCloneWithoutIds(components),
+                defaultProps: comp.defaultProps || {},
+                tag: comp.tag || "div",
+                iconName: comp.iconName || "Square",
+              }
+            : comp
+        )
       );
 
       setComponents([]);
       setSelectedComponentId(null);
       setEditingSavedComponentId(null);
-
       toast.success("Custom Component Updated!");
       return;
     }
@@ -332,10 +335,8 @@ const ComponentEditor = () => {
     setCustomIconName("Square");
     setShowNameInput(true);
   };
-
-  const selectedComponent = selectedComponentId
-    ? findComponentById(components, selectedComponentId)
-    : null;
+  
+  const selectedComponent = selectedComponentId ? findComponentById(components, selectedComponentId) : null;
 
   const combinedComponents = [
     ...BasicComponents,
@@ -362,59 +363,52 @@ const ComponentEditor = () => {
       children: rest.children ? deepCloneWithoutIds(rest.children) : [],
     }));
 
-    const handleIconSelect = (iconName) => {
-      setCustomIconName(iconName);
-    
-      setCustomComponents(prev => {
-        if (editingSavedComponentId) {
-          return prev.map(component =>
-            component.id === editingSavedComponentId
-              ? {
-                  ...component,
-                  label: customComponentName,
-                  iconName,
-                  children: deepCloneWithoutIds(components),
-                }
-              : component
-          );
-        }
-        return [
-          ...prev,
-          {
-            id: `custom-${uuidv4()}`,
-            label: customComponentName,
-            tag: "div",
-            iconName,
-            isRootCustom: true,
-            defaultProps: {
-              className: "custom-component-root",
-            },
-            children: deepCloneWithoutIds(components),
-          },
-        ];
-      });
-    
-      setComponents([]);
-      setSelectedComponentId(null);
-      setEditingSavedComponentId(null);
-      setShowIconPicker(false);
-      setCustomComponentName("");
-      setCustomIconName("Square");
-    
-      toast.success(
-        editingSavedComponentId
-          ? "Custom Component Updated!"
-          : "Custom Component Saved!"
-      );
-    };
-    
+  const handleIconSelect = (iconName) => {
+    setCustomIconName(iconName);
 
-  const handleAddJsonComponent = (newComponent) => {
-    setCustomComponents(prev => [
-      ...prev,
-      { ...newComponent, children: newComponent.children || [] }
-    ])
+    setCustomComponents(prev => {
+      if (editingSavedComponentId) {
+        return prev.map(component =>
+          component.id === editingSavedComponentId
+            ? {
+              ...component,
+              label: customComponentName,
+              iconName,
+              children: deepCloneWithoutIds(components),
+            }
+            : component
+        );
+      }
+      return [
+        ...prev,
+        {
+          id: `custom-${uuidv4()}`,
+          label: customComponentName,
+          tag: "div",
+          iconName,
+          isRootCustom: true,
+          defaultProps: {
+            className: "custom-component-root",
+          },
+          children: deepCloneWithoutIds(components),
+        },
+      ];
+    });
+
+    setComponents([]);
+    setSelectedComponentId(null);
+    setEditingSavedComponentId(null);
+    setShowIconPicker(false);
+    setCustomComponentName("");
+    setCustomIconName("Square");
+
+    toast.success(
+      editingSavedComponentId
+        ? "Custom Component Updated!"
+        : "Custom Component Saved!"
+    );
   };
+
 
   const handleRenameComponent = (component) => {
     const newName = prompt("Enter new name", component.label);
@@ -446,9 +440,6 @@ const ComponentEditor = () => {
     }
   };
 
-
-
-
   /* ---------------- Render ---------------- */
 
   return (
@@ -469,7 +460,6 @@ const ComponentEditor = () => {
                 toast.error("There is no component to preview!", toastErrorStyle);
                 return;
               }
-
               navigate("/component-editor-preview");
             }}
           >
@@ -479,11 +469,11 @@ const ComponentEditor = () => {
 
           <button
             className="save-component-btn"
-            disabled={!components.length && !editingSavedComponentId}
-            onClick={saveCanvasAsComponent} >
+            disabled={!components.length}
+            onClick={saveCanvasAsComponent}
+          >
             {editingSavedComponentId ? "Update Component" : "Save Component"}
           </button>
-
         </div>
 
 
@@ -500,7 +490,6 @@ const ComponentEditor = () => {
             onChangeIcon={handleChangeIcon}
             onDeleteComponent={handleDeleteComponent}
           />
-
 
           <Canvas
             components={components}

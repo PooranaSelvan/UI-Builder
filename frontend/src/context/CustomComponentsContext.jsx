@@ -7,8 +7,7 @@ export const CustomComponentsProvider = ({ children }) => {
 
   return (
     <CustomComponentsContext.Provider
-      value={{ customComponents, setCustomComponents }}
-    >
+      value={{ customComponents, setCustomComponents }}>
       {children}
     </CustomComponentsContext.Provider>
   );
