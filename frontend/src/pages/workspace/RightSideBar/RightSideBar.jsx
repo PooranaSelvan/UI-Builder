@@ -53,23 +53,6 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     const display = selectedComponent?.defaultProps?.style?.display || "block";
     const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
 
-    useEffect(() => {
-        if (!selectedComponent) {
-            return;
-        }
-
-        updateComponent(selectedComponent.id, (node) => {
-            node.defaultProps ??= {};
-            node.defaultProps.style ??= {};
-
-            if (!node.defaultProps.style.borderWidth || !node.defaultProps.style.borderStyle || !node.defaultProps.style.borderColor) {
-                node.defaultProps.style.borderWidth = '1px';
-                node.defaultProps.style.borderStyle = 'solid';
-                node.defaultProps.style.borderColor = '#000000'
-            }
-        })
-    }, [selectedComponent?.id]);
-
     /*To fetch the data from the api that entered by the user */
     const fetchApiData = async () => {
         if (!apiUrl) {
@@ -777,7 +760,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <input
                                                 type="number"
                                                 min={0}
-                                                value={parseFloat(selectedComponent.defaultProps?.style?.borderWidth) || 1}
+                                                value={parseFloat(selectedComponent.defaultProps?.style?.borderWidth)}
                                                 onChange={(e) => {
                                                     updateComponent(selectedComponent.id, (node) => {
                                                         node.defaultProps ??= {};
@@ -789,7 +772,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                         <div className='border-prop'>
                                             <label htmlFor="">Style</label>
-                                            <select value={selectedComponent.defaultProps?.style?.borderStyle ?? "solid"} onChange={(e) => {
+                                            <select value={selectedComponent.defaultProps?.style?.borderStyle} onChange={(e) => {
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps ??= {};
                                                     node.defaultProps.style ??= {};
@@ -805,7 +788,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                     </div>
                                     <ColorPalette
-                                        value={selectedComponent.defaultProps?.style?.borderColor || "#000000"}
+                                        value={selectedComponent.defaultProps?.style?.borderColor}
                                         onChange={(v) =>
                                             updateComponent(selectedComponent.id, (node) => {
                                                 node.defaultProps ??= {};
