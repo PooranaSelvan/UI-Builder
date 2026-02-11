@@ -931,3 +931,25 @@
 .content{
     margin-top: 5%;
 }
+
+.wrap-input{
+    width: 100%;
+}
+
+.wrap-input label{
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    color: gray;
+    margin-bottom: 3%;
+}
+
+.wrap-input select{
+    width: 100%;
+    padding: 2%;
+    border-radius: 5px;
+    background-color: #F9FAFB;
+    border: 1px solid #e5e7eb;
+    outline: none;
+}
