@@ -1,10 +1,13 @@
 import mysql from "mysql2";
+import dotenv from "dotenv";
+dotenv.config();
 
 const con = mysql.createConnection({
-     host : "localhost",
-     user : "root",
-     password : process.env.DB_USER_PASSWORD,
-     database : "sirpamuibuilder"
+     host : process.env.DB_HOSTNAME,
+     port: process.env.DB_PORT,
+     user : process.env.DB_USERNAME,
+     password : process.env.DB_PASSWORD,
+     database : "sirpam-ui-builder"
 });
 
 

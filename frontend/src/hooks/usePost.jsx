@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-function postFetch(url, userData) {
+function usePost(url) {
      const [data, setData] = useState(null);
      const [loading, setLoading] = useState(true);
      const [error, setError] = useState(null);
 
-     useEffect(async () => {
+     async function postData(userData) {
           try {
                let res = await axios.post(url, userData);
                setData(res.data);
@@ -15,10 +15,10 @@ function postFetch(url, userData) {
                console.log(error);
                setError(error);
           }
-     }, [url]);
+     }
 
-     return { data, loading, error };
+     return {postData, data, loading, error };
 }
 
 
-export default postFetch;
+export default usePost;

@@ -18,16 +18,16 @@ import Dashboard from "./pages/dashboard/Dashboard.jsx";
 
 
 function App() {
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-
   let location = useLocation();
+  const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
+
 
   useEffect(() => {
     const checkMe = async () => {
       try {
-        let res = await axios.get("http://localhost:5000/checkme", {
+        let res = await axios.get(`${baseUrl}checkme`, {
           withCredentials: true
         });
 
