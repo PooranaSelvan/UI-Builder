@@ -11,7 +11,7 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
   const [open, setOpen] = useState(false);
   const [openDropDown, setDropDown] = useState(false);
   let dropDownRef = useRef(null);
-
+  const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
 
   useEffect(() => {
     const handleOutSideClick = (e) => {
@@ -25,14 +25,9 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
   }, []);
 
 
-  const handleLogin = () => {
-    window.location.href = `http://localhost:5000/auth/zoho/login?redirect=${encodeURIComponent(window.location.pathname)}`;
-  }
-
-
   const logoutHandler = async () => {
     try {
-      let res = await axios.get("http://localhost:5000/auth/zoho/logout", { withCredentials: true });
+      let res = await axios.get(`${baseUrl}auth/zoho/logout`, { withCredentials: true });
 
       console.log(res);
 
@@ -84,8 +79,8 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
           </>
         ) : (
           <>
-            <Button className='nav-btn nav-btn-primary' onClick={handleLogin}>Login</Button>
-            <Button className='nav-btn primary-button' onClick={handleLogin}>Get Started</Button>
+            <NavLink className='nav-btn nav-btn-primary' to='/login'>Login</NavLink>
+            <NavLink className='nav-btn primary-button' to='/signup'>Get Started</NavLink>
           </>
         )}
       </div>
@@ -105,8 +100,8 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
           <NavLink to="/templates" onClick={() => setOpen(false)}>Templates</NavLink>
 
           <div className="mobile-actions">
-            <Button className='nav-btn nav-btn-primary' onClick={handleLogin}>Login</Button>
-            <Button className='nav-btn primary-button' onClick={handleLogin}>Get Started</Button>
+            <NavLink className='nav-btn nav-btn-primary' to='/login'>Login</NavLink>
+            <NavLink className='nav-btn primary-button' to='/signup'>Get Started</NavLink>
           </div>
         </div>
       )}

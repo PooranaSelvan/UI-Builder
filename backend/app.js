@@ -7,20 +7,21 @@ import cors from "cors";
 import { generateToken, verifyUser } from "./utils/generateToken.js";
 import cookieParser from "cookie-parser";
 import componentRoutes from "./routes/componentRoutes.js";
+import con from "./db/config.js";
 
 
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const app = express();
 dotenv.config();
 app.use(cors({
-     origin: "http://localhost:5173",
+     origin: [process.env.FRONTEND_LOCALURL, process.env.FRONTEND_PRODURL],
      credentials : true
 }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-let siteUrl = process.env.SITE_TYPE === "development" ? "http://localhost:5173" : "";
+let siteUrl = process.env.SITE_TYPE === "development" ? process.env.FRONTEND_LOCALURL : process.env.FRONTEND_PRODURL;
 
 
 
@@ -33,13 +34,17 @@ app.get("/", (req, res) => {
 // User Routes
 app.use("/users/", userRoutes);
 app.use("/components/", componentRoutes);
-// app.use("/auth/", authRoutes);
 
+
+
+// Checking Whether the User is Logged in or Not
 app.get("/checkme", verifyUser, (req, res) => {
      res.json({ user: req.user });
 });
 
 
+
+// Zoho Oauth
 app.get("/auth/zoho/callback", async (req, res) => {
      try {
           const { code, state } = req.query;
@@ -86,9 +91,7 @@ app.get("/auth/zoho/callback", async (req, res) => {
           return res.status(500).json({ error: "Zoho login failed" });
      }
 });
-
-
-
+// Redirecting the User via that UI
 app.get("/auth/zoho/login", async (req, res) => {
      let redirectPath = req.query.redirect || "/";
 
@@ -96,9 +99,7 @@ app.get("/auth/zoho/login", async (req, res) => {
 
      res.redirect(redirectUrl);
 });
-
-
-app.get("/auth/zoho/logout", async (req, res) => {
+app.get("/auth/logout", async (req, res) => {
      try {
           res.clearCookie("authauth");
 

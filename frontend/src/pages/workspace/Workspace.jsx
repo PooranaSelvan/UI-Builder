@@ -19,7 +19,7 @@ const Workspace = () => {
   const [zoom, setZoom] = useState(1);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
 
-  const baseUrl = import.meta.url.VITE_SITE_TYPE === "development" ? "http://localhost:5000/" : "http://production.backend.url";
+  const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
 
   // Zoom Functions
   const handleZoomIn = () => {
