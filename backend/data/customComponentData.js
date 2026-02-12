@@ -1,16 +1,16 @@
-import {
-     Grid,
-     Layout,
-     Square,
-     Heading,
-     AlignLeft,
-     MousePointerClick,
-     FormInput,
-     Image,
-     CircleUserRound,
-     Minus,
-     Star
-} from "lucide-react";
+// import {
+//      Grid,
+//      Layout,
+//      Square,
+//      Heading,
+//      AlignLeft,
+//      MousePointerClick,
+//      FormInput,
+//      Image,
+//      CircleUserRound,
+//      Minus,
+//      Star
+// } from "lucide-react";
 
 export const BasicComponents = [
      {
@@ -20,7 +20,7 @@ export const BasicComponents = [
                {
                     id: "container",
                     label: "Container",
-                    icon: Square,
+                    icon: "Square",
                     tag: "div",
                     rank: 1,
                     content: "Container",
@@ -39,7 +39,7 @@ export const BasicComponents = [
                {
                     id: "heading",
                     label: "Heading",
-                    icon: Heading,
+                    icon: "Heading",
                     tag: "h2",
                     rank: 4,
                     content: "Heading Text",
@@ -50,7 +50,7 @@ export const BasicComponents = [
                {
                     id: "paragraph",
                     label: "Paragraph",
-                    icon: AlignLeft,
+                    icon: "AlignLeft",
                     tag: "p",
                     rank: 4,
                     content:
@@ -62,7 +62,7 @@ export const BasicComponents = [
                {
                     id: "button",
                     label: "Button",
-                    icon: MousePointerClick,
+                    icon: "MousePointerClick",
                     tag: "button",
                     rank: 4,
                     content: "Button",
@@ -74,7 +74,7 @@ export const BasicComponents = [
                {
                     id: "input",
                     label: "Input",
-                    icon: FormInput,
+                    icon: "FormInput",
                     tag: "input",
                     rank: 4,
                     defaultProps: {
@@ -86,7 +86,7 @@ export const BasicComponents = [
                {
                     id: "image",
                     label: "Image",
-                    icon: Image,
+                    icon: "Image",
                     tag: "img",
                     rank: 4,
                     defaultProps: {
@@ -98,7 +98,7 @@ export const BasicComponents = [
                {
                     id: "avatar",
                     label: "Avatar",
-                    icon: CircleUserRound,
+                    icon: "CircleUserRound",
                     tag: "img",
                     rank: 4,
                     componentType: "avatar",
@@ -111,7 +111,7 @@ export const BasicComponents = [
                {
                     id: "textarea",
                     label: "Textarea",
-                    icon: AlignLeft,
+                    icon: "AlignLeft",
                     tag: "textarea",
                     rank: 4,
                     defaultProps: {
@@ -123,7 +123,7 @@ export const BasicComponents = [
                {
                     id: "radio",
                     label: "Radio",
-                    icon: FormInput,
+                    icon: "FormInput",
                     tag: "input",
                     rank: 4,
                     defaultProps: {
@@ -134,7 +134,7 @@ export const BasicComponents = [
                {
                     id: "checkbox",
                     label: "Checkbox",
-                    icon: FormInput,
+                    icon: "FormInput",
                     tag: "input",
                     rank: 4,
                     defaultProps: {
@@ -145,7 +145,7 @@ export const BasicComponents = [
                {
                     id: "divider",
                     label: "Divider",
-                    icon: Minus,
+                    icon: "Minus",
                     tag: "hr",
                     rank: 4,
                     defaultProps: {

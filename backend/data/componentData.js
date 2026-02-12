@@ -1,17 +1,17 @@
-import {
-     Image,
-     Square,
-     Link2,
-     Video,
-     Minus,
-     Layout,
-     MousePointerClick,
-     FormInput,
-     List,
-     Grid,
-     Heading,
-     AlignLeft
-} from "lucide-react";
+// import {
+//      Image,
+//      Square,
+//      Link2,
+//      Video,
+//      Minus,
+//      Layout,
+//      MousePointerClick,
+//      FormInput,
+//      List,
+//      Grid,
+//      Heading,
+//      AlignLeft
+// } from "lucide-react";
 
 export const components = [
      {
@@ -21,7 +21,7 @@ export const components = [
                {
                     id: "container",
                     label: "Container",
-                    icon: Square,
+                    icon: "Square",
                     tag: "div",
                     rank: 1,
                     content: "Container",
@@ -35,7 +35,7 @@ export const components = [
                {
                     id: "flex",
                     label: "Flex Container",
-                    icon: Grid,
+                    icon: "Grid",
                     tag: "div",
                     rank: 2,
                     content: "Flex Container",
@@ -51,7 +51,7 @@ export const components = [
                {
                     id: "grid",
                     label: "Grid Container",
-                    icon: Layout,
+                    icon: "Layout",
                     tag: "div",
                     rank: 3,
                     content: "Grid Container",
@@ -72,7 +72,7 @@ export const components = [
                {
                     id: "heading",
                     label: "Heading",
-                    icon: Heading,
+                    icon: "Heading",
                     tag: "h2",
                     rank: 4,
                     content: "Heading Text",
@@ -81,7 +81,7 @@ export const components = [
                {
                     id: "paragraph",
                     label: "Paragraph",
-                    icon: AlignLeft,
+                    icon: "AlignLeft",
                     tag: "p",
                     rank: 4,
                     content: "Paragraph text goes here. This is a sample paragraph that can be edited later.",
@@ -90,7 +90,7 @@ export const components = [
                {
                     id: "image",
                     label: "Image",
-                    icon: Image,
+                    icon: "Image",
                     tag: "img",
                     rank: 4,
                     defaultProps: {
@@ -102,7 +102,7 @@ export const components = [
                {
                     id: "button",
                     label: "Button",
-                    icon: MousePointerClick,
+                    icon: "MousePointerClick",
                     tag: "button",
                     rank: 4,
                     content: "Click me",
@@ -114,7 +114,7 @@ export const components = [
                {
                     id: "link",
                     label: "Link",
-                    icon: Link2,
+                    icon: "Link2",
                     tag: "a",
                     rank: 4,
                     content: "Link",
@@ -126,7 +126,7 @@ export const components = [
                {
                     id: "divider",
                     label: "Divider",
-                    icon: Minus,
+                    icon: "Minus",
                     tag: "hr",
                     rank: 4,
                     defaultProps: { className: "basic-divider test-component" }
@@ -134,7 +134,7 @@ export const components = [
                {
                     id: "video",
                     label: "Video",
-                    icon: Video,
+                    icon: "Video",
                     tag: "div",
                     rank: 4,
                     content: "Video placeholder",
@@ -149,7 +149,7 @@ export const components = [
                {
                     id: "input",
                     label: "Input",
-                    icon: FormInput,
+                    icon: "FormInput",
                     tag: "input",
                     rank: 4,
                     defaultProps: {
@@ -161,7 +161,7 @@ export const components = [
                {
                     id: "textarea",
                     label: "Textarea",
-                    icon: AlignLeft,
+                    icon: "AlignLeft",
                     tag: "textarea",
                     rank: 4,
                     defaultProps: {
@@ -173,7 +173,7 @@ export const components = [
                {
                     id: "select",
                     label: "Select",
-                    icon: List,
+                    icon: "List",
                     tag: "select",
                     rank: 4,
                     defaultProps: {
