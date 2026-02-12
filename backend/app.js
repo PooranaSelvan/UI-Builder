@@ -16,7 +16,7 @@ const app = express();
 dotenv.config();
 app.use(cors({
      origin: [process.env.FRONTEND_LOCALURL, process.env.FRONTEND_PRODURL],
-     credentials : true
+     credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());
@@ -77,7 +77,7 @@ app.get("/auth/zoho/callback", async (req, res) => {
           if (profileRes.status === 200) {
                const zohoUser = profileRes.data;
 
-               generateToken(req, res, zohoUser);
+               generateToken(res, zohoUser.ZUID);
 
                let sendSameUrl = decodeURIComponent(state || "/");
                res.redirect(`${siteUrl}${sendSameUrl}`);
@@ -101,11 +101,15 @@ app.get("/auth/zoho/login", async (req, res) => {
 });
 app.get("/auth/logout", async (req, res) => {
      try {
-          res.clearCookie("authauth");
+          res.clearCookie("authauth", {
+               httpOnly: true,
+               secure: process.env.NODE_ENV === "production",
+               sameSite: "lax"
+          });
 
-          return res.status(201).json({message : "Logged out successfully!"});
+          return res.status(200).json({ message: "Logout Successful!" });
      } catch (error) {
-          return res.status(400).json({message : "Logged out failed!"});
+          return res.status(400).json({ message: "Logout failed!" });
      }
 });
 

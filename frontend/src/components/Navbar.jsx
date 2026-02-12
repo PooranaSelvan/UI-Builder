@@ -6,12 +6,14 @@ import { NavLink } from 'react-router-dom';
 import { Menu, X, Settings, User, LogOut } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from "axios";
+import useFetch from '../hooks/useFetch';
 
 const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
   const [open, setOpen] = useState(false);
   const [openDropDown, setDropDown] = useState(false);
   let dropDownRef = useRef(null);
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
+  const { fetchData, data, loading, error } = useFetch(`${baseUrl}auth/logout`);
 
   useEffect(() => {
     const handleOutSideClick = (e) => {
@@ -27,15 +29,10 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
 
   const logoutHandler = async () => {
     try {
-      let res = await axios.get(`${baseUrl}auth/zoho/logout`, { withCredentials: true });
-
-      console.log(res);
-
+      let res = fetchData();
       setIsAuthenticated(false);
-      toast.success(res.data.message);
     } catch (err) {
       setIsAuthenticated(true);
-      toast.error("Login Failed");
     }
   }
 

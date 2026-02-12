@@ -1,21 +1,15 @@
 import jwt from "jsonwebtoken";
 
 
-export const generateToken = (req, res, data) => {
-     let userData = {
-          zid: data.ZUID,
-          name: data.Display_Name,
-          email: data.Email
-     };
-
-     let token = jwt.sign(userData, process.env.JWT_SECRET, {
+export const generateToken = (res, userId) => {
+     let token = jwt.sign({id : userId}, process.env.JWT_SECRET, {
           expiresIn: "7d"
      });
 
 
      res.cookie("authauth", token, {
           httpOnly: true,
-          secure: false,
+          secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000
      });
