@@ -1,11 +1,11 @@
 import express from "express";
-import { loginUser, registerUser } from "../controllers/builderController.js";
+import { getPages, savePage, getCustomComponents, saveCustomComponent } from "../controllers/builderController.js";
 
-// const router = express.Router();
-
-
-// router.route("/login").post(loginUser);
-// router.route("/signup").post(registerUser);
+const router = express.Router();
 
 
-// export default router;
+router.route("/components").get(getCustomComponents).post(saveCustomComponent);
+router.route("/pages").get(getPages).post(savePage);
+
+
+export default router;

@@ -7,7 +7,7 @@ import cors from "cors";
 import { generateToken, verifyUser } from "./utils/generateToken.js";
 import cookieParser from "cookie-parser";
 import componentRoutes from "./routes/componentRoutes.js";
-import con from "./db/config.js";
+import builderRoutes from "./routes/builderRoutes.js";
 
 
 
@@ -34,6 +34,7 @@ app.get("/", (req, res) => {
 // User Routes
 app.use("/users/", userRoutes);
 app.use("/components/", componentRoutes);
+app.use("/builder/", builderRoutes);
 
 
 
