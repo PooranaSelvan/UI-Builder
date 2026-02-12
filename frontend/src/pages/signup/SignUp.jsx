@@ -6,14 +6,30 @@ import { Eye, EyeOff, User, Mail, Lock, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import axios from "axios";
 import ZohoLogo from "../../assets/zohologo.ico";
+import usePost from '../../hooks/usePost';
+import toast from 'react-hot-toast';
 
 const SignUp = () => {
-  const [showPassword, setPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirm] = useState(false);
+  const [name, setName] = useState("Poorana Selvan");
+  const [email, setEmail] = useState("poorana@gmail.com");
+  const [password, setPassword] = useState("Poorana@123");
+  const [cPassword, setCPassword] = useState("Poorana@123");
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
+  const { postData, data, loading, error } = usePost(`${baseUrl}users/signup/`);
 
   const handleZohoLogin = () => {
     window.location.href = `${baseUrl}auth/zoho/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+  }
+
+  const handleNormalSignUp = () => {
+    if (password !== cPassword) {
+      toast.error("Confirm Password Doesn't Match with your Password!");
+      return;
+    }
+
+    postData({ name, email, password });
   }
 
   return (
@@ -33,6 +49,8 @@ const SignUp = () => {
                 type="text"
                 placeholder="Enter your name"
                 className="signup-input"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
               <User className="icon" size={20} />
             </div>
@@ -44,6 +62,8 @@ const SignUp = () => {
                 type="email"
                 placeholder="yourname@gmail.com"
                 className="signup-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <Mail className="icon" size={20} />
             </div>
@@ -54,9 +74,11 @@ const SignUp = () => {
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className="signup-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <Lock size={20} className='icon' />
-              <span className='eye-icon' onClick={() => setPassword(!showPassword)}>
+              <span className='eye-icon' onClick={() => setShowPassword(!showPassword)}>
                 {showPassword ? <Eye size={15} /> : < EyeOff size={15} />}
               </span>
             </div>
@@ -71,6 +93,8 @@ const SignUp = () => {
                 type={confirmPassword ? "text" : "password"}
                 placeholder="••••••••"
                 className="signup-input"
+                value={cPassword}
+                onChange={(e) => setCPassword(e.target.value)}
               />
               <ShieldCheck size={20} className='icon' />
 
@@ -88,7 +112,7 @@ const SignUp = () => {
               </span>
             </div>
 
-            <Button className="primary-button signup-btn">
+            <Button className="primary-button signup-btn" onClick={handleNormalSignUp}>
               Create Account
             </Button>
 

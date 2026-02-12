@@ -5,7 +5,6 @@ import { Eye } from 'lucide-react';
 import { EyeOff } from 'lucide-react';
 import ZohoLogo from "../../assets/zohologo.ico";
 import { NavLink } from "react-router-dom";
-import useFetch from "../../hooks/useFetch";
 import usePost from '../../hooks/usePost';
 
 const buttonStyle = {
@@ -32,10 +31,10 @@ const googleStyle = {
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("poorana@gmail.com");
+    const [password, setPassword] = useState("Poorana@123");
     const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
-    const { postData, data, loading, error } = usePost(`${baseUrl}auth/login`);
+    const { postData, data, loading, error } = usePost(`${baseUrl}users/login/`);
 
     const handleZohoLogin = () => {
         window.location.href = `${baseUrl}auth/zoho/login?redirect=${encodeURIComponent(window.location.pathname)}`;
