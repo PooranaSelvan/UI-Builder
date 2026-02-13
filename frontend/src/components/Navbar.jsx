@@ -49,7 +49,7 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
       <ul className='nav-flex desktop-navbar'>
         <li><NavLink to='/features' className='nav-btns'>Features</NavLink></li>
         <li><NavLink to='/docs' className='nav-btns'>Docs</NavLink></li>
-        <li><NavLink to='/workspace' className='nav-btns'>Workspace</NavLink></li>
+        <li><NavLink to='/dashboard' className='nav-btns'>Dashboard</NavLink></li>
         <li><NavLink to='/templates' className='nav-btns'>Templates</NavLink></li>
       </ul>
       <div className='nav-flex desktop-navbar'>
@@ -93,7 +93,7 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
         <div className="mobile-menu">
           <NavLink to="/features" onClick={() => setOpen(false)}>Features</NavLink>
           <NavLink to="/docs" onClick={() => setOpen(false)}>Docs</NavLink>
-          <NavLink to="/workspace" onClick={() => setOpen(false)}>Workspace</NavLink>
+          <NavLink to="/dashboard" onClick={() => setOpen(false)}>Dashboard</NavLink>
           <NavLink to="/templates" onClick={() => setOpen(false)}>Templates</NavLink>
 
           <div className="mobile-actions">

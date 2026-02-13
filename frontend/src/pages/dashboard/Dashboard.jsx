@@ -2,26 +2,18 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FolderCard from "./FolderCard";
 import CreateForm from "./CreateForm";
-import {
-  Plus,
-  MoreVertical,
-  FileText,
-  Search,
-  Clock,
-  ArrowRight,
-  Pencil,
-  Copy,
-  Edit3,
-  Eye,
-  Trash2
-} from "lucide-react";
+import { Plus, MoreVertical, FileText, Search, Clock, ArrowRight, Pencil, Copy, Edit3, Eye, Trash2 } from "lucide-react";
 import "./Dashboard.css";
+import useFetch from "../../hooks/useFetch";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [selectedApp, setSelectedApp] = useState(null);
   const [activeMenu, setActiveMenu] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
 
   const menuRef = useRef(null);
 
@@ -35,6 +27,60 @@ const Dashboard = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+
+  const getUserId = async () => {
+    let res = await axios.get(`${baseUrl}checkme/`, { withCredentials: true });
+
+    return res.data.user.id;
+  }
+
+
+  const handleCreateNewPage = async (name, description) => {
+    let userId = await getUserId();
+
+    if (userId < 1) {
+      toast.error("Invalid User!");
+      return;
+    }
+
+    // try {
+    //   let res = await axios.post(`${baseUrl}builder/projects/`, {
+    //     userId,
+    //     projectName: name,
+    //     description
+    //   });
+
+    //   console.log("Success:", res.data);
+
+    // } catch (err) {
+    //   toast.error(err.response?.data.message);
+    // }
+  }
+
+  const handleCreateNewProject = async (name, description) => {
+    let userId = await getUserId();
+
+
+    if (userId < 1) {
+      toast.error("Invalid User!");
+      return;
+    }
+
+    try {
+      let res = await axios.post(`${baseUrl}builder/projects/`, {
+        userId,
+        projectName: name,
+        description
+      });
+
+      console.log("Success:", res.data);
+
+    } catch (err) {
+      toast.error(err.response?.data.message);
+    }
+
+  }
 
 
   const applications = [
@@ -138,6 +184,7 @@ const Dashboard = () => {
           nameLabel="Project Name"
           descriptionLabel="Project Description"
           buttonText="Create Project"
+          createNewProject={handleCreateNewProject}
         />
 
       </div>
@@ -239,11 +286,11 @@ const Dashboard = () => {
               <div className="page-divider"></div>
               <br />
               {/* TITLE */}
-            <div className="page-title">  
-            <p>{page.name}</p>
-            </div>
-            <p className="page-description">{page.description}</p>
-            
+              <div className="page-title">
+                <p>{page.name}</p>
+              </div>
+              <p className="page-description">{page.description}</p>
+
               {/* FOOTER */}
               <div className="page-footer">
                 <div className="last-modified">
@@ -268,6 +315,7 @@ const Dashboard = () => {
           nameLabel="Page Name"
           descriptionLabel="Page Description"
           buttonText="Create Page"
+          createNewPage={handleCreateNewPage}
         />
       </div>
     </div>

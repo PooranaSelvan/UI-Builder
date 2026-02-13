@@ -25,7 +25,7 @@ let siteUrl = process.env.SITE_TYPE === "development" ? process.env.FRONTEND_LOC
 
 
 
-
+// Default Route
 app.get("/", (req, res) => {
      res.send("Close This!");
 });

@@ -15,11 +15,9 @@ function useFetch(url) {
                let res = await axios.get(url, { withCredentials: true });
                setData(res.data);
                setLoading(false);
-               toast.success(res.data.message || "Success");
           } catch (error) {
                let message = error.response?.data?.message || "Error Happened!";
                setError(message);
-               toast.error(message);
           } finally {
                setLoading(false);
           }
