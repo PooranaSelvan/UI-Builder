@@ -64,7 +64,7 @@ const loginUser = async (req, res) => {
      con.query(loginUserQuery, [email], async (err, result) => {
           if (err) {
                console.log(err);
-               return res.status(500).json({ message: "Error Occured : ", err });
+               return res.status(500).json({ message: "Error Occured", err });
           }
 
           if (result.length === 0) {
