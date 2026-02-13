@@ -238,7 +238,7 @@
 
 @media (max-width: 1024px) {
     .login-container {
-        padding: 10% 25%;
+        padding: 10% 15%;
     }
 
     .top-content img {
@@ -398,4 +398,10 @@
         height: 40px;
     }
 
+}
+
+@media (min-width: 1024px) and (max-width: 1280px) {
+    .login-container{
+        padding: 6% 18%;
+    }
 }
