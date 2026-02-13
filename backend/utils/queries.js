@@ -6,4 +6,6 @@ export const selectUserById = "SELECT * FROM users WHERE userId = ?";
 export const saveNewPage = "INSERT INTO pages(projectId, pageName, description, data, isPublished, lastModified) values(?, ?, ?, ?, ?, ?)";
 export const saveNewComponent = "INSERT INTO components(userId, icon, componentName, data, lastModified) values(?, ?, ?, ?, ?)";
 export const saveNewProject = "INSERT INTO projects(userId, projectName, description, isPublished) values(?, ?, ?, ?)";
-export const selectProjectByUserId = "SELECT * FROM projects where userId = ?";
+export const selectProjectByUserId = "SELECT * FROM projects where userId = ?"; 
+export const getUserPagesQuery = "SELECT * FROM pages JOIN projects ON pages.projectId = projects.projectId WHERE projects.userId = ?";
+export const getUserComponentsQuery = "SELECT * FROM components WHERE userId = ?";

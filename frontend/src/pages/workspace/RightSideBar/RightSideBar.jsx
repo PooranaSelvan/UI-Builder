@@ -50,6 +50,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     const [apiUrl, setApiUrl] = useState("");
     const [loadingApi, setLoadingApi] = useState(false);
     const [eventType, setEventType] = useState("");
+    const [error, setError] = useState("");
     // const fileRef = useRef(null);
     const display = selectedComponent?.defaultProps?.style?.display || "block";
     const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
@@ -144,10 +145,25 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <div className='content'>
                                                 <label htmlFor="">Content</label>
                                                 <input type="text" value={selectedComponent.content} onChange={(e) => {
+                                                    const value = e.target.value
                                                     updateComponent(selectedComponent.id, (node) => {
-                                                        node.content = e.target.value;
-                                                    })
-                                                }} />
+                                                        node.content = value;
+                                                    });
+
+                                                    if(error) {
+                                                        setError("");
+                                                    }
+                                                }}
+                                                onBlur={(e) => {
+                                                    const value = e.target.value;
+                                                    const hasChildren = selectedComponent.children?.length;
+
+                                                    if(!hasChildren && value.trim() === ""){
+                                                        setError("The content must contain a character")
+                                                    }
+                                                }}
+                                                />
+                                                {error && <p style={{color : "red", fontSize : "14px"}}>{error}</p>}
                                             </div>
                                         )}
                                         {selectedComponent.tag === 'img' && (
@@ -285,6 +301,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                     } else {
                                                         node.defaultProps.className = className.replace('hidden', "").trim();
                                                         node.defaultProps.style.opacity = 1;
+                                                        node.defaultProps.style.display = value;
                                                     }
                                                 })
                                             }}

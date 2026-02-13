@@ -1,7 +1,8 @@
 import con from "../db/config.js";
 import { getProjectById, getUserById } from "../utils/finders.js";
 import { saveNewComponent, saveNewPage, saveNewProject, selectProjectByUserId } from "../utils/queries.js";
-
+import { getUserComponentsQuery } from "../utils/queries.js";
+import { getUserPagesQuery } from "../utils/queries.js";
 
 
 // Projects
@@ -79,7 +80,16 @@ const saveProject = async (req, res) => {
 
 // Pages
 const getPages = async (req, res) => {
+     try {
+          const { userId } = req.params;
+          const result = await con.promise().query(getUserPagesQuery, [userId]);
 
+          res.json({ result: result.rows || [] });
+     } catch (error) {
+          res.status(500).json({
+               message: "error fetching file"
+          });
+     }
 }
 
 const savePage = async (req, res) => {
@@ -125,7 +135,16 @@ const savePage = async (req, res) => {
 
 // Custom Components
 const getCustomComponents = async (req, res) => {
+     try {
+          const { userId } = req.params;
+          const result = await con.promise().query(getUserComponentsQuery, [userId]);
 
+          res.json({ result: result.rows || [] });
+     } catch (error) {
+          res.status(500).json({
+               message: "error fetching file"
+          });
+     }
 }
 
 const saveCustomComponent = async (req, res) => {

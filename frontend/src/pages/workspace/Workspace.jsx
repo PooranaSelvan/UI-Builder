@@ -12,14 +12,27 @@ import "./workspace.css";
 import Button from "../../components/Button.jsx";
 import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket } from 'lucide-react';
 import useFetch from "../../hooks/useFetch.jsx";
+import { useEffect } from "react";
 
 
 const Workspace = () => {
-  const [ components, setComponents ] = useState([]);
+  const [components, setComponents] = useState([]);
   const [zoom, setZoom] = useState(1);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
 
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
+
+  const { fetchData, data, loading, error } = useFetch(`${baseUrl}builder/components`);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+    }
+  }, [data]);
 
   // Zoom Functions
   const handleZoomIn = () => {
@@ -58,14 +71,14 @@ const Workspace = () => {
 
   const cloneWithNewIds = (component) => {
     const newId = `${component.id}-${uuidv4()}`;
-  
+
     return {
       ...component,
       id: newId,
       children: component.children?.map(cloneWithNewIds) || [],
     };
   };
-  
+
 
 
   const selectedComponent = selectedComponentId ? findComponentById(components, selectedComponentId) : null;
@@ -91,15 +104,15 @@ const Workspace = () => {
           toast.error("Basic elements must be inside a layout", toastErrorStyle);
           return;
         }
-      
+
         const clonedComponent = cloneWithNewIds(componentData);
-      
+
         setComponents((prev) => [...prev, clonedComponent]);
         setSelectedComponentId(clonedComponent.id);
-      
+
         return;
       }
-      
+
 
       // From SideBar to Canvas -- Child Components
       let overData = over.data.current;
