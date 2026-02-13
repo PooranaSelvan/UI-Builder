@@ -4,7 +4,6 @@ import FolderCard from "./FolderCard";
 import CreateForm from "./CreateForm";
 import { Plus, MoreVertical, FileText, Search, Clock, ArrowRight, Pencil, Copy, Edit3, Eye, Trash2 } from "lucide-react";
 import "./Dashboard.css";
-import useFetch from "../../hooks/useFetch";
 import toast from "react-hot-toast";
 import axios from "axios";
 
@@ -73,8 +72,6 @@ const Dashboard = () => {
         projectName: name,
         description
       });
-
-      console.log("Success:", res.data);
 
     } catch (err) {
       toast.error(err.response?.data.message);
