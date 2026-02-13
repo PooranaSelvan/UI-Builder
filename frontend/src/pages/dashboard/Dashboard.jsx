@@ -35,6 +35,23 @@ const Dashboard = () => {
   }
 
 
+  useEffect(() => {
+    async function sample() {
+      let userId = await getUserId();
+
+      try {
+        let res = await axios.get(`${baseUrl}builder/projects/${userId}`, { withCredentials: true });
+
+        console.log(res.data.projects);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    sample();
+  }, []);
+
+
   const handleCreateNewPage = async (name, description) => {
     let userId = await getUserId();
 
@@ -85,7 +102,6 @@ const Dashboard = () => {
       id: 1,
       name: "E-commerce Platform",
       desc: "Online store management system",
-      color: "yellow",
       pages: [
         {
           name: "Home Page",
@@ -117,14 +133,12 @@ const Dashboard = () => {
       id: 2,
       name: "Travel Tourism Management",
       desc: "Explore World, Enjoy life",
-      color: "blue",
       pages: []
     },
     {
       id: 3,
       name: "Periodic Table",
       desc: "Can become a geek of chemistry",
-      color: "green",
       pages: []
     }
   ];

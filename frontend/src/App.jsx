@@ -57,10 +57,10 @@ function App() {
           />
         )}
         <Routes>
-          <Route path='/' element={<HomePage />} />
+          <Route path='/' element={<HomePage isAuthenticated={isAuthenticated} />} />
           <Route path='*' element={<ErrorPage />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path='/login' element={<LoginPage />} />
+          <Route path="/signup" element={<SignUp setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path='/login' element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/workspace" element={<Workspace />} />
           <Route path="/preview" element={<PreviewCanvas />} />
           <Route

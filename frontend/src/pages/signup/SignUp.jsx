@@ -1,5 +1,5 @@
 import Button from '../../components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './SignUp.css';
 import { Eye, EyeOff, User, Mail, Lock, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
@@ -7,7 +7,8 @@ import axios from "axios";
 import ZohoLogo from "../../assets/zohologo.ico";
 import toast from 'react-hot-toast';
 
-const SignUp = () => {
+
+const SignUp = ({ setIsAuthenticated }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirm] = useState(false);
   const [name, setName] = useState("");
@@ -16,6 +17,7 @@ const SignUp = () => {
   const [cPassword, setCPassword] = useState("");
   const [terms, setTerms] = useState(false);
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
+  let navigate = useNavigate();
 
   const handleZohoLogin = () => {
     window.location.href = `${baseUrl}auth/zoho/login?redirect=${encodeURIComponent(window.location.pathname)}`;
@@ -42,9 +44,11 @@ const SignUp = () => {
         email,
         password
       }, { withCredentials: true });
-
+      setIsAuthenticated(true);
       toast.success(res.data.message);
+      navigate("/");
     } catch (err) {
+      setIsAuthenticated(false);
       console.log(err);
       toast.error(err.response?.data.message);
     }

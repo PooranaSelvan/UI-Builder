@@ -3,10 +3,17 @@ import { getPages, savePage, getCustomComponents, saveCustomComponent, getProjec
 
 const router = express.Router();
 
+// Custom Components
+router.route("/components/:userId").get(getCustomComponents);
+router.route("/components").post(saveCustomComponent);
 
-router.route("/components").get(getCustomComponents).post(saveCustomComponent);
-router.route("/pages").get(getPages).post(savePage);
-router.route("/projects").get(getProjects).post(saveProject);
+// Page
+router.route("/pages/:userId").get(getPages);
+router.route("/pages").post(savePage);
+
+// Project
+router.route("/projects/:userId").get(getProjects);
+router.route("/projects").post(saveProject);
 
 
 export default router;

@@ -7,7 +7,7 @@ import { getUserPagesQuery } from "../utils/queries.js";
 
 // Projects
 const getProjects = async (req, res) => {
-     const { userId } = req.body;
+     const { userId } = req.params;
 
      if (!userId) {
           return res.status(400).json({ message: "All fields are required!" });
@@ -27,7 +27,7 @@ const getProjects = async (req, res) => {
                }
 
                if (result.length === 0) {
-                    return res.status(401).json({ message: "No Projects Found!" });
+                    return res.status(200).json({ projects : [] });
                }
 
                let projects = result[0];
