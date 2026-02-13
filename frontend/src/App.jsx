@@ -51,10 +51,7 @@ function App() {
     <CustomComponentsProvider>
       <>
         {!hideNavbar && (
-          <Navbar
-            isAuthenticated={isAuthenticated}
-            setIsAuthenticated={setIsAuthenticated}
-          />
+          <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} />
         )}
         <Routes>
           <Route path='/' element={<HomePage isAuthenticated={isAuthenticated} />} />

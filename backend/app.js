@@ -1,6 +1,5 @@
 import express from "express";
 import userRoutes from "./routes/userRoutes.js";
-// import authRoutes from "./routes/authRoutes.js";
 import dotenv from "dotenv";
 import axios from "axios";
 import cors from "cors";
@@ -8,7 +7,9 @@ import { generateToken, verifyUser } from "./utils/generateToken.js";
 import cookieParser from "cookie-parser";
 import componentRoutes from "./routes/componentRoutes.js";
 import builderRoutes from "./routes/builderRoutes.js";
-
+import { getUserByEmail, getUserById } from "./utils/finders.js";
+import { signUpUserQuery, loginUserQuery } from "./utils/queries.js";
+import con from "./db/config.js";
 
 
 const PORT = process.env.PORT || 5000;
@@ -39,8 +40,9 @@ app.use("/builder/", builderRoutes);
 
 
 // Checking Whether the User is Logged in or Not
-app.get("/checkme", verifyUser, (req, res) => {
-     res.json({ user: req.user });
+app.get("/checkme", verifyUser, async (req, res) => {
+     let user = await getUserById(req.user.id);
+     res.json({ user });
 });
 
 
@@ -48,7 +50,7 @@ app.get("/checkme", verifyUser, (req, res) => {
 // Zoho Oauth
 app.get("/auth/zoho/callback", async (req, res) => {
      try {
-          const { code, state } = req.query;
+          const { code } = req.query;
           if (!code) {
                return res.status(400).send("Auth Code Not Found");
           }
@@ -77,27 +79,54 @@ app.get("/auth/zoho/callback", async (req, res) => {
 
           if (profileRes.status === 200) {
                const zohoUser = profileRes.data;
+               let user = await getUserByEmail(zohoUser.Email);
 
-               generateToken(res, zohoUser.ZUID);
+               console.log(user);
 
-               let sendSameUrl = decodeURIComponent(state || "/");
-               res.redirect(`${siteUrl}${sendSameUrl}`);
+               if (user === null || !user) {
+                    con.query(signUpUserQuery, [zohoUser.Display_Name, zohoUser.Email, "", false], async (err, result) => {
+                         if (err) {
+                              if (err.code === "ER_DUP_ENTRY") {
+                                   return res.status(401).json({ message: "User Already Exists!" });
+                              }
 
-               return;
+                              return res.status(500).json({ message: err?.sqlMessage, err });
+                         }
+
+                         let userId = result.insertId;
+                         generateToken(res, userId);
+
+                         return res.redirect(siteUrl);
+                    });
+               } else {
+                    con.query(loginUserQuery, [zohoUser.Email], async (err, result) => {
+                         if (err) {
+                              console.log(err);
+                              return res.status(500).json({ message: "Error Occured", err });
+                         }
+
+                         if (result.length === 0) {
+                              return res.status(401).json({ message: "Invalid Credentials" });
+                         }
+
+                         let user = result[0];
+                         generateToken(res, user.userId);
+
+                         
+                         return res.redirect(siteUrl);
+                    });
+               }
           } else {
                res.status(404).json({ message: "Authentication Failed!" });
           }
      } catch (err) {
           console.error("Zoho login error:", err.response?.data || err.message);
-          return res.status(500).json({ error: "Zoho login failed" });
+          return res.status(500).json({ error: "Login failed! Try Again Later!" });
      }
 });
 // Redirecting the User via that UI
 app.get("/auth/zoho/login", async (req, res) => {
-     let redirectPath = req.query.redirect || "/";
-
-     let redirectUrl = `https://accounts.zoho.in/oauth/v2/auth?response_type=code&client_id=${process.env.ZOHO_CLIENT_ID}&scope=AaaServer.profile.Read&redirect_uri=${process.env.ZOHO_REDIRECT_URI}&access_type=offline&state=${encodeURIComponent(redirectPath)}`;
-
+     let redirectUrl = `https://accounts.zoho.in/oauth/v2/auth?response_type=code&client_id=${process.env.ZOHO_CLIENT_ID}&scope=AaaServer.profile.Read&redirect_uri=${process.env.ZOHO_REDIRECT_URI}&access_type=offline`;
      res.redirect(redirectUrl);
 });
 app.get("/auth/logout", async (req, res) => {

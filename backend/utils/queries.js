@@ -3,6 +3,7 @@ export const loginUserQuery = "SELECT * FROM users where email = ?";
 export const signUpUserQuery = "INSERT INTO users(name, email, password, userStatus) values(?, ?, ?, ?)"; 
 export const selectProjectById = "SELECT * FROM projects WHERE projectId = ?";  
 export const selectUserById = "SELECT * FROM users WHERE userId = ?";
+export const selectUserByEmail = "SELECT * FROM users where email = ?";
 export const saveNewPage = "INSERT INTO pages(projectId, pageName, description, data, isPublished, lastModified) values(?, ?, ?, ?, ?, ?)";
 export const saveNewComponent = "INSERT INTO components(userId, icon, componentName, data, lastModified) values(?, ?, ?, ?, ?)";
 export const saveNewProject = "INSERT INTO projects(userId, projectName, description, isPublished) values(?, ?, ?, ?)";

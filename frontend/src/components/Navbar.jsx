@@ -3,11 +3,11 @@ import sirpamLogo from '../assets/sirpam-logo.svg';
 import "./navbar.css";
 import Button from './Button';
 import { NavLink } from 'react-router-dom';
-import { Menu, X, Settings, User, LogOut } from 'lucide-react';
+import { Menu, X, Settings, User, LogOut, CircleUserRound } from 'lucide-react';
 import axios from "axios";
 import toast from 'react-hot-toast';
 
-const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
+const Navbar = ({ isAuthenticated, setIsAuthenticated, user }) => {
   const [open, setOpen] = useState(false);
   const [openDropDown, setDropDown] = useState(false);
   let dropDownRef = useRef(null);
@@ -56,10 +56,10 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
       <div className='nav-flex desktop-navbar'>
         {isAuthenticated ? (
           <>
-            <button className='nav-btn nav-btn-profile' onClick={(e) => { e.preventDefault(); setDropDown(!openDropDown) }}>
-              <Settings size={20} />
-              Settings
-            </button>
+            <Button className='nav-btn-profile' onClick={(e) => { e.preventDefault(); setDropDown(!openDropDown) }}>
+              <CircleUserRound size={30} />
+              {user?.name.split(" ")[0]}
+            </Button>
 
             <div id="nav-dropdown" style={{ display: openDropDown ? "flex" : "none", cursor: "pointer" }} ref={dropDownRef}>
               <div id="nav-dropdown-wrapper">

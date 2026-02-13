@@ -20,7 +20,7 @@ const SignUp = ({ setIsAuthenticated }) => {
   let navigate = useNavigate();
 
   const handleZohoLogin = () => {
-    window.location.href = `${baseUrl}auth/zoho/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+    window.location.href = `${baseUrl}auth/zoho/login`;
   }
 
   const handleNormalSignUp = async () => {
