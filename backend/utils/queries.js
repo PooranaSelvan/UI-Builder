@@ -10,3 +10,7 @@ export const saveNewProject = "INSERT INTO projects(userId, projectName, descrip
 export const selectProjectByUserId = "SELECT * FROM projects where userId = ?"; 
 export const getUserPagesQuery = "SELECT * FROM projects LEFT JOIN pages ON pages.projectId = projects.projectId WHERE projects.userId = ?";
 export const getUserComponentsQuery = "SELECT * FROM components WHERE userId = ?";
+export const deleteProjectQuery = "DELETE FROM projects WHERE projectId = ?";
+export const deletePageQuery = "DELETE FROM pages WHERE projectId = ?";
+export const deleteCustomComponentQuery = "DELETE FROM components WHERE userId = ? and id = ?";
+export const deleteAllCustomComponentsQuery = "DELETE FROM components WHERE userId = ?";
