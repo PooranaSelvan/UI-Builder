@@ -31,6 +31,9 @@ export default function CreateForm({ isOpen, onClose, title, nameLabel, descript
     if (createNewProject) {
       createNewProject(name, description);
     }
+
+    setName("");
+    setDescription("");
   }
 
   return (

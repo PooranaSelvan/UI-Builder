@@ -59,7 +59,7 @@ function App() {
           <Route path='*' element={<ErrorPage />} />
           <Route path="/signup" element={<SignUp setIsAuthenticated={setIsAuthenticated} />} />
           <Route path='/login' element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path="/workspace" element={<Workspace />} />
+          <Route path="/workspace/:pageId" element={<Workspace />} />
           <Route path="/preview" element={<PreviewCanvas />} />
           <Route path="/component-editor" element={<ComponentEditor />}/>
           <Route path="/component-editor-preview" element={<ComponentEditorPreview />}/>

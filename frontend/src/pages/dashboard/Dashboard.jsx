@@ -6,6 +6,7 @@ import { Plus, MoreVertical, FileText, Search, Clock, ArrowRight, Pencil, Copy, 
 import "./Dashboard.css";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { formatDistanceToNow } from "date-fns";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -52,31 +53,32 @@ const Dashboard = () => {
 
       if (data.pageName) {
         project[projectId].pages.push({
+          id: data.pageId,
           name: data.pageName,
           description: data.pageDescription,
           status: data.pagePublished ? "Published" : "Draft",
-          modified: data.lastModified
+          modified: data.lastModified,
+          data: data.pageData || {}
         });
       }
     });
     return Object.values(project);
   }
 
-  useEffect(() => {
-    async function fetchPages() {
-      let userId = await getUserId();
+  async function fetchPages() {
+    let userId = await getUserId();
 
-      try {
-        let res = await axios.get(`${baseUrl}builder/pages/${userId}`, { withCredentials: true });
+    try {
+      let res = await axios.get(`${baseUrl}builder/pages/${userId}`, { withCredentials: true });
 
-        let formattedJSON = buildJSON(res.data.pages);
-        setProjects(formattedJSON);
-        console.log(formattedJSON);
-      } catch (err) {
-        console.log(err);
-      }
+      let formattedJSON = buildJSON(res.data.pages);
+      setProjects(formattedJSON);
+    } catch (err) {
+      console.log(err);
     }
+  }
 
+  useEffect(() => {
     fetchPages();
   }, []);
 
@@ -88,26 +90,52 @@ const Dashboard = () => {
       return;
     }
 
-    // try {
-    //   let res = await axios.post(`${baseUrl}builder/projects/`, {
-    //     userId,
-    //     projectName: name,
-    //     description
-    //   });
+    if (!selectedApp) {
+      toast.error("Something Went Wrong! Refresh & Try Again!");
+      return;
+    }
 
-    //   console.log("Success:", res.data);
+    try {
+      let res = await axios.post(`${baseUrl}builder/pages/`, {
+        projectId: selectedApp.id,
+        pageName: name,
+        description,
+        data: {}
+      });
 
-    // } catch (err) {
-    //   toast.error(err.response?.data.message);
-    // }
+      let projectId = selectedApp.id;
+
+      let newPage = {
+        id: res.data.pageId,
+        name: name,
+        description,
+        status: "Draft",
+        modified: new Date().toLocaleString(),
+        data: {}
+      };
+
+      setSelectedApp(ele => ({
+        ...ele,
+        pages: [...ele.pages, newPage]
+      }));
+
+      setProjects(data =>
+        data.map(project => project.id === projectId ? { ...project, pages: [...project.pages, newPage] } : project)
+      );
+
+      setIsModalOpen(false);
+      toast.success("Page Created Successfully!");
+    } catch (err) {
+      console.log(err.response);
+      toast.error(err.response?.data.message);
+    }
   }
 
   const handleCreateNewProject = async (name, description) => {
     let userId = await getUserId();
 
-
     if (userId < 1) {
-      toast.error("Invalid User!");
+      toast.error("Invalid User! Refresh & Try Again!");
       return;
     }
 
@@ -118,58 +146,25 @@ const Dashboard = () => {
         description
       });
 
+      setProjects(projects => [
+        ...projects,
+        {
+          id: res.data.projectId,
+          name,
+          desc: description,
+          pages: []
+        }
+      ]);
+
+      setIsModalOpen(false);
+      toast.success("Project Created Successfully!");
     } catch (err) {
+      console.log(err);
       toast.error(err.response?.data.message);
     }
 
   }
 
-
-  const applications = [
-    {
-      id: 1,
-      name: "E-commerce Platform",
-      desc: "Online store management system",
-      pages: [
-        {
-          name: "Home Page",
-          description: "Main landing page of the website",
-          status: "Published",
-          modified: "3 days ago"
-        },
-        {
-          name: "Products Page",
-          description: "Displays all available products",
-          status: "Published",
-          modified: "20 mins ago"
-        },
-        {
-          name: "Cart Page",
-          description: "Shows selected items before checkout",
-          status: "Draft",
-          modified: "15 hrs ago"
-        },
-        {
-          name: "Product Summary",
-          description: "Detailed overview of selected product",
-          status: "Published",
-          modified: "2 days ago"
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: "Travel Tourism Management",
-      desc: "Explore World, Enjoy life",
-      pages: []
-    },
-    {
-      id: 3,
-      name: "Periodic Table",
-      desc: "Can become a geek of chemistry",
-      pages: []
-    }
-  ];
   // ================= DASHBOARD VIEW =================
   if (!selectedApp) {
     return (
@@ -180,7 +175,7 @@ const Dashboard = () => {
             <div>
               <h1>My Workspace</h1>
               <p className="sub-text">
-                Organize your projects into folders
+                Organize your ideas into Projects
               </p>
             </div>
 
@@ -268,84 +263,84 @@ const Dashboard = () => {
           </div>
 
           {selectedApp?.pages?.map((page, index) => (
-              <div key={index} className="page-card">
-                <div className="page-top">
-                  {/* HEADER */}
-                  <div className="page-header">
-                    <div className="folder-icon folder-color">
-                      <FileText size={26} />
-                    </div>
-                    <br />
-                    <div className="page-header-right">
-                      <span
-                        className={`status ${page.status === "Published"
-                          ? "published"
-                          : "draft"
-                          }`}>
-                        {page.status}
-                      </span>
-                      <div className="menu-wrapper" ref={menuRef}>
-                        <MoreVertical
-                          size={20}
-                          className="three-dots"
-                          onClick={() =>
-                            setActiveMenu(activeMenu === index ? null : index)
-                          } />
-                        {activeMenu === index && (
-                          <div className="dropdown-menu">
-                            <div className="menu-item">
-                              <Pencil size={16} />
-                              Edit Page
-                            </div>
-                            <div className="menu-item">
-                              <Copy size={16} />
-                              Duplicate
-                            </div>
-                            <div className="menu-item">
-                              <Edit3 size={16} />
-                              Rename
-                            </div>
-                            <div className="menu-item">
-                              <Eye size={16} />
-                              Preview
-                            </div>
-                            <div className="menu-divider" />
-                            <div className="menu-item delete">
-                              <Trash2 size={16} />
-                              Delete
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+            <div key={index} className="page-card">
+              <div className="page-top">
+                {/* HEADER */}
+                <div className="page-header">
+                  <div className="folder-icon folder-color">
+                    <FileText size={26} />
                   </div>
-
-                </div>
-                {/* DIVIDER */}
-                <div className="page-divider"></div>
-                <br />
-                {/* TITLE */}
-                <div className="page-title">
-                  <p>{page.name}</p>
-                </div>
-                <p className="page-description">{page.description}</p>
-
-                {/* FOOTER */}
-                <div className="page-footer">
-                  <div className="last-modified">
-                    <Clock size={14} />
-                    <span>
-                      {page.modified}
+                  <br />
+                  <div className="page-header-right">
+                    <span
+                      className={`status ${page.status === "Published"
+                        ? "published"
+                        : "draft"
+                        }`}>
+                      {page.status}
                     </span>
+                    <div className="menu-wrapper" ref={menuRef}>
+                      <MoreVertical
+                        size={20}
+                        className="three-dots"
+                        onClick={() =>
+                          setActiveMenu(activeMenu === index ? null : index)
+                        } />
+                      {activeMenu === index && (
+                        <div className="dropdown-menu">
+                          <div className="menu-item">
+                            <Pencil size={16} />
+                            Edit Page
+                          </div>
+                          <div className="menu-item">
+                            <Copy size={16} />
+                            Duplicate
+                          </div>
+                          <div className="menu-item">
+                            <Edit3 size={16} />
+                            Rename
+                          </div>
+                          <div className="menu-item">
+                            <Eye size={16} />
+                            Preview
+                          </div>
+                          <div className="menu-divider" />
+                          <div className="menu-item delete">
+                            <Trash2 size={16} />
+                            Delete
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div
-                    className="open-page"
-                    onClick={() => navigate("/workspace")}>
-                    <ArrowRight size={24} />
-                  </div>
+                </div>
+
+              </div>
+              {/* DIVIDER */}
+              <div className="page-divider"></div>
+              <br />
+              {/* TITLE */}
+              <div className="page-title">
+                <p>{page.name}</p>
+              </div>
+              <p className="page-description">{page.description}</p>
+
+              {/* FOOTER */}
+              <div className="page-footer">
+                {/* <div className="last-modified">
+                  <Clock size={14} />
+                  <span>
+                    {page.modified ? formatDistanceToNow(new Date(page.modified), { addSuffix: true }) : "Just now"}
+                  </span>
+                </div> */}
+                <div
+                  className="open-page"
+                  onClick={() => navigate(`/workspace/${page.id}`)}>
+                  <ArrowRight size={24} />
                 </div>
               </div>
-            ))
+            </div>
+          ))
           }
         </div>
         <CreateForm

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DndContext } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import LeftPanel from "./LeftSideBar/LeftPanel";
@@ -11,13 +11,49 @@ import { components as componentLibrary } from "./utils/ComponentsData.js";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
 import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket } from 'lucide-react';
-
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const Workspace = () => {
   const [components, setComponents] = useState([]);
   const [zoom, setZoom] = useState(1);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
+  const { pageId } = useParams();
+
+  useEffect(() => {
+    async function fetchComponents() {
+      try {
+        let res = await axios.get(`${baseUrl}builder/page/${pageId}`, {
+          withCredentials: true
+        });
+
+        // console.log(res.data);
+
+        setComponents(res.data.data || []);
+      } catch (error) {
+        console.log(error);
+        toast.error("Something Went Wrong! Please Refresh & Try Again!");
+      }
+    }
+
+    fetchComponents();
+  }, [pageId]);
+
+
+  const handleSavePage = async () => {
+    try {
+      let res = await axios.put(`${baseUrl}builder/pages/${pageId}`, {
+        data: components
+      }, { withCredentials: true });
+
+      toast.success("Pages Saved Successfully!");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
 
   // Zoom Functions
   const handleZoomIn = () => {
@@ -335,6 +371,10 @@ const Workspace = () => {
               <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }}>
                 <Rocket size={20} />
                 Publish
+              </Button>
+              <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleSavePage}>
+                <Rocket size={20} />
+                Save Page
               </Button>
             </div>
           </div>

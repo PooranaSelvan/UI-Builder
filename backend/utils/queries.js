@@ -4,13 +4,15 @@ export const signUpUserQuery = "INSERT INTO users(name, email, password, userSta
 export const selectProjectById = "SELECT * FROM projects WHERE projectId = ?";  
 export const selectUserById = "SELECT * FROM users WHERE userId = ?";
 export const selectUserByEmail = "SELECT * FROM users where email = ?";
-export const saveNewPage = "INSERT INTO pages(projectId, pageName, description, data, isPublished, lastModified) values(?, ?, ?, ?, ?, ?)";
+export const saveNewPage = "INSERT INTO pages(projectId, pageName, description, data, isPublished, lastModified) values(?, ?, ?, ?, ?, NOW())";
 export const saveNewComponent = "INSERT INTO components(userId, icon, componentName, data, lastModified) values(?, ?, ?, ?, ?)";
 export const saveNewProject = "INSERT INTO projects(userId, projectName, description, isPublished) values(?, ?, ?, ?)";
 export const selectProjectByUserId = "SELECT * FROM projects where userId = ?"; 
-export const getUserPagesQuery = "SELECT projects.projectId,projects.userId,projects.projectName,projects.description,projects.isPublished,pages.pageName,pages.description AS pageDescription,pages.lastModified,pages.isPublished AS pagePublished FROM projects LEFT JOIN pages ON projects.projectId = pages.projectId WHERE projects.userId = ?";
+export const getUserPagesQuery = "SELECT projects.projectId,projects.userId,projects.projectName,projects.description,projects.isPublished,pages.pageId,pages.pageName,pages.description AS pageDescription,pages.data AS pageData,pages.lastModified,pages.isPublished AS pagePublished FROM projects LEFT JOIN pages ON projects.projectId = pages.projectId WHERE projects.userId = ?";
 export const getUserComponentsQuery = "SELECT * FROM components WHERE userId = ?";
 export const deleteProjectQuery = "DELETE FROM projects WHERE projectId = ?";
 export const deletePageQuery = "DELETE FROM pages WHERE projectId = ?";
 export const deleteCustomComponentQuery = "DELETE FROM components WHERE userId = ? and id = ?";
 export const deleteAllCustomComponentsQuery = "DELETE FROM components WHERE userId = ?";
+export const updatePageData = "UPDATE pages SET data = ?, lastModified = NOW() WHERE pageId = ?";
+export const getPageByPageIdQuery = "SELECT pageId, pageName, description, data, lastModified, isPublished FROM pages WHERE pageId = ?";

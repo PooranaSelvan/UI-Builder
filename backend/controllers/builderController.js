@@ -1,6 +1,6 @@
 import con from "../db/config.js";
 import { getProjectById, getUserById } from "../utils/finders.js";
-import { deleteAllCustomComponentsQuery, deleteCustomComponentQuery, deletePageQuery, deleteProjectQuery, saveNewComponent, saveNewPage, saveNewProject, selectProjectByUserId } from "../utils/queries.js";
+import { deleteAllCustomComponentsQuery, deleteCustomComponentQuery, deletePageQuery, deleteProjectQuery, getPageByPageIdQuery, saveNewComponent, saveNewPage, saveNewProject, selectProjectByUserId, updatePageData } from "../utils/queries.js";
 import { getUserComponentsQuery } from "../utils/queries.js";
 import { getUserPagesQuery } from "../utils/queries.js";
 
@@ -70,7 +70,7 @@ const saveProject = async (req, res) => {
                     return res.status(500).json({ message: err?.sqlMessage, err });
                }
 
-               return res.status(200).json({ message: "Project Created Successfully!" });
+               return res.status(200).json({ message: "Project Created Successfully!", projectId: result.insertId });
           });
      } catch (error) {
           console.log(error);
@@ -136,6 +136,34 @@ const getPages = async (req, res) => {
      }
 }
 
+
+const getPageByPageId = async (req, res) => {
+     const { pageId } = req.params;
+
+     if (!pageId) {
+          return res.status(400).json({ message: "Page ID is required" });
+     }
+
+     con.query(getPageByPageIdQuery, [pageId], (err, result) => {
+          if (err) {
+               return res.status(500).json({
+                    message: "Error occured", err
+               })
+          }
+
+          let page = result[0];
+
+          return res.status(200).json({
+               id: page.pageId,
+               name: page.pageName,
+               description: page.description,
+               data: page.data || {},
+               lastModified: page.lastModified,
+               isPublished: page.isPublished
+          });
+     });
+}
+
 const savePage = async (req, res) => {
      const { projectId, pageName, description, data } = req.body;
 
@@ -158,7 +186,7 @@ const savePage = async (req, res) => {
                return res.status(404).json({ message: "Project Not Found!" });
           }
 
-          con.query(saveNewPage, [projectId, pageName, description, data, false, new Date().toLocaleString()], (err, result) => {
+          con.query(saveNewPage, [projectId, pageName, description, JSON.stringify(data), false], (err, result) => {
                if (err) {
                     if (err.code === "ER_DUP_ENTRY") {
                          return res.status(401).json({ message: "Page Already Exists!" });
@@ -167,12 +195,32 @@ const savePage = async (req, res) => {
                     return res.status(500).json({ message: err?.sqlMessage, err });
                }
 
-               return res.status(200).json({ message: "Page Created Successfully!" });
+               return res.status(200).json({ message: "Page Created Successfully!", pageId: result.insertId });
           });
      } catch (error) {
           console.log(error);
 
      }
+}
+
+const updatePage = async (req, res) => {
+     const { pageId } = req.params;
+     const { data } = req.body;
+
+     if (!pageId) {
+          return res.status(400).json({ message: "Invalid Page Id!" });
+     }
+
+     con.query(updatePageData, [JSON.stringify(data), pageId], (err, result) => {
+          if (err) {
+               console.error(err);
+               return res.status(500).json({ message: "Something went wrong" });
+          }
+
+          return res.status(200).json({
+               message: "Page updated successfully"
+          });
+     });
 }
 
 const deletePage = async (req, res) => {
@@ -269,7 +317,7 @@ const deleteCustomComponent = async (req, res) => {
 const deleteAllCustomComponent = async (req, res) => {
      const { userId } = req.body;
 
-     if (!userId) { 
+     if (!userId) {
           return res.status(400).json({ message: "All fields are required!" });
      }
 
@@ -287,4 +335,4 @@ const deleteAllCustomComponent = async (req, res) => {
      });
 }
 
-export { getProjects, saveProject, deleteProject, getPages, savePage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent };
+export { getProjects, saveProject, deleteProject, getPages, getPageByPageId, savePage, updatePage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent };
