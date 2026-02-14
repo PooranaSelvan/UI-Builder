@@ -8,5 +8,5 @@ export const saveNewPage = "INSERT INTO pages(projectId, pageName, description, 
 export const saveNewComponent = "INSERT INTO components(userId, icon, componentName, data, lastModified) values(?, ?, ?, ?, ?)";
 export const saveNewProject = "INSERT INTO projects(userId, projectName, description, isPublished) values(?, ?, ?, ?)";
 export const selectProjectByUserId = "SELECT * FROM projects where userId = ?"; 
-export const getUserPagesQuery = "SELECT * FROM projects LEFT JOIN pages ON pages.projectId = projects.projectId WHERE projects.userId = ?";
+export const getUserPagesQuery = "SELECT projects.projectId,projects.userId,projects.projectName,projects.description,projects.isPublished,pages.pageName,pages.description AS pageDescription,pages.lastModified,pages.isPublished AS pagePublished FROM projects LEFT JOIN pages ON projects.projectId = pages.projectId WHERE projects.userId = ?";
 export const getUserComponentsQuery = "SELECT * FROM components WHERE userId = ?";

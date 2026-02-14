@@ -31,9 +31,8 @@ const Dashboard = () => {
 
   const getUserId = async () => {
     let res = await axios.get(`${baseUrl}checkme/`, { withCredentials: true });
-    console.log(res);
 
-    return res.data.user.id;
+    return res.data.user.userId;
   }
 
   function buildJSON(rows) {
@@ -55,8 +54,8 @@ const Dashboard = () => {
       if (data.pageName) {
         project[projectId].pages.push({
           name: data.pageName,
-          description: data.description,
-          status: data.isPublished ? "Published" : "Draft",
+          description: data.pageDescription,
+          status: data.pagePublished ? "Published" : "Draft",
           modified: data.lastModified
         });
       }
@@ -67,7 +66,6 @@ const Dashboard = () => {
   useEffect(() => {
     async function sample() {
       let userId = await getUserId();
-      console.log(userId)
 
       try {
         let res = await axios.get(`${baseUrl}builder/projects/${userId}`, { withCredentials: true });
@@ -106,7 +104,6 @@ const Dashboard = () => {
       try {
         let res = await axios.get(`${baseUrl}builder/projects/${userId}`, { withCredentials: true });
 
-        console.log(res.data.projects);
       } catch (error) {
         console.log(error);
       }
@@ -303,8 +300,7 @@ const Dashboard = () => {
             <p>Add a new page to this project</p>
           </div>
 
-          {projects.map((project) =>
-            project.pages.map((page, index) => (
+          {selectedApp?.pages?.map((page, index) => (
               <div key={index} className="page-card">
                 <div className="page-top">
                   {/* HEADER */}
@@ -383,7 +379,7 @@ const Dashboard = () => {
                 </div>
               </div>
             ))
-          )}
+          }
         </div>
         <CreateForm
           isOpen={isModalOpen}
