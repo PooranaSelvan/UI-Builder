@@ -33,32 +33,30 @@ export const components = [
                     children: []
                },
                {
-                    id: "flex",
-                    label: "Flex Container",
+                    id: "row",
+                    label: "Row",
                     icon: "Grid",
                     tag: "div",
                     rank: 2,
-                    content: "Flex Container",
+                    content: "Row",
                     defaultProps: {
-                         className: "layout-flex test-component",
+                         className: "layout-row test-component",
                          style: {
-                              height: "300px",
-                              display: "flex"
+                              height: "300px"
                          }
                     },
                     children: []
                },
                {
-                    id: "grid",
-                    label: "Grid Container",
+                    id: "column",
+                    label: "Column",
                     icon: "Layout",
                     tag: "div",
                     rank: 3,
-                    content: "Grid Container",
+                    content: "Column",
                     defaultProps: {
                          className: "layout-column test-component", style: {
-                              height: "300px",
-                              display: "grid"
+                              height: "300px"
                          }
                     },
                     children: []

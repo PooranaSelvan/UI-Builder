@@ -4,7 +4,6 @@ import FolderCard from "./FolderCard";
 import CreateForm from "./CreateForm";
 import { Plus, MoreVertical, FileText, Search, Clock, ArrowRight, Pencil, Copy, Edit3, Eye, Trash2 } from "lucide-react";
 import "./Dashboard.css";
-import useFetch from "../../hooks/useFetch";
 import toast from "react-hot-toast";
 import axios from "axios";
 
@@ -100,6 +99,23 @@ const Dashboard = () => {
   }, [])
 
 
+  useEffect(() => {
+    async function sample() {
+      let userId = await getUserId();
+
+      try {
+        let res = await axios.get(`${baseUrl}builder/projects/${userId}`, { withCredentials: true });
+
+        console.log(res.data.projects);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    sample();
+  }, []);
+
+
   const handleCreateNewPage = async (name, description) => {
     let userId = await getUserId();
 
@@ -138,8 +154,6 @@ const Dashboard = () => {
         description
       });
 
-      console.log("Success:", res.data);
-
     } catch (err) {
       toast.error(err.response?.data.message);
     }
@@ -152,7 +166,6 @@ const Dashboard = () => {
       id: 1,
       name: "E-commerce Platform",
       desc: "Online store management system",
-      color: "yellow",
       pages: [
         {
           name: "Home Page",
@@ -184,14 +197,12 @@ const Dashboard = () => {
       id: 2,
       name: "Travel Tourism Management",
       desc: "Explore World, Enjoy life",
-      color: "blue",
       pages: []
     },
     {
       id: 3,
       name: "Periodic Table",
       desc: "Can become a geek of chemistry",
-      color: "green",
       pages: []
     }
   ];

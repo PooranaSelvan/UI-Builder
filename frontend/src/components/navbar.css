@@ -139,9 +139,11 @@ a {
      align-items: center;
      justify-content: center;
      gap: 10px;
-     background-color: var(--red-100);
      color: var(--primary);
-     font-weight: 800;
+     font-size: 16px;
+     background: var(--red-100);
+     padding: 8px 20px;
+     border-radius: 8px;
      letter-spacing: 0.3px;
 }
 

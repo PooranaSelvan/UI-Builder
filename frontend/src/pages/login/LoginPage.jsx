@@ -4,8 +4,9 @@ import Button from '../../components/Button'
 import { Eye } from 'lucide-react';
 import { EyeOff } from 'lucide-react';
 import ZohoLogo from "../../assets/zohologo.ico";
-import { NavLink } from "react-router-dom";
-import usePost from '../../hooks/usePost';
+import { NavLink, useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const buttonStyle = {
     width: '100%',
@@ -29,19 +30,36 @@ const googleStyle = {
 
 
 
-const LoginPage = () => {
+const LoginPage = ({ setIsAuthenticated }) => {
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("poorana@gmail.com");
-    const [password, setPassword] = useState("Poorana@123");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
-    const { postData, data, loading, error } = usePost(`${baseUrl}users/login/`);
+    let navigate = useNavigate();
 
     const handleZohoLogin = () => {
-        window.location.href = `${baseUrl}auth/zoho/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+        window.location.href = `${baseUrl}auth/zoho/login`;
     }
 
-    const handleNormalLogin = () => {
-        postData({ email, password });
+    const handleNormalLogin = async () => {
+        if (!email || !password) {
+            toast.error("Name & Email are Required!");
+            return;
+        }
+
+        try {
+            let res = await axios.post(`${baseUrl}users/login/`, {
+                email,
+                password
+            }, { withCredentials: true });
+            setIsAuthenticated(true);
+            toast.success(res.data.message);
+            navigate("/");
+        } catch (err) {
+            console.log(err);
+            setIsAuthenticated(false);
+            toast.error(err.response?.data.message);
+        }
     }
 
     return (

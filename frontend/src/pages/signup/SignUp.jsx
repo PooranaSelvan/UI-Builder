@@ -1,35 +1,57 @@
-import React from 'react';
 import Button from '../../components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './SignUp.css';
 import { Eye, EyeOff, User, Mail, Lock, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import axios from "axios";
 import ZohoLogo from "../../assets/zohologo.ico";
-import usePost from '../../hooks/usePost';
 import toast from 'react-hot-toast';
 
-const SignUp = () => {
+
+const SignUp = ({ setIsAuthenticated }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirm] = useState(false);
-  const [name, setName] = useState("Poorana Selvan");
-  const [email, setEmail] = useState("poorana@gmail.com");
-  const [password, setPassword] = useState("Poorana@123");
-  const [cPassword, setCPassword] = useState("Poorana@123");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [cPassword, setCPassword] = useState("");
+  const [terms, setTerms] = useState(false);
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
-  const { postData, data, loading, error } = usePost(`${baseUrl}users/signup/`);
+  let navigate = useNavigate();
 
   const handleZohoLogin = () => {
-    window.location.href = `${baseUrl}auth/zoho/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+    window.location.href = `${baseUrl}auth/zoho/login`;
   }
 
-  const handleNormalSignUp = () => {
+  const handleNormalSignUp = async () => {
+    if (!name || !email || !password || !cPassword) {
+      toast.error("All Fields are Required!");
+      return;
+    }
     if (password !== cPassword) {
       toast.error("Confirm Password Doesn't Match with your Password!");
       return;
     }
 
-    postData({ name, email, password });
+    if (!terms) {
+      toast.error("You Should Agree to our Terms & Conditions!");
+      return;
+    }
+
+    try {
+      let res = await axios.post(`${baseUrl}users/signup/`, {
+        name,
+        email,
+        password
+      }, { withCredentials: true });
+      setIsAuthenticated(true);
+      toast.success(res.data.message);
+      navigate("/");
+    } catch (err) {
+      setIsAuthenticated(false);
+      console.log(err);
+      toast.error(err.response?.data.message);
+    }
   }
 
   return (
@@ -105,7 +127,7 @@ const SignUp = () => {
             </div>
 
             <div className="terms-container">
-              <input type="checkbox" />
+              <input type="checkbox" checked={terms} onChange={() => setTerms(!terms)} />
               <span>
                 I agree to the <span className="link-text">Terms of Service</span> and &nbsp;
                 <span className="link-text">Privacy Policy</span>

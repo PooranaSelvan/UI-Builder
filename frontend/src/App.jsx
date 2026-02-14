@@ -31,8 +31,12 @@ function App() {
           withCredentials: true
         });
 
-        setIsAuthenticated(true);
-        setUser(res.data.user);
+        if (res.data?.user) {
+          setIsAuthenticated(true);
+          setUser(res.data.user);
+        } else {
+          setIsAuthenticated(false);
+        }
       } catch (err) {
         setIsAuthenticated(false);
         setUser(null);
@@ -45,41 +49,38 @@ function App() {
 
   return (
     <CustomComponentsProvider>
-    <>
-      {!hideNavbar && (
-        <Navbar
-          isAuthenticated={isAuthenticated}
-          setIsAuthenticated={setIsAuthenticated}
-        />
-      )}
-      <Routes>
-        <Route path='/' element={<HomePage />} />
-        <Route path='*' element={<ErrorPage />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path='/login' element={<LoginPage />} />
-        <Route path="/workspace" element={<Workspace />} />
-        <Route path="/preview" element={<PreviewCanvas />} />
-        <Route
-          path="/component-editor"
-          element={
-            <ComponentEditorProvider>
-              <ComponentEditor />
-            </ComponentEditorProvider>
-          }
-        />
+      <>
+        {!hideNavbar && (
+          <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} />
+        )}
+        <Routes>
+          <Route path='/' element={<HomePage isAuthenticated={isAuthenticated} />} />
+          <Route path='*' element={<ErrorPage />} />
+          <Route path="/signup" element={<SignUp setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path='/login' element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path="/workspace" element={<Workspace />} />
+          <Route path="/preview" element={<PreviewCanvas />} />
+          <Route
+            path="/component-editor"
+            element={
+              <ComponentEditorProvider>
+                <ComponentEditor />
+              </ComponentEditorProvider>
+            }
+          />
 
-        <Route
-          path="/component-editor-preview"
-          element={
-            <ComponentEditorProvider>
-              <ComponentEditorPreview />
-            </ComponentEditorProvider>
-          }
-        />
-        <Route path='/dashboard' element={<Dashboard />} />
-      </Routes>
-      <Toaster />
-    </>
+          <Route
+            path="/component-editor-preview"
+            element={
+              <ComponentEditorProvider>
+                <ComponentEditorPreview />
+              </ComponentEditorProvider>
+            }
+          />
+          <Route path='/dashboard' element={<Dashboard />} />
+        </Routes>
+        <Toaster />
+      </>
     </CustomComponentsProvider>
   )
 }
