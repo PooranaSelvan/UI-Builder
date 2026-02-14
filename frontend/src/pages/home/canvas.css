@@ -509,6 +509,11 @@
 
 
 /* Media Query */
+@media screen and (max-width : 1552px) {
+     .ring-container {
+          display: none;
+     }
+}
 @media screen and (max-width: 1024px)  {
      .ring-container {
           display: none;
