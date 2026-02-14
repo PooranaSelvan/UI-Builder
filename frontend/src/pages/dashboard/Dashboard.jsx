@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [selectedApp, setSelectedApp] = useState(null);
   const [activeMenu, setActiveMenu] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [projects, setProjects] = useState([]);
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
 
   const menuRef = useRef(null);
@@ -31,9 +32,72 @@ const Dashboard = () => {
 
   const getUserId = async () => {
     let res = await axios.get(`${baseUrl}checkme/`, { withCredentials: true });
+    console.log(res);
 
     return res.data.user.id;
   }
+
+  function buildJSON(rows) {
+    let project = {};
+    console.log(rows);
+
+    rows.forEach((data) => {
+      const projectId = data.projectId;
+
+      if (!project[projectId]) {
+        project[projectId] = {
+          id: projectId,
+          name: data.projectName,
+          desc: data.description,
+          pages: []
+        }
+      }
+
+      if (data.pageName) {
+        project[projectId].pages.push({
+          name: data.pageName,
+          description: data.description,
+          status: data.isPublished ? "Published" : "Draft",
+          modified: data.lastModified
+        });
+      }
+    });
+    return Object.values(project);
+  }
+
+  useEffect(() => {
+    async function sample() {
+      let userId = await getUserId();
+      console.log(userId)
+
+      try {
+        let res = await axios.get(`${baseUrl}builder/projects/${userId}`, { withCredentials: true });
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    sample();
+  }, []);
+
+  useEffect(() => {
+    async function fetchPages() {
+      let userId = await getUserId();
+
+      try {
+        let res = await axios.get(`${baseUrl}builder/pages/${userId}`, { withCredentials: true });
+
+        let formattedJSON = buildJSON(res.data.pages);
+        setProjects(formattedJSON);
+        console.log(formattedJSON);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    fetchPages();
+  }, [])
 
 
   const handleCreateNewPage = async (name, description) => {
@@ -163,7 +227,7 @@ const Dashboard = () => {
               <p>Organize your projects</p>
             </div>
 
-            {applications.map((app, index) => (
+            {projects.map((app, index) => (
               <FolderCard
                 key={app.id}
                 app={app}
@@ -228,85 +292,87 @@ const Dashboard = () => {
             <p>Add a new page to this project</p>
           </div>
 
-          {selectedApp.pages.map((page, index) => (
-            <div key={index} className="page-card">
-              <div className="page-top">
-                {/* HEADER */}
-                <div className="page-header">
-                  <div className="folder-icon folder-color">
-                    <FileText size={26} />
-                  </div>
-                  <br />
-                  <div className="page-header-right">
-                    <span
-                      className={`status ${page.status === "Published"
-                        ? "published"
-                        : "draft"
-                        }`}>
-                      {page.status}
-                    </span>
-                    <div className="menu-wrapper" ref={menuRef}>
-                      <MoreVertical
-                        size={20}
-                        className="three-dots"
-                        onClick={() =>
-                          setActiveMenu(activeMenu === index ? null : index)
-                        } />
-                      {activeMenu === index && (
-                        <div className="dropdown-menu">
-                          <div className="menu-item">
-                            <Pencil size={16} />
-                            Edit Page
+          {projects.map((project) =>
+            project.pages.map((page, index) => (
+              <div key={index} className="page-card">
+                <div className="page-top">
+                  {/* HEADER */}
+                  <div className="page-header">
+                    <div className="folder-icon folder-color">
+                      <FileText size={26} />
+                    </div>
+                    <br />
+                    <div className="page-header-right">
+                      <span
+                        className={`status ${page.status === "Published"
+                          ? "published"
+                          : "draft"
+                          }`}>
+                        {page.status}
+                      </span>
+                      <div className="menu-wrapper" ref={menuRef}>
+                        <MoreVertical
+                          size={20}
+                          className="three-dots"
+                          onClick={() =>
+                            setActiveMenu(activeMenu === index ? null : index)
+                          } />
+                        {activeMenu === index && (
+                          <div className="dropdown-menu">
+                            <div className="menu-item">
+                              <Pencil size={16} />
+                              Edit Page
+                            </div>
+                            <div className="menu-item">
+                              <Copy size={16} />
+                              Duplicate
+                            </div>
+                            <div className="menu-item">
+                              <Edit3 size={16} />
+                              Rename
+                            </div>
+                            <div className="menu-item">
+                              <Eye size={16} />
+                              Preview
+                            </div>
+                            <div className="menu-divider" />
+                            <div className="menu-item delete">
+                              <Trash2 size={16} />
+                              Delete
+                            </div>
                           </div>
-                          <div className="menu-item">
-                            <Copy size={16} />
-                            Duplicate
-                          </div>
-                          <div className="menu-item">
-                            <Edit3 size={16} />
-                            Rename
-                          </div>
-                          <div className="menu-item">
-                            <Eye size={16} />
-                            Preview
-                          </div>
-                          <div className="menu-divider" />
-                          <div className="menu-item delete">
-                            <Trash2 size={16} />
-                            Delete
-                          </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-              </div>
-              {/* DIVIDER */}
-              <div className="page-divider"></div>
-              <br />
-              {/* TITLE */}
-              <div className="page-title">
-                <p>{page.name}</p>
-              </div>
-              <p className="page-description">{page.description}</p>
+                </div>
+                {/* DIVIDER */}
+                <div className="page-divider"></div>
+                <br />
+                {/* TITLE */}
+                <div className="page-title">
+                  <p>{page.name}</p>
+                </div>
+                <p className="page-description">{page.description}</p>
 
-              {/* FOOTER */}
-              <div className="page-footer">
-                <div className="last-modified">
-                  <Clock size={14} />
-                  <span>
-                    {page.modified}
-                  </span>
-                </div>
-                <div
-                  className="open-page"
-                  onClick={() => navigate("/workspace")}>
-                  <ArrowRight size={24} />
+                {/* FOOTER */}
+                <div className="page-footer">
+                  <div className="last-modified">
+                    <Clock size={14} />
+                    <span>
+                      {page.modified}
+                    </span>
+                  </div>
+                  <div
+                    className="open-page"
+                    onClick={() => navigate("/workspace")}>
+                    <ArrowRight size={24} />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
         <CreateForm
           isOpen={isModalOpen}

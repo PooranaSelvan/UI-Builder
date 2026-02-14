@@ -30,7 +30,7 @@ const getProjects = async (req, res) => {
                     return res.status(401).json({ message: "No Projects Found!" });
                }
 
-               let projects = result[0];
+               let projects = result;
 
                return res.status(200).json({ projects });
           });
@@ -80,15 +80,34 @@ const saveProject = async (req, res) => {
 
 // Pages
 const getPages = async (req, res) => {
-     try {
-          const { userId } = req.params;
-          const result = await con.promise().query(getUserPagesQuery, [userId]);
+     const { userId } = req.params;
 
-          res.json({ result: result.rows || [] });
-     } catch (error) {
-          res.status(500).json({
-               message: "error fetching file"
+     if (!userId) {
+          return res.status(400).json({
+               message: "All fields are required"
+          })
+     }
+
+     try {
+          con.query(getUserPagesQuery, [userId], (err, result) => {
+               if (err) {
+                    return res.status(500).json({
+                         message: "Error occured", err
+                    })
+               }
+
+               if (!result.length) {
+                    return res.status(200).json({
+                         pages: []
+                    })
+               }
+
+               let projects = result;
+
+               return res.status(200).json({ pages: projects })
           });
+     } catch (err) {
+          console.log(err);
      }
 }
 
