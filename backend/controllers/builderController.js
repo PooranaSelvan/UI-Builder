@@ -46,11 +46,11 @@ const saveProject = async (req, res) => {
           return res.status(400).json({ message: "All fields are required!" });
      }
 
-     if (projectName.length < 3) {
-          return res.status(400).json({ message: "Name Must be More than 3 Characters!" });
+     if (projectName.length < 3 || projectName.length > 20) {
+          return res.status(400).json({ message: "Name can't be less than 3 & more than 30 characters!" });
      }
-     if (description.length < 10 || description.length > 50) {
-          return res.status(400).json({ message: "Description Can't be Less than 10 & more than 50 Characters!" });
+     if (description.length < 10 || description.length > 90) {
+          return res.status(400).json({ message: "Description can't be less than 10 & more than 90 Characters!" });
      }
 
 
@@ -146,9 +146,11 @@ const getPageByPageId = async (req, res) => {
 
      con.query(getPageByPageIdQuery, [pageId], (err, result) => {
           if (err) {
-               return res.status(500).json({
-                    message: "Error occured", err
-               })
+               return res.status(500).json({ message: "Error occured", err });
+          }
+
+          if (result.length === 0) {
+               return res.status(404).json({ message: "Page Not Found!" });
           }
 
           let page = result[0];
@@ -171,11 +173,11 @@ const savePage = async (req, res) => {
           return res.status(400).json({ message: "All fields are required!" });
      }
 
-     if (pageName.length < 3) {
-          return res.status(400).json({ message: "Name Must be More than 3 Characters!" });
+     if (pageName.length < 3 || pageName.length > 20) {
+          return res.status(400).json({ message: "Name can't be less than 3 & more than 20 Characters!" });
      }
-     if (description.length < 10 || description.length > 50) {
-          return res.status(400).json({ message: "Description Can't be Less than 10 & more than 50 Characters!" });
+     if (description.length < 5 || description.length > 50) {
+          return res.status(400).json({ message: "Description can't be less than 5 & more than 50 Characters!" });
      }
 
 

@@ -100,7 +100,7 @@ const Dashboard = () => {
         projectId: selectedApp.id,
         pageName: name,
         description,
-        data: {}
+        data: []
       });
 
       let projectId = selectedApp.id;
@@ -111,7 +111,7 @@ const Dashboard = () => {
         description,
         status: "Draft",
         modified: new Date().toLocaleString(),
-        data: {}
+        data: []
       };
 
       setSelectedApp(ele => ({
