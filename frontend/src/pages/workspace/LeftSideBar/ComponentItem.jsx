@@ -9,10 +9,11 @@ export default function ComponentItem({ item, onEditSavedComponent, onRenameComp
   const Icon = iconName ? LucideIcons[iconName] || LucideIcons.Square : icon || LucideIcons.Square;
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id,
-      data: { component: item },
-    });
+  useDraggable({
+    id,
+    data: { component: item },
+  });
+
 
   const style = {
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
@@ -40,8 +41,11 @@ export default function ComponentItem({ item, onEditSavedComponent, onRenameComp
       <div
         ref={setNodeRef}
         style={style}
-        {...listeners}
         {...attributes}
+        onPointerDown={(e) => {
+          if (e.button === 2) return;
+          listeners.onPointerDown?.(e);
+        }}
         className="grid-item"
         onContextMenu={handleContextMenu}
       >

@@ -1,9 +1,16 @@
-import React, { useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { VOID_TAGS } from "../workspace/utils/voidTags.js";
-import { ComponentEditorContext } from "../../context/ComponentEditorContext";
+
 
 const ComponentEditorPreview = () => {
-  const { components } = useContext(ComponentEditorContext);
+  const [components, setComponents] = useState([]);
+  useEffect(() => {
+    const stored = localStorage.getItem("componentEditorPreview");
+    if (stored) {
+      setComponents(JSON.parse(stored));
+    }
+  }, []);
+  
 
   const renderComponents = (arr = []) =>
     arr.map((ele) => {
