@@ -14,6 +14,8 @@ import axios from "axios";
 import ComponentEditorPreview from "./pages/component-editor/ComponentEditorPreview.jsx";
 import { CustomComponentsProvider } from "./context/CustomComponentsContext";
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
+import Features from "./pages/features/Features.jsx";
+import Templates from "./pages/templates/Templates.jsx";
 
 
 function App() {
@@ -62,6 +64,8 @@ function App() {
           <Route path="/component-editor" element={<ComponentEditor />}/>
           <Route path="/component-editor-preview" element={<ComponentEditorPreview />}/>
           <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/features' element={<Features />} />
+          <Route path='/templates' element={<Templates />} />
         </Routes>
         <Toaster />
       </>

@@ -44,32 +44,11 @@
 }
 
 .gradient-text {
-     position: relative;
-     display: inline-block;
-     z-index: 1;
-     color: white;
-     padding: 0 20px;
-}
-
-.gradient-text::before {
-     content: "";
-     position: absolute;
-     left: -4px;
-     right: -4px;
-     top: 50%;
-     height: 100%;
-     background: var(--primary);
-     transform: translateY(-50%) rotate(-1.5deg);
-     border-radius: 8px;
-     z-index: -1;
-}
-
-.gradient-text-small {
      color: var(--primary);
 }
 
 .home-hero-content p {
-     font-size: 18px;
+     font-size: 20px;
      width: 50ch;
 }
 

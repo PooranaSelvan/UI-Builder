@@ -49,7 +49,7 @@ const HomePage = ({ isAuthenticated }) => {
             <h1>Build Custom UI <span className="gradient-text">10x Faster</span></h1>
             <p>
               Drag and drop components and deploy custom apps for you in minutes not weeks.
-              <span className='gradient-text-small'>Secure, scalable, and fully customizable.</span>
+              <span className='gradient-text'>Secure, scalable, and fully customizable.</span>
             </p>
             <div className='home-hero-btns'>
               <Button className='primary-button get-started-btn' style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 32px", fontSize: "16px", fontWeight: "600" }} onClick={handleGetStarted}>
