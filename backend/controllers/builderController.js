@@ -1,6 +1,6 @@
 import con from "../db/config.js";
 import { getProjectById, getUserById } from "../utils/finders.js";
-import { saveNewComponent, saveNewPage, saveNewProject, selectProjectByUserId } from "../utils/queries.js";
+import { deleteAllCustomComponentsQuery, deleteCustomComponentQuery, deletePageQuery, deleteProjectQuery, saveNewComponent, saveNewPage, saveNewProject, selectProjectByUserId } from "../utils/queries.js";
 import { getUserComponentsQuery } from "../utils/queries.js";
 import { getUserPagesQuery } from "../utils/queries.js";
 
@@ -27,7 +27,7 @@ const getProjects = async (req, res) => {
                }
 
                if (result.length === 0) {
-                    return res.status(200).json({ projects : [] });
+                    return res.status(200).json({ projects: [] });
                }
 
                let projects = result;
@@ -71,6 +71,31 @@ const saveProject = async (req, res) => {
                }
 
                return res.status(200).json({ message: "Project Created Successfully!" });
+          });
+     } catch (error) {
+          console.log(error);
+     }
+}
+
+const deleteProject = async (req, res) => {
+     const { projectId } = req.body;
+
+     if (!projectId) {
+          return res.status(400).json({ message: "All fields are required!" });
+     }
+
+
+     try {
+          con.query(deleteProjectQuery, [projectId], (err, result) => {
+               if (err) {
+                    if (err.code === 'ER_BAD_NULL_ERROR') {
+                         return res.status(400).json({ message: "Required inputs are missing" });
+                    }
+
+                    return res.status(400).json({ message: "Error Occurred" });
+               }
+
+               return res.status(200).json({ message: "Project & its Pages Deleted Successfully!" });
           });
      } catch (error) {
           console.log(error);
@@ -150,6 +175,25 @@ const savePage = async (req, res) => {
      }
 }
 
+const deletePage = async (req, res) => {
+     const { projectId } = req.body;
+
+     if (!projectId) {
+          return res.status(400).json({ message: "All fields are required!" });
+     }
+
+     con.query(deletePageQuery, [projectId], (err, result) => {
+          if (err) {
+               if (err.code === 'ER_BAD_NULL_ERROR') {
+                    return res.status(400).json({ message: "Required inputs are missing" });
+               }
+
+               return res.status(400).json({ message: "Error Occurred" });
+          }
+
+          return res.status(200).json({ message: "Pages Deleted Successfully!" });
+     });
+}
 
 
 // Custom Components
@@ -201,5 +245,46 @@ const saveCustomComponent = async (req, res) => {
 }
 
 
+const deleteCustomComponent = async (req, res) => {
+     const { userId, componentId } = req.body;
 
-export { getProjects, saveProject, getPages, savePage, getCustomComponents, saveCustomComponent };
+     if (!userId || !componentId) {
+          return res.status(400).json({ message: "All fields are required!" });
+     }
+
+     con.query(deleteCustomComponentQuery, [userId, componentId], (err, result) => {
+          if (err) {
+               if (err.code === 'ER_BAD_NULL_ERROR') {
+                    return res.status(400).json({ message: "Required inputs are missing" });
+               }
+
+               return res.status(400).json({ message: "Error Occurred" });
+          }
+
+          return res.status(200).json({ message: "Component Deleted Successfully!" });
+     });
+}
+
+
+const deleteAllCustomComponent = async (req, res) => {
+     const { userId } = req.body;
+
+     if (!userId) { 
+          return res.status(400).json({ message: "All fields are required!" });
+     }
+
+
+     con.query(deleteAllCustomComponentsQuery, [userId], (err, result) => {
+          if (err) {
+               if (err.code === 'ER_BAD_NULL_ERROR') {
+                    return res.status(400).json({ message: "Required inputs are missing" });
+               }
+
+               return res.status(400).json({ message: "Error Occurred" });
+          }
+
+          return res.status(200).json({ message: "All Components Deleted Successfully!" });
+     });
+}
+
+export { getProjects, saveProject, deleteProject, getPages, savePage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent };
