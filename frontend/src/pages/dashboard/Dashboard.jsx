@@ -37,7 +37,6 @@ const Dashboard = () => {
 
   function buildJSON(rows) {
     let project = {};
-    console.log(rows);
 
     rows.forEach((data) => {
       const projectId = data.projectId;
@@ -64,21 +63,6 @@ const Dashboard = () => {
   }
 
   useEffect(() => {
-    async function sample() {
-      let userId = await getUserId();
-
-      try {
-        let res = await axios.get(`${baseUrl}builder/projects/${userId}`, { withCredentials: true });
-
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    sample();
-  }, []);
-
-  useEffect(() => {
     async function fetchPages() {
       let userId = await getUserId();
 
@@ -94,24 +78,7 @@ const Dashboard = () => {
     }
 
     fetchPages();
-  }, [])
-
-
-  useEffect(() => {
-    async function sample() {
-      let userId = await getUserId();
-
-      try {
-        let res = await axios.get(`${baseUrl}builder/projects/${userId}`, { withCredentials: true });
-
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    sample();
   }, []);
-
 
   const handleCreateNewPage = async (name, description) => {
     let userId = await getUserId();
