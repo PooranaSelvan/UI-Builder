@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState,useContext} from "react";
 import { DndContext } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { v4 as uuidv4 } from "uuid";
@@ -11,14 +11,11 @@ import IconPicker from "./IconPicker";
 import { Search, X, Eye } from "lucide-react";
 import { BasicComponents } from "../workspace/utils/basicComponentsData";
 import Button from "../../components/Button.jsx";
-import { useNavigate, useLocation } from "react-router-dom";
-import { ComponentEditorContext } from "../../context/ComponentEditorContext";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
 
 const ComponentEditor = () => {
   /* ---------------- State ---------------- */
-
-  const { components, setComponents } = useContext(ComponentEditorContext);
+  const [components, setComponents] = useState([]);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
   const { customComponents, setCustomComponents } = useContext(CustomComponentsContext);
   const [customIconName, setCustomIconName] = useState("Square");
@@ -27,8 +24,7 @@ const ComponentEditor = () => {
   const [showNameInput, setShowNameInput] = useState(false);
   const [iconSearch, setIconSearch] = useState("");
   const [editingSavedComponentId, setEditingSavedComponentId] = useState(null);
-  let navigate = useNavigate();
-
+  
 
   /* ---------------- Helpers ---------------- */
 
@@ -452,8 +448,15 @@ const ComponentEditor = () => {
                 toast.error("There is no component to preview!", toastErrorStyle);
                 return;
               }
-              navigate("/component-editor-preview");
+            
+              localStorage.setItem(
+                "componentEditorPreview",
+                JSON.stringify(components)
+              );
+            
+              window.open("/component-editor-preview", "_blank");
             }}
+            
           >
             <Eye size={20} />
             Preview

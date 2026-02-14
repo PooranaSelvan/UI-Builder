@@ -12,7 +12,6 @@ import PreviewCanvas from './pages/workspace/preview/PreviewCanvas';
 import { useEffect } from 'react';
 import axios from "axios";
 import ComponentEditorPreview from "./pages/component-editor/ComponentEditorPreview.jsx";
-import { ComponentEditorProvider } from "./context/ComponentEditorContext";
 import { CustomComponentsProvider } from "./context/CustomComponentsContext";
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
 
@@ -63,23 +62,8 @@ function App() {
           <Route path='/login' element={<LoginPage />} />
           <Route path="/workspace" element={<Workspace />} />
           <Route path="/preview" element={<PreviewCanvas />} />
-          <Route
-            path="/component-editor"
-            element={
-              <ComponentEditorProvider>
-                <ComponentEditor />
-              </ComponentEditorProvider>
-            }
-          />
-
-          <Route
-            path="/component-editor-preview"
-            element={
-              <ComponentEditorProvider>
-                <ComponentEditorPreview />
-              </ComponentEditorProvider>
-            }
-          />
+          <Route path="/component-editor" element={<ComponentEditor />}/>
+          <Route path="/component-editor-preview" element={<ComponentEditorPreview />}/>
           <Route path='/dashboard' element={<Dashboard />} />
         </Routes>
         <Toaster />
