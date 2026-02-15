@@ -75,6 +75,7 @@ const Workspace = () => {
   }
 
 
+  // DFS
   const findComponentById = (items, id) => {
     for (let ele of items) {
       if (ele.id === id) {

@@ -81,8 +81,6 @@ app.get("/auth/zoho/callback", async (req, res) => {
                const zohoUser = profileRes.data;
                let user = await getUserByEmail(zohoUser.Email);
 
-               console.log(user);
-
                if (user === null || !user) {
                     con.query(signUpUserQuery, [zohoUser.Display_Name, zohoUser.Email, "", false], async (err, result) => {
                          if (err) {
