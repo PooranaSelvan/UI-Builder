@@ -37,3 +37,24 @@
   font-size: 13px;
   color: gray;
 }
+
+.button-part{
+    padding: 14px 16px;
+}
+
+.button-part button{
+    padding: 3%;
+    margin-right: 4%;
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+.btn-view{
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+.btn-open{
+    background-color: #dc2626;
+    color: white;
+}
