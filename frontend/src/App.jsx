@@ -16,6 +16,7 @@ import { CustomComponentsProvider } from "./context/CustomComponentsContext";
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
 import Features from "./pages/features/Features.jsx";
 import Templates from "./pages/templates/Templates.jsx";
+import Profile from "./pages/profile/Profile.jsx";
 
 
 function App() {
@@ -66,6 +67,7 @@ function App() {
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/features' element={<Features />} />
           <Route path='/templates' element={<Templates />} />
+          <Route path='/profile' element={<Profile />} />
         </Routes>
         <Toaster />
       </>
