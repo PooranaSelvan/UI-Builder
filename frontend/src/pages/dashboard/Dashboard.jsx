@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FolderCard from "./FolderCard";
 import CreateForm from "./CreateForm";
-import { Plus, MoreVertical, FileText, Search, Clock, ArrowRight, Pencil, Copy, Edit3, Eye, Trash2 } from "lucide-react";
+import { Plus, MoreVertical, FileText, Search, Clock, ArrowRight, Pencil, Copy, Edit3, Eye, Trash2, Rocket } from "lucide-react";
 import "./Dashboard.css";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -289,20 +289,20 @@ const Dashboard = () => {
                       {activeMenu === index && (
                         <div className="dropdown-menu">
                           <div className="menu-item">
-                            <Pencil size={16} />
-                            Edit Page
+                            <Edit3 size={16} />
+                            Rename
                           </div>
                           <div className="menu-item">
                             <Copy size={16} />
                             Duplicate
                           </div>
                           <div className="menu-item">
-                            <Edit3 size={16} />
-                            Rename
-                          </div>
-                          <div className="menu-item">
                             <Eye size={16} />
                             Preview
+                          </div>
+                          <div className="menu-item">
+                            <Rocket size={16} />
+                            Publish
                           </div>
                           <div className="menu-divider" />
                           <div className="menu-item delete">
