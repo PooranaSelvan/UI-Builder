@@ -10,7 +10,7 @@ import Dock from "./components/Dock";
 import { components as componentLibrary } from "./utils/ComponentsData.js";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
-import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket } from 'lucide-react';
+import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save } from 'lucide-react';
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
@@ -47,6 +47,7 @@ const Workspace = () => {
         data: components
       }, { withCredentials: true });
 
+      localStorage.setItem("previewComponents", JSON.stringify(components));
       toast.success("Pages Saved Successfully!");
     } catch (error) {
       console.log(error);
@@ -75,6 +76,7 @@ const Workspace = () => {
   }
 
 
+  // DFS
   const findComponentById = (items, id) => {
     for (let ele of items) {
       if (ele.id === id) {
@@ -364,6 +366,10 @@ const Workspace = () => {
             </div>
             <div className="divider-line" />
             <div className="workspace-topbar-btns">
+              <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleSavePage} disabled={!components.length}>
+                <Save size={20} />
+                Save Page
+              </Button>
               <Button className="secondary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleNavigatePreview}>
                 <Eye size={20} />
                 Preview
@@ -371,10 +377,6 @@ const Workspace = () => {
               <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }}>
                 <Rocket size={20} />
                 Publish
-              </Button>
-              <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleSavePage}>
-                <Rocket size={20} />
-                Save Page
               </Button>
             </div>
           </div>

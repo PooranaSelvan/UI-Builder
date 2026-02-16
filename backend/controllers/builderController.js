@@ -64,7 +64,7 @@ const saveProject = async (req, res) => {
           con.query(saveNewProject, [userId, projectName, description, false], (err, result) => {
                if (err) {
                     if (err.code === "ER_DUP_ENTRY") {
-                         return res.status(401).json({ message: "Page Already Exists!" });
+                         return res.status(401).json({ message: "Project Already Exists!" });
                     }
 
                     return res.status(500).json({ message: err?.sqlMessage, err });
@@ -159,7 +159,7 @@ const getPageByPageId = async (req, res) => {
                id: page.pageId,
                name: page.pageName,
                description: page.description,
-               data: page.data || {},
+               data: page.data || [],
                lastModified: page.lastModified,
                isPublished: page.isPublished
           });

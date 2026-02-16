@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FolderCard from "./FolderCard";
 import CreateForm from "./CreateForm";
-import { Plus, MoreVertical, FileText, Search, Clock, ArrowRight, Pencil, Copy, Edit3, Eye, Trash2 } from "lucide-react";
+import { Plus, MoreVertical, FileText, Search, Clock, ArrowRight, Pencil, Copy, Edit3, Eye, Trash2, Rocket } from "lucide-react";
 import "./Dashboard.css";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
+import Loading from "../../components/Loading";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Dashboard = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(false);
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
 
   const menuRef = useRef(null);
@@ -66,6 +68,7 @@ const Dashboard = () => {
   }
 
   async function fetchPages() {
+    setLoading(true);
     let userId = await getUserId();
 
     try {
@@ -73,6 +76,7 @@ const Dashboard = () => {
 
       let formattedJSON = buildJSON(res.data.pages);
       setProjects(formattedJSON);
+      setLoading(false);
     } catch (err) {
       console.log(err);
     }
@@ -163,6 +167,14 @@ const Dashboard = () => {
       toast.error(err.response?.data.message);
     }
 
+  }
+
+  if (loading) {
+    return (
+      <div className="dashboard-container">
+        <Loading />
+      </div>
+    );
   }
 
   // ================= DASHBOARD VIEW =================
@@ -289,20 +301,20 @@ const Dashboard = () => {
                       {activeMenu === index && (
                         <div className="dropdown-menu">
                           <div className="menu-item">
-                            <Pencil size={16} />
-                            Edit Page
+                            <Edit3 size={16} />
+                            Rename
                           </div>
                           <div className="menu-item">
                             <Copy size={16} />
                             Duplicate
                           </div>
                           <div className="menu-item">
-                            <Edit3 size={16} />
-                            Rename
-                          </div>
-                          <div className="menu-item">
                             <Eye size={16} />
                             Preview
+                          </div>
+                          <div className="menu-item">
+                            <Rocket size={16} />
+                            Publish
                           </div>
                           <div className="menu-divider" />
                           <div className="menu-item delete">
