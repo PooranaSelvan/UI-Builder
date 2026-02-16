@@ -28,7 +28,7 @@
 }
 
 .template-heading {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   margin-bottom: 6px;
 }
@@ -40,13 +40,18 @@
 
 .button-part{
     padding: 14px 16px;
+    display: flex;
 }
 
 .button-part button{
-    padding: 3%;
+    padding: 2% 5%;
     margin-right: 4%;
     border-radius: 10px;
     font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 
 .btn-view{
