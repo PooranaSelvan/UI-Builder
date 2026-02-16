@@ -16,16 +16,18 @@ const Canvas = ({ components, zoom, selectedComponentId, onSelectComponent, clea
 
   return (
     <div className="work-canvas-wrapper" onClick={unSelectComponent}>
-      <div ref={setNodeRef} className="canvas-drop-zone" style={{ flex: 1, transform: `scale(${zoom})`, transformOrigin: "top left", transition: "transform 0.3s ease-in-out", padding: "20px", background: isOver ? "#eaf7ff" : "white", border: isOver ? "2px dashed black" : "", marginTop : "25px" }}>
-        {components.length === 0 && (
-          <p style={{ color: "#999", textAlign: "center" }}>Drag components here</p>
-        )}
+      <div className="canvas-scroll-wrapper">
+        <div ref={setNodeRef} className="canvas-drop-zone" style={{ flex: 1, transform: `scale(${zoom})`, transformOrigin: "top left", transition: "transform 0.3s ease-in-out", padding: "20px", background: isOver ? "#eaf7ff" : "white", border: isOver ? "2px dashed black" : "", marginTop: "25px" }}>
+          {components.length === 0 && (
+            <p style={{ color: "#999", textAlign: "center" }}>Drag components here</p>
+          )}
 
-        <SortableContext items={components.map((c) => c.id)} strategy={verticalListSortingStrategy}>
-          {components.map((ele) => (
-            <SortableItem key={ele.id} ele={ele} isSelected={selectedComponentId === ele.id} selectedComponentId={selectedComponentId} onSelect={onSelectComponent} />
-          ))}
-        </SortableContext>
+          <SortableContext items={components.map((c) => c.id)} strategy={verticalListSortingStrategy}>
+            {components.map((ele) => (
+              <SortableItem key={ele.id} ele={ele} isSelected={selectedComponentId === ele.id} selectedComponentId={selectedComponentId} onSelect={onSelectComponent} />
+            ))}
+          </SortableContext>
+        </div>
       </div>
     </div>
   );
