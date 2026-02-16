@@ -169,6 +169,26 @@ const Dashboard = () => {
 
   }
 
+  const deleteProject = async (projectId) => {
+    let userId = await getUserId();
+
+    if (userId < 1) {
+      toast.error("Invalid User! Refresh & Try Again!");
+      return;
+    }
+
+    try {
+      let res = await axios.delete(`${baseUrl}builder/projects/`, {
+        projectId
+      });
+
+      setProjects(projects => projects.filter(ele => ele.projectId !== projectId));
+    } catch (error) {
+      console.log(error);
+      toast.error(err.response?.data.message);
+    }
+  }
+
   if (loading) {
     return (
       <div className="dashboard-container">
