@@ -178,11 +178,31 @@ const Dashboard = () => {
     }
 
     try {
-      let res = await axios.delete(`${baseUrl}builder/projects/`, {
+      let res = await axios.delete(`${baseUrl}builder/projects/`, { withCredentials: true }, {
         projectId
       });
 
       setProjects(projects => projects.filter(ele => ele.projectId !== projectId));
+      toast.success("Project is Deleted Successfully!");
+    } catch (error) {
+      console.log(error);
+      toast.error(err.response?.data.message);
+    }
+  }
+
+  const deletePage = async (pageId) => {
+    let userId = await getUserId();
+
+    if (userId < 1) {
+      toast.error("Invalid User! Refresh & Try Again!");
+      return;
+    }
+
+    try {
+      let res = await axios.delete(`${baseUrl}builder/pages/`, { withCredentials: true }, {
+        pageId
+      });
+      toast.success("Page is Deleted Successfully!");
     } catch (error) {
       console.log(error);
       toast.error(err.response?.data.message);

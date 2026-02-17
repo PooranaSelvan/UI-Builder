@@ -226,13 +226,13 @@ const updatePage = async (req, res) => {
 }
 
 const deletePage = async (req, res) => {
-     const { projectId } = req.body;
+     const { pageId } = req.body;
 
-     if (!projectId) {
+     if (!pageId) {
           return res.status(400).json({ message: "All fields are required!" });
      }
 
-     con.query(deletePageQuery, [projectId], (err, result) => {
+     con.query(deletePageQuery, [pageId], (err, result) => {
           if (err) {
                if (err.code === 'ER_BAD_NULL_ERROR') {
                     return res.status(400).json({ message: "Required inputs are missing" });
@@ -296,7 +296,8 @@ const saveCustomComponent = async (req, res) => {
 
 
 const deleteCustomComponent = async (req, res) => {
-     const { userId, componentId } = req.body;
+     const { userId } = req.body;
+     const { componentId } = req.params;
 
      if (!userId || !componentId) {
           return res.status(400).json({ message: "All fields are required!" });
