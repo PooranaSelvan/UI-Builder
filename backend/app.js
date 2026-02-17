@@ -15,6 +15,7 @@ import con from "./db/config.js";
 const PORT = process.env.PORT || 5000;
 const app = express();
 dotenv.config();
+app.set("trust proxy", 1);
 app.use(cors({
      origin: [process.env.FRONTEND_LOCALURL, process.env.FRONTEND_PRODURL],
      credentials: true
