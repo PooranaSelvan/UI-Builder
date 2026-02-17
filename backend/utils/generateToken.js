@@ -6,11 +6,12 @@ export const generateToken = (res, userId) => {
           expiresIn: "7d"
      });
 
+     let isLive = process.env.NODE_ENV === "production";
 
      res.cookie("authauth", token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
+          secure: isLive,
+          sameSite: isLive ? "none" : "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000,
      });
 }
