@@ -50,7 +50,7 @@ function App() {
   const hideNavbar = location.pathname.startsWith("/preview") || location.pathname.startsWith("/component-editor-preview");
 
   return (
-    <CustomComponentsProvider>
+    <CustomComponentsProvider user={user}>
       <>
         {!hideNavbar && (
           <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} />
@@ -60,13 +60,13 @@ function App() {
           <Route path='*' element={<ErrorPage />} />
           <Route path="/signup" element={<SignUp setIsAuthenticated={setIsAuthenticated} />} />
           <Route path='/login' element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path="/workspace/:pageId" element={<Workspace />} />
-          <Route path="/preview" element={<PreviewCanvas />} />
-          <Route path="/component-editor" element={<ComponentEditor />}/>
-          <Route path="/component-editor-preview" element={<ComponentEditorPreview />}/>
-          <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/features' element={<Features />} />
           <Route path='/templates' element={<Templates />} />
+          <Route path="/workspace/:pageId" element={<Workspace />} />
+          <Route path="/preview" element={<PreviewCanvas />} />
+          <Route path="/component-editor" element={<ComponentEditor />} />
+          <Route path="/component-editor-preview" element={<ComponentEditorPreview />} />
+          <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/profile' element={<Profile />} />
         </Routes>
         <Toaster />

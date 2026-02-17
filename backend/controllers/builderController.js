@@ -226,13 +226,13 @@ const updatePage = async (req, res) => {
 }
 
 const deletePage = async (req, res) => {
-     const { projectId } = req.body;
+     const { pageId } = req.body;
 
-     if (!projectId) {
+     if (!pageId) {
           return res.status(400).json({ message: "All fields are required!" });
      }
 
-     con.query(deletePageQuery, [projectId], (err, result) => {
+     con.query(deletePageQuery, [pageId], (err, result) => {
           if (err) {
                if (err.code === 'ER_BAD_NULL_ERROR') {
                     return res.status(400).json({ message: "Required inputs are missing" });
@@ -241,7 +241,7 @@ const deletePage = async (req, res) => {
                return res.status(400).json({ message: "Error Occurred" });
           }
 
-          return res.status(200).json({ message: "Pages Deleted Successfully!" });
+          return res.status(200).json({ message: "Page Deleted Successfully!" });
      });
 }
 
@@ -250,15 +250,18 @@ const deletePage = async (req, res) => {
 const getCustomComponents = async (req, res) => {
      try {
           const { userId } = req.params;
-          const result = await con.promise().query(getUserComponentsQuery, [userId]);
 
-          res.json({ result: result.rows || [] });
+          const [rows] = await con.promise().query(getUserComponentsQuery, [userId]);
+
+          res.status(200).json({ components: rows || [] });
+
      } catch (error) {
           res.status(500).json({
-               message: "error fetching file"
+               message: "Error fetching components"
           });
      }
-}
+};
+
 
 const saveCustomComponent = async (req, res) => {
      const { userId, icon, componentName, data } = req.body;
@@ -267,36 +270,40 @@ const saveCustomComponent = async (req, res) => {
           return res.status(400).json({ message: "All fields are required!" });
      }
 
-     if (componentName.length < 3) {
-          return res.status(400).json({ message: "Name Must be More than 3 Characters!" });
-     }
-
      try {
-          let user = getUserById(userId);
+          let user = await getUserById(userId);
 
           if (user === null) {
                return res.status(404).json({ message: "User Not Found!" });
           }
 
-          con.query(saveNewComponent, [userId, icon, componentName, data, new Date().toLocaleString()], (err, result) => {
-               if (err) {
-                    if (err.code === "ER_DUP_ENTRY") {
-                         return res.status(401).json({ message: "Component Already Exists!" });
+          con.query(
+               saveNewComponent,
+               [userId, icon, componentName, JSON.stringify(data), new Date()],
+               (err, result) => {
+                    if (err) {
+                         console.log("SQL ERROR:", err);
+                         return res.status(500).json({
+                              message: err?.sqlMessage,
+                              error: err
+                         });
                     }
 
-                    return res.status(500).json({ message: err?.sqlMessage, err });
+                    return res.status(200).json({
+                         message: "Component Created Successfully!"
+                    });
                }
-
-               return res.status(200).json({ message: "Component Created Successfully!" });
-          });
+          );
      } catch (error) {
-          console.log(error);
+          console.log("CATCH ERROR:", error);
      }
-}
+};
+
 
 
 const deleteCustomComponent = async (req, res) => {
-     const { userId, componentId } = req.body;
+     const { userId } = req.body;
+     const { componentId } = req.params;
 
      if (!userId || !componentId) {
           return res.status(400).json({ message: "All fields are required!" });

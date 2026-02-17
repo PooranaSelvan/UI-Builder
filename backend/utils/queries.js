@@ -11,7 +11,7 @@ export const selectProjectByUserId = "SELECT * FROM projects where userId = ?";
 export const getUserPagesQuery = "SELECT projects.projectId,projects.userId,projects.projectName,projects.description,projects.isPublished,pages.pageId,pages.pageName,pages.description AS pageDescription,pages.data AS pageData,pages.lastModified,pages.isPublished AS pagePublished FROM projects LEFT JOIN pages ON projects.projectId = pages.projectId WHERE projects.userId = ?";
 export const getUserComponentsQuery = "SELECT * FROM components WHERE userId = ?";
 export const deleteProjectQuery = "DELETE FROM projects WHERE projectId = ?";
-export const deletePageQuery = "DELETE FROM pages WHERE projectId = ?";
+export const deletePageQuery = "DELETE FROM pages WHERE pageId = ?";
 export const deleteCustomComponentQuery = "DELETE FROM components WHERE userId = ? and id = ?";
 export const deleteAllCustomComponentsQuery = "DELETE FROM components WHERE userId = ?";
 export const updatePageData = "UPDATE pages SET data = ?, lastModified = NOW() WHERE pageId = ?";

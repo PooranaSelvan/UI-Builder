@@ -17,14 +17,13 @@ const ComponentEditor = () => {
   /* ---------------- State ---------------- */
   const [components, setComponents] = useState([]);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
-  const { customComponents, setCustomComponents } = useContext(CustomComponentsContext);
+  const { customComponents, addCustomComponent, deleteCustomComponent ,updateCustomComponent,   addCustomComponentToState  } = useContext(CustomComponentsContext);
   const [customIconName, setCustomIconName] = useState("Square");
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [customComponentName, setCustomComponentName] = useState("");
   const [showNameInput, setShowNameInput] = useState(false);
   const [iconSearch, setIconSearch] = useState("");
   const [editingSavedComponentId, setEditingSavedComponentId] = useState(null);
-  
 
   /* ---------------- Helpers ---------------- */
 
@@ -87,7 +86,6 @@ const ComponentEditor = () => {
 
     return { newTree: cloned, removedChild };
   };
-
   const cloneComponentWithNewIds = (component) => {
     const newId = `${component.id}-${uuidv4()}`;
     return {
@@ -98,6 +96,7 @@ const ComponentEditor = () => {
         : [],
     };
   };
+  
 
   const startEditingSavedComponent = (savedComponent) => {
     setEditingSavedComponentId(savedComponent.id);
@@ -107,7 +106,7 @@ const ComponentEditor = () => {
     const cloned = cloneComponentWithNewIds(savedComponent);
     setComponents([cloned]);
     setSelectedComponentId(cloned.id);
-  };
+  }
 
   /* ---------------- Drag Logic ---------------- */
 
@@ -152,10 +151,10 @@ const ComponentEditor = () => {
 
       setSelectedComponentId(clonedComponent.id);
 
-
-      if (componentData.isRootCustom && customComponents.some(c => c.id === componentData.id)) {
-        setEditingSavedComponentId(componentData.id);
+      if (componentData.isRootCustom) {
+        setEditingSavedComponentId(componentData.originalId || componentData.id);
       }
+      
 
       return;
     }
@@ -298,27 +297,12 @@ const ComponentEditor = () => {
       toast.error("Canvas is empty");
       return;
     }
-
+  
     if (editingSavedComponentId) {
-      setCustomComponents(prev =>
-        prev.map(comp =>
-          comp.id === editingSavedComponentId
-            ? {
-              ...comp,
-              children: deepCloneWithoutIds(components),
-              defaultProps: comp.defaultProps || {},
-              tag: comp.tag || "div",
-              iconName: comp.iconName || "Square",
-            }
-            : comp
-        )
-      );
-      setComponents([]);
-      setSelectedComponentId(null);
-      setEditingSavedComponentId(null);
-      toast.success("Custom Component Updated!");
+      setShowIconPicker(true);
       return;
     }
+  
     setCustomComponentName("");
     setCustomIconName("Square");
     setShowNameInput(true);
@@ -326,18 +310,48 @@ const ComponentEditor = () => {
 
   const selectedComponent = selectedComponentId ? findComponentById(components, selectedComponentId) : null;
 
+ 
   const combinedComponents = [
     ...BasicComponents,
     ...(customComponents.length
       ? [
-        {
-          title: "Custom Components",
-          type: "grid",
-          items: customComponents,
-        },
-      ]
+          {
+            title: "Custom Components",
+            type: "grid",
+            items: customComponents.map((comp) => {
+              let parsedData = [];
+              try {
+                parsedData = comp.data
+                  ? typeof comp.data === "string"
+                    ? JSON.parse(comp.data)
+                    : comp.data
+                  : [];
+              } catch (err) {
+                parsedData = [];
+              }
+  
+              const uniqueId = comp._id || uuidv4();
+  
+              return {
+                id: `custom-${uniqueId}`,
+                originalId: comp._id || uniqueId,
+                label: comp.componentName || "My Component",
+                iconName: comp.icon || "Square",
+                isRootCustom: true,
+                children: parsedData,
+                rank: 1,             
+                defaultProps: {},    
+                tag: "div",         
+              };
+            }),
+          },
+        ]
       : []),
   ];
+  
+  
+  
+  
 
   const handleNameSubmit = () => {
     if (!customComponentName.trim()) return;
@@ -351,63 +365,67 @@ const ComponentEditor = () => {
       children: rest.children ? deepCloneWithoutIds(rest.children) : [],
     }));
 
-  const handleIconSelect = (iconName) => {
-    setCustomIconName(iconName);
-
-    setCustomComponents(prev => {
-      if (editingSavedComponentId) {
-        return prev.map(component =>
-          component.id === editingSavedComponentId
-            ? {
-              ...component,
-              label: customComponentName,
-              iconName,
-              children: deepCloneWithoutIds(components),
-            }
-            : component
-        );
+    const handleIconSelect = async (iconName) => {
+      setCustomIconName(iconName);
+    
+      const componentPayload = {
+        icon: iconName,
+        componentName: customComponentName,
+        data: JSON.stringify(deepCloneWithoutIds(components)), 
+      };
+    
+      try {
+        let savedComponent;
+    
+        if (editingSavedComponentId) {
+          savedComponent = await updateCustomComponent(editingSavedComponentId, componentPayload);
+          toast.success("Custom Component Updated!");
+        } else {
+          savedComponent = await addCustomComponent(componentPayload);
+          if (!savedComponent) return;
+    
+          toast.success("Custom Component Saved!");
+    
+          addCustomComponentToState({
+            _id: savedComponent._id,
+            componentName: savedComponent.componentName,
+            icon: savedComponent.icon || "Square",
+            data: savedComponent.data || "[]",
+          });
+        }
+    
+        setComponents([]);  
+        setSelectedComponentId(null);
+        setEditingSavedComponentId(null);
+        setShowIconPicker(false);
+        setCustomComponentName("");
+        setCustomIconName("Square");
+    
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to save component");
       }
-      return [
-        ...prev,
-        {
-          id: `custom-${uuidv4()}`,
-          label: customComponentName,
-          tag: "div",
-          iconName,
-          isRootCustom: true,
-          defaultProps: {
-            className: "custom-component-root",
-          },
-          children: deepCloneWithoutIds(components),
-        },
-      ];
-    });
+    };
+    
+    
+    
+    
 
-    setComponents([]);
-    setSelectedComponentId(null);
-    setEditingSavedComponentId(null);
-    setShowIconPicker(false);
-    setCustomComponentName("");
-    setCustomIconName("Square");
-
-    toast.success(
-      editingSavedComponentId
-        ? "Custom Component Updated!"
-        : "Custom Component Saved!"
-    );
-  };
-
-
-  const handleRenameComponent = (component) => {
-    const newName = prompt("Enter new name", component.label);
-    if (!newName) return;
-
-    setCustomComponents(prev =>
-      prev.map(c =>
-        c.id === component.id ? { ...c, label: newName } : c
-      )
-    );
-  };
+    const handleRenameComponent = async (component) => {
+      const newName = prompt("Enter new name", component.label);
+      if (!newName) return;
+    
+      try {
+        await updateCustomComponent(component.id, {
+          componentName: newName,
+        });
+    
+        toast.success("Component renamed!");
+      } catch (err) {
+        toast.error("Rename failed");
+      }
+    };
+    
 
   const handleChangeIcon = (component) => {
     setEditingSavedComponentId(component.id);
@@ -415,18 +433,23 @@ const ComponentEditor = () => {
     setShowIconPicker(true);
   };
 
-  const handleDeleteComponent = (component) => {
+  const handleDeleteComponent = async (component) => {
     if (!window.confirm("Delete this component?")) return;
-
-    setCustomComponents(prev =>
-      prev.filter(c => c.id !== component.id)
-    );
-
-    if (editingSavedComponentId === component.id) {
-      setComponents([]);
-      setEditingSavedComponentId(null);
+  
+    try {
+      await deleteCustomComponent(component.id);
+  
+      if (editingSavedComponentId === component.id) {
+        setComponents([]);
+        setEditingSavedComponentId(null);
+      }
+  
+      toast.success("Component deleted!");
+    } catch (err) {
+      toast.error("Delete failed");
     }
   };
+  // console.log("customComponents:", customComponents);
 
   /* ---------------- Render ---------------- */
 
@@ -474,12 +497,15 @@ const ComponentEditor = () => {
 
         <div className="editor-body">
           <LeftPanel components={combinedComponents}
-            onAddJsonComponent={(newComp) => {
-
-              const newId = `custom-${uuidv4()}`;
-              setCustomComponents(prev => [...prev, { ...newComp, id: newId }]);
-              toast.success("JSON component added!");
-            }}
+         onAddJsonComponent={async (newComp) => {
+          try {
+            await addCustomComponent(newComp);
+            toast.success("JSON component added!");
+          } catch (err) {
+            toast.error("Failed to add JSON component");
+          }
+        }}
+        
             onEditSavedComponent={startEditingSavedComponent}
             onRenameComponent={handleRenameComponent}
             onChangeIcon={handleChangeIcon}
