@@ -17,8 +17,6 @@ const TemplateCard = () => {
         <div className="button-part">
             <Button className='btn-view'><Eye size={16}/>View Template</Button>
             <Button className='btn-open'><ExternalLink size={16}/>Open Template</Button>
-            {/* <button className='btn-view'><Eye/>View Template</button>
-            <button className='btn-open'>Open Template</button> */}
         </div>
     </div>
   );
