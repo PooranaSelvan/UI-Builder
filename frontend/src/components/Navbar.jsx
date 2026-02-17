@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import sirpamLogo from '../assets/sirpam-logo.svg';
+import sirpamLogo from '../assets/sirpam-logo.png';
 import "./navbar.css";
 import Button from './Button';
 import { NavLink } from 'react-router-dom';

@@ -50,6 +50,7 @@ const Workspace = () => {
         data: components
       }, { withCredentials: true });
 
+      localStorage.setItem("previewComponents", JSON.stringify(components));
       toast.success("Pages Saved Successfully!");
     } catch (error) {
       console.log(error);

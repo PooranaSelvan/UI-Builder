@@ -7,6 +7,7 @@ import "./Dashboard.css";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
+import Loading from "../../components/Loading";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Dashboard = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(false);
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
 
   const menuRef = useRef(null);
@@ -66,6 +68,7 @@ const Dashboard = () => {
   }
 
   async function fetchPages() {
+    setLoading(true);
     let userId = await getUserId();
 
     try {
@@ -73,6 +76,7 @@ const Dashboard = () => {
 
       let formattedJSON = buildJSON(res.data.pages);
       setProjects(formattedJSON);
+      setLoading(false);
     } catch (err) {
       console.log(err);
     }
@@ -163,6 +167,54 @@ const Dashboard = () => {
       toast.error(err.response?.data.message);
     }
 
+  }
+
+  const deleteProject = async (projectId) => {
+    let userId = await getUserId();
+
+    if (userId < 1) {
+      toast.error("Invalid User! Refresh & Try Again!");
+      return;
+    }
+
+    try {
+      let res = await axios.delete(`${baseUrl}builder/projects/`, { withCredentials: true }, {
+        projectId
+      });
+
+      setProjects(projects => projects.filter(ele => ele.projectId !== projectId));
+      toast.success("Project is Deleted Successfully!");
+    } catch (error) {
+      console.log(error);
+      toast.error(err.response?.data.message);
+    }
+  }
+
+  const deletePage = async (pageId) => {
+    let userId = await getUserId();
+
+    if (userId < 1) {
+      toast.error("Invalid User! Refresh & Try Again!");
+      return;
+    }
+
+    try {
+      let res = await axios.delete(`${baseUrl}builder/pages/`, { withCredentials: true }, {
+        pageId
+      });
+      toast.success("Page is Deleted Successfully!");
+    } catch (error) {
+      console.log(error);
+      toast.error(err.response?.data.message);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="dashboard-container">
+        <Loading />
+      </div>
+    );
   }
 
   // ================= DASHBOARD VIEW =================

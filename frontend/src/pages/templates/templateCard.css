@@ -28,7 +28,7 @@
 }
 
 .template-heading {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   margin-bottom: 6px;
 }
@@ -36,4 +36,30 @@
 .template-description {
   font-size: 13px;
   color: gray;
+}
+
+.button-part{
+    padding: 14px 16px;
+    display: flex;
+}
+
+.button-part button{
+    padding: 2% 5%;
+    margin-right: 4%;
+    border-radius: 10px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-view{
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+.btn-open{
+    background-color: #dc2626;
+    color: white;
 }

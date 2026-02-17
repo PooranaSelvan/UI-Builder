@@ -1,6 +1,6 @@
 import React from 'react';
 import "./footer.css";
-import sirpamLogo from '../assets/sirpam-logo.svg';
+import sirpamLogo from '../assets/sirpam-logo.png';
 import { Link } from 'react-router-dom';
 import { Twitter, Github, Linkedin } from 'lucide-react';
 
@@ -15,9 +15,9 @@ const Footer = () => {
                          </div>
                          <p>Empowering developers to build custom UI without writing code.</p>
                          <div>
-                              <Twitter className='footer-icon' size={45} fill='#fee2e2' color='red' strokeWidth={1} />
-                              <Github className='footer-icon' size={45} fill='#fee2e2' color='red' strokeWidth={1} />
-                              <Linkedin className='footer-icon' size={45} fill='#fee2e2' color='red' strokeWidth={1} />
+                              <Twitter className='footer-icon' size={45} fill='var(--red-100)' color='var(--primary)' />
+                              <Github className='footer-icon' size={45} fill='var(--red-100)' color='var(--primary)' />
+                              <Linkedin className='footer-icon' size={45} fill='var(--red-100)' color='var(--primary)' />
                          </div>
                     </div>
                     <div className="footer-product">
