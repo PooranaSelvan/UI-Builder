@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import sirpamLogo from '../assets/sirpam-logo.png';
 import "./navbar.css";
 import Button from './Button';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Menu, X, Settings, User, LogOut, CircleUserRound } from 'lucide-react';
 import axios from "axios";
 import toast from 'react-hot-toast';
@@ -12,6 +12,7 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, user }) => {
   const [openDropDown, setDropDown] = useState(false);
   let dropDownRef = useRef(null);
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
+  let navigate = useNavigate();
 
   useEffect(() => {
     const handleOutSideClick = (e) => {
@@ -64,7 +65,7 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, user }) => {
             <div id="nav-dropdown" style={{ display: openDropDown ? "flex" : "none", cursor: "pointer" }} ref={dropDownRef}>
               <div id="nav-dropdown-wrapper">
                 <X id='nav-dropdown-close' onClick={() => setDropDown(!openDropDown)} />
-                <Button>
+                <Button onClick={() => navigate("/profile")}>
                   <User />
                   Profile
                 </Button>
