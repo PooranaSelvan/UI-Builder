@@ -1,11 +1,15 @@
 import express from "express";
-import { getPages, savePage, getCustomComponents, saveCustomComponent, getProjects, saveProject, updatePage, getPageByPageId } from "../controllers/builderController.js";
+import { getPages, savePage, getCustomComponents, saveCustomComponent, getProjects, saveProject, updatePage, getPageByPageId,deleteCustomComponent} from "../controllers/builderController.js";
 
 const router = express.Router();
 
 // Custom Components
-router.route("/components/:userId").get(getCustomComponents);
-router.route("/components").post(saveCustomComponent);
+router.get("/components/user/:userId", getCustomComponents);
+router.post("/components", saveCustomComponent);
+router.delete("/components/:componentId", deleteCustomComponent);
+
+
+
 
 // Page
 router.route("/pages/:userId").get(getPages);

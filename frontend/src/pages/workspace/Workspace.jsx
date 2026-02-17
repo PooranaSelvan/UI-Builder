@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useContext } from "react";
 import { DndContext } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import LeftPanel from "./LeftSideBar/LeftPanel";
@@ -8,6 +8,7 @@ import RightSideBar from "./RightSideBar/RightSideBar";
 import toast from 'react-hot-toast';
 import Dock from "./components/Dock";
 import { components as componentLibrary } from "./utils/ComponentsData.js";
+import { CustomComponentsContext } from "../../context/CustomComponentsContext";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
 import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save } from 'lucide-react';
@@ -20,6 +21,8 @@ const Workspace = () => {
   const [selectedComponentId, setSelectedComponentId] = useState(null);
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
   const { pageId } = useParams();
+  const { customComponents } = useContext(CustomComponentsContext);
+
 
   useEffect(() => {
     async function fetchComponents() {
@@ -341,6 +344,27 @@ const Workspace = () => {
     localStorage.setItem("previewComponents", JSON.stringify(components));
   }
 
+  const combinedComponents = [
+    ...componentLibrary,
+    ...(customComponents.length
+      ? [
+          {
+            title: "Custom Components",
+            type: "grid",
+            items: customComponents.map(c => ({
+              id: c._id,
+              originalId: c._id,
+              label: c.componentName,
+              iconName: c.icon || "Square",
+              isRootCustom: true,
+              children: c.data ? JSON.parse(c.data) : [],
+            })),
+          },
+        ]
+      : []),
+  ];
+  
+
 
   // console.log(components);
 
@@ -379,7 +403,7 @@ const Workspace = () => {
               </Button>
             </div>
           </div>
-          <LeftPanel components={componentLibrary} />
+          <LeftPanel components={combinedComponents} />
           <Canvas components={components} zoom={zoom} selectedComponentId={selectedComponentId} onSelectComponent={(id) => setSelectedComponentId(id)} clearComponentSelection={clearComponentSelection} />
           <RightSideBar selectedComponent={selectedComponent} updateComponent={updateComponent} deleteComponent={deleteComponent} />
         </div >

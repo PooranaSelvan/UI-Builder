@@ -49,7 +49,7 @@ function App() {
   const hideNavbar = location.pathname.startsWith("/preview") || location.pathname.startsWith("/component-editor-preview");
 
   return (
-    <CustomComponentsProvider>
+    <CustomComponentsProvider user={user}>
       <>
         {!hideNavbar && (
           <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} />

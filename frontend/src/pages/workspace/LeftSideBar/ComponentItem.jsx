@@ -10,8 +10,8 @@ export default function ComponentItem({ item, onEditSavedComponent, onRenameComp
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
   useDraggable({
-    id,
-    data: { component: item },
+    id: item.id,
+    data: { component: item }, 
   });
 
 

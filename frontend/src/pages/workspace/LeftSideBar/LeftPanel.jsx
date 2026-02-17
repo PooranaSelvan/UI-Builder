@@ -9,11 +9,12 @@ import { X, ChevronRight } from "lucide-react";
 import { getIconByName } from "../utils/icons";
 import { useCustomComponents } from "../../../context/CustomComponentsContext";
 
+
 export default function LeftPanel({ components, onAddJsonComponent, onEditSavedComponent, onRenameComponent, onChangeIcon, onDeleteComponent }) {
   const [showJsonModal, setShowJsonModal] = useState(false);
   const [jsonInput, setJsonInput] = useState("");
-  const { customComponents } = useCustomComponents();
   const location = useLocation();
+  const { addCustomComponent } = useCustomComponents();
   const isComponentEditor = location.pathname === "/component-editor";
   const [widthPercent, setWidthPercent] = useState(16);
   const isResizing = useRef(false);
@@ -22,7 +23,7 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    if (components.length > 0){
+    if (components.length > 0) {
       setOpenSections(prev => {
         const newSections = { ...prev };
         components.forEach(section => {
@@ -65,7 +66,7 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
 
 
   /* ---------------- JSON Save ---------------- */
-  const handleSaveJsonComponent = () => {
+  const handleSaveJsonComponent = async () => {
     try {
       const raw = JSON.parse(jsonInput);
 
@@ -82,18 +83,21 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
       const parsed = {
         ...raw,
         id: `json-${Date.now()}`,
-        icon: getIconByName(raw.icon || "Square"),
+        iconName: raw.icon || "Square",
         children: Array.isArray(raw.children) ? raw.children : [],
         defaultProps: raw.defaultProps || {},
-        isRootCustom: true
       };
-
-      onAddJsonComponent?.(parsed);
+      await addCustomComponent({
+        componentName: parsed.label,
+        icon: raw.icon || "Square",
+        data: JSON.stringify([parsed]),
+      });
 
       toast.success("Component added successfully!");
       setJsonInput("");
       setShowJsonModal(false);
-    } catch {
+
+    } catch (err) {
       toast.error("Invalid JSON format!");
     }
   };
@@ -111,27 +115,7 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
       };
     })
     .filter((section) => section.items.length > 0);
-
-  const filteredCustomSection = {
-    title: "Custom Components",
-    items: customComponents
-      .filter((comp) =>
-        comp.label.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .map((comp) => ({
-        ...comp,
-        icon: getIconByName(comp.iconName || "Square"),
-        rank: 999,
-      })),
-  };
-
-
-  const finalSections = [
-    ...filteredSections,
-    !isComponentEditor && filteredCustomSection.items.length > 0 ? filteredCustomSection : null,
-  ].filter(Boolean);
-
-
+  const finalSections = filteredSections;
 
   return (
     <>
@@ -194,16 +178,31 @@ export default function LeftPanel({ components, onAddJsonComponent, onEditSavedC
               {/* CONTENT */}
               {(searchTerm || openSections[section.title]) && section.items.length > 0 && (
                 <div className="grid">
-                  {section.items.map(item => (
-                    <ComponentItem
-                      key={item.id}
-                      item={item}
-                      onEditSavedComponent={onEditSavedComponent}
-                      onRenameComponent={onRenameComponent}
-                      onChangeIcon={onChangeIcon}
-                      onDeleteComponent={onDeleteComponent}
-                    />
-                  ))}
+                  {section.items.map((item, index) => {
+                    const uniqueId = item.id || item._id || `${section.title}-${index}`;
+
+                    const draggableItem = {
+                      ...item,
+                      id: uniqueId,
+                      children: item.children || [],
+                      tag: item.tag || "div",
+                      rank: item.rank ?? 1,
+                      defaultProps: item.defaultProps || {},
+                      isRootCustom: item.isRootCustom || false,
+                    };
+
+                    return (
+                      <ComponentItem
+                        key={uniqueId}
+                        item={draggableItem}
+                        onEditSavedComponent={onEditSavedComponent}
+                        onRenameComponent={onRenameComponent}
+                        onChangeIcon={onChangeIcon}
+                        onDeleteComponent={onDeleteComponent}
+                      />
+                    );
+                  })}
+
                 </div>
               )}
             </div>
