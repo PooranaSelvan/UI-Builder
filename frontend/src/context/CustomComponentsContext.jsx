@@ -26,7 +26,7 @@ export const CustomComponentsProvider = ({ children, user }) => {
     if (!user?.userId) return;
 
     try {
-      const res = await axios.get(`${baseUrl}builder/components/user/${user.userId}`, {
+      const res = await axios.get(`${baseUrl}builder/components/${user.userId}`, {
         withCredentials: true,
       });
 
