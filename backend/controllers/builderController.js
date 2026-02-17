@@ -241,7 +241,7 @@ const deletePage = async (req, res) => {
                return res.status(400).json({ message: "Error Occurred" });
           }
 
-          return res.status(200).json({ message: "Pages Deleted Successfully!" });
+          return res.status(200).json({ message: "Page Deleted Successfully!" });
      });
 }
 

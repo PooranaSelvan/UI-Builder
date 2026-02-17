@@ -77,6 +77,11 @@ button {
   box-shadow: var(--btn-shadow-hover);
 }
 
+.primary-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Secondary Button */
 .secondary-button {
   background-color: var(--red-100);

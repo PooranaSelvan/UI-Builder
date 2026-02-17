@@ -8,16 +8,16 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
 import Loading from "../../components/Loading";
+import Button from "../../components/Button";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
+  let navigate = useNavigate();
   const [selectedApp, setSelectedApp] = useState(null);
   const [activeMenu, setActiveMenu] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
-
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -100,6 +100,7 @@ const Dashboard = () => {
     }
 
     try {
+      setLoading(true);
       let res = await axios.post(`${baseUrl}builder/pages/`, {
         projectId: selectedApp.id,
         pageName: name,
@@ -129,7 +130,10 @@ const Dashboard = () => {
 
       setIsModalOpen(false);
       toast.success("Page Created Successfully!");
+      setLoading(false);
+      navigate(`/workspace/${res.data.pageId}`, { replace: true });
     } catch (err) {
+      setLoading(false);
       console.log(err.response);
       toast.error(err.response?.data.message);
     }
@@ -144,6 +148,7 @@ const Dashboard = () => {
     }
 
     try {
+      setLoading(true);
       let res = await axios.post(`${baseUrl}builder/projects/`, {
         userId,
         projectName: name,
@@ -162,7 +167,9 @@ const Dashboard = () => {
 
       setIsModalOpen(false);
       toast.success("Project Created Successfully!");
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
       console.log(err);
       toast.error(err.response?.data.message);
     }
@@ -178,11 +185,17 @@ const Dashboard = () => {
     }
 
     try {
-      let res = await axios.delete(`${baseUrl}builder/projects/`, { withCredentials: true }, {
-        projectId
+      let res = await axios.delete(`${baseUrl}builder/projects/`, {
+        withCredentials: true, data: {
+          projectId
+        }
       });
 
-      setProjects(projects => projects.filter(ele => ele.projectId !== projectId));
+      setProjects(projects => projects.filter(ele => ele.id !== projectId));
+      if (selectedApp?.id === projectId) {
+        setSelectedApp(null);
+      }
+      setActiveMenu(null);
       toast.success("Project is Deleted Successfully!");
     } catch (error) {
       console.log(error);
@@ -199,14 +212,31 @@ const Dashboard = () => {
     }
 
     try {
-      let res = await axios.delete(`${baseUrl}builder/pages/`, { withCredentials: true }, {
-        pageId
+      let res = await axios.delete(`${baseUrl}builder/pages/`, {
+        withCredentials: true, data: {
+          pageId
+        }
       });
-      toast.success("Page is Deleted Successfully!");
-    } catch (error) {
-      console.log(error);
+
+      setActiveMenu(null);
+      setSelectedApp(project => ({
+        ...project,
+        pages: project.pages.filter(page => page.id !== pageId)
+      }));
+      setProjects(ele => ele.map(project => project.id === selectedApp.id ? { ...project, pages: project.pages.filter(page => page.id !== pageId) } : project));
+      toast.success("Page Deleted Successfully!");
+    } catch (err) {
+      console.log(err);
       toast.error(err.response?.data.message);
     }
+  }
+
+  const renameProject = async () => {
+
+  }
+
+  const renamePage = async () => {
+
   }
 
   if (loading) {
@@ -257,7 +287,7 @@ const Dashboard = () => {
                 activeMenu={activeMenu}
                 setActiveMenu={setActiveMenu}
                 setSelectedApp={setSelectedApp}
-                menuRef={menuRef}
+                handleDeleteProject={deleteProject}
               />
             ))}
           </div>
@@ -331,26 +361,25 @@ const Dashboard = () => {
                         }`}>
                       {page.status}
                     </span>
-                    <div className="menu-wrapper" ref={menuRef}>
+                    <div className="menu-wrapper">
                       <MoreVertical
                         size={20}
                         className="three-dots"
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setActiveMenu(activeMenu === index ? null : index)
-                        } />
+                        }} />
                       {activeMenu === index && (
-                        <div className="dropdown-menu">
+                        <div className="dropdown-menu" onClick={(e) => e.stopPropagation()} ref={menuRef}>
                           <div className="menu-item">
                             <Edit3 size={16} />
                             Rename
                           </div>
                           <div className="menu-item">
-                            <Copy size={16} />
-                            Duplicate
-                          </div>
-                          <div className="menu-item">
-                            <Eye size={16} />
-                            Preview
+                            <button style={{ width: "100%", borderRadius: "5px", color: "var(--primary)", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                              <Eye size={16} />
+                              Preview
+                            </button>
                           </div>
                           <div className="menu-item">
                             <Rocket size={16} />
@@ -358,8 +387,10 @@ const Dashboard = () => {
                           </div>
                           <div className="menu-divider" />
                           <div className="menu-item delete">
-                            <Trash2 size={16} />
-                            Delete
+                            <button onClick={(e) => { e.stopPropagation(); deletePage(page.id) }} style={{ width: "100%", borderRadius: "5px", color: "var(--primary)", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                              <Trash2 size={16} />
+                              Delete
+                            </button>
                           </div>
                         </div>
                       )}

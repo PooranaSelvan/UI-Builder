@@ -14,7 +14,7 @@ const FolderCard = ({
   activeMenu,
   setActiveMenu,
   setSelectedApp,
-  menuRef
+  handleDeleteProject
 }) => {
   return (
     <div
@@ -28,7 +28,6 @@ const FolderCard = ({
 
         <div
           className="menu-wrapper"
-          ref={menuRef}
           onClick={(e) => e.stopPropagation()}
         >
           <MoreVertical
@@ -45,18 +44,11 @@ const FolderCard = ({
                 <Pencil size={16} />
                 Rename
               </div>
-
-              <div className="menu-item">
-                <Copy size={16} />
-                Duplicate
-              </div>
-
               <div className="menu-divider" />
-
-              <div className="menu-item delete">
+              <button className="menu-item delete" style={{width : "100%", backgroundColor : "transparent"}} onClick={(e) => {e.stopPropagation(); handleDeleteProject(app.id)}}>
                 <Trash2 size={16} />
                 Delete
-              </div>
+              </button>
             </div>
           )}
         </div>
