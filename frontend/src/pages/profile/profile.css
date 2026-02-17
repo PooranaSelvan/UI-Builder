@@ -1,0 +1,172 @@
+.profile-container{
+    width: 100%;
+    background-color: #FEECEC;
+    padding: 2% 32%;
+}
+
+.profile-card{
+    background-color: white;
+    padding: 6% 4%;
+    box-shadow: 0px -10px 0px 0px #F15656;
+    border-radius: 15px;
+}
+
+.profile-image{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4%;
+}
+
+.profile-image div{
+    padding: 6%;
+    border-radius: 75px;
+    background-color: #E23B3B;
+    box-shadow: 7px 12px 29px -8px #E23B3B;
+}
+
+.profile-image div h1{
+    font-size: 40px;
+    font-weight: 300;
+    color: white;
+}
+
+.profile-image h3{
+    margin-top: 3%;
+}
+
+.profile-details{
+    width: 100%;
+    padding: 0 3%;
+}
+
+.profile-details h2{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4%;
+}
+
+.profile-details h2 span{
+    background-color: #FEE2E2;
+    padding: 5px 7px;
+    border-radius: 100%;
+    color: red;
+}
+
+.profile-form label{
+    display: block;
+    margin-bottom: 1%;
+}
+
+.profile-form input{
+    width: 100%;
+    padding: 2%;
+    border-radius: 25px;
+    background-color: #FEF8F8;
+    border: 1px solid #FEE2E2;
+    outline: none;
+    margin-bottom: 3%;
+    font-size: 18px;
+    font-weight: 300;
+}
+
+.profile-form .mail{
+    display: flex;
+    align-items: center;
+    background-color: #FEF8F8;
+    border: 1px solid #FEE2E2;
+    border-radius: 25px;
+    padding: 0 2%;
+    gap: 10px;
+    margin-bottom: 7%;
+}
+
+#personal-mail{
+    padding: 2%;
+    margin: 0;
+    font-size: 18px;
+    outline: none;
+    border: none;
+}
+
+.profile-form .hr{
+    width: 60%;
+    height: 1px;
+    margin-left: 20%;
+    background-color: #E23B3B;
+    margin-bottom: 4%;
+}
+
+.delete-account{
+    display: flex;
+    padding: 3%;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: #FEF8F8;
+    border: 1px solid #FEE2E2;
+}
+
+.delete-account .alert-icon{
+    padding: 12px 15px;
+    border-radius: 50px;
+    background-color: #FEE2E2;
+}
+
+.delete-description span{
+    color: var(--primary-active);
+    font-weight: 500;
+}   
+
+.delete-description p{
+    font-size: 12px;
+    color: #E23B3B;
+    font-weight: 300;
+}
+
+.profile-delete-btn{
+    padding: 2% 6%;
+    background-color: #FEE2E2;
+    border-radius: 10px;
+    color: var(--primary);
+    font-weight: 400;
+}
+
+.delete-account{
+    margin-bottom: 5%;
+}
+
+.save-changes{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 2% 0;
+    gap: 10px;
+}
+
+.cancel-btn{
+    padding: 2% 4%;
+    color: black;
+    border-radius: 10px;
+    border: 1px solid #FEE2E2;
+}
+
+.cancel-btn:hover{
+    background-color: #FEF2F2;
+    color: black;   
+}
+
+.save-changes-btn{
+    background-color: var(--primary);
+    padding: 2% 4%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    gap: 10px;
+    font-size: 16px;
+    border-radius: 15px;
+}
