@@ -13,6 +13,7 @@ export const generateToken = (res, userId) => {
           secure: isLive,
           sameSite: isLive ? "none" : "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000,
+          path : "/"
      });
 }
 
