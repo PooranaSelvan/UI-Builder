@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import "./RightSideBar.css";
 import "../../../index.css"
-import { Icon, Settings } from 'lucide-react';
+import { Icon, ListPlus, Settings } from 'lucide-react';
 import { v4 as uuidv4 } from "uuid";
 import { ChevronDown } from 'lucide-react';
 import { ChevronUp } from 'lucide-react';
@@ -29,16 +29,57 @@ const UNITS = ["px", "%", "rem", "em", "auto"];
 
 /*used to render the required events according to the component is selected */
 const EVENT_MAP = {
-    button: ["navigation", "visibility", "style"],
-    link: ["navigation", "style"],
-    menu: ["navigation", "visibility", "style"],
-    card: ["navigation", "visibility", "style"],
-    modal: ["visibility", "style"],
-    select: ["visibility", "style"],
-    tooltip: ["visibility", "style"],
+    div: ["visibility", "style"],
+    h2: ["visibility", "style"],
+    p: ["visibility", "style"],
     img: ["visibility", "style"],
-    text: ["visibility", "style"],
-    div: ["visibility", "style"]
+    button: ["navigation", "visibility", "style"],
+    a: ["navigation", "style"],
+    input: ["visibility", "style"],
+    textarea: ["visibility", "style"],
+    select: ["visibility", "style"],
+};
+
+const COMPONENT_PROPS_MAP = {
+    input: [
+        { key: "type", label: "Input Type", type: "select", options: ["text", "email", "password", "number", "tel", "url", "date", "checkbox", "radio"] },
+        { key: "placeholder", label: "Placeholder", type: "text" },
+        { key: "minLength", label: "Min Length", type: "number" },
+        { key: "maxLength", label: "Max Length", type: "number" },
+        { key: "min", label: "Min Value", type: "number" },
+        { key: "max", label: "Max Value", type: "number" },
+        { key: "required", label: "Required", type: "checkbox" },
+        { key: "disabled", label: "Disabled", type: "checkbox" },
+        { key: "readOnly", label: "Read Only", type: "checkbox" },
+    ],
+    button: [
+        { key: "type", label: "Button Type", type: "select", options: ["button", "submit", "reset"] },
+        { key: "disabled", label: "Disabled", type: "checkbox" },
+    ],
+    img: [
+        { key: "alt", label: "Alt Text", type: "text" },
+    ],
+    a: [
+        { key: "href", label: "URL", type: "text" },
+        { key: "target", label: "Target", type: "select", options: ["_self", "_blank", "_parent", "_top"] },
+        { key: "rel", label: "Rel", type: "text" },
+    ],
+    select: [
+        { key: "multiple", label: "Multiple Select", type: "checkbox" },
+        { key: "disabled", label: "Disabled", type: "checkbox" },
+        { key: "required", label: "Required", type: "checkbox" },
+    ],
+    textarea: [
+        { key: "placeholder", label: "Placeholder", type: "text" },
+        { key: "rows", label: "Rows", type: "number" },
+        { key: "cols", label: "Cols", type: "number" },
+        { key: "minLength", label: "Min Length", type: "number" },
+        { key: "maxLength", label: "Max Length", type: "number" },
+        { key: "disabled", label: "Disabled", type: "checkbox" },
+        { key: "readOnly", label: "Read Only", type: "checkbox" },
+        { key: "required", label: "Required", type: "checkbox" },
+        { key: "resize", label: "Resize", type: "select", options: ["both", "horizontal", "vertical", "none"] },
+    ],
 };
 
 const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) => {
@@ -75,6 +116,31 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
             setLoadingApi(false)
         }
     }
+
+    useEffect(() => {
+        if (!selectedComponent) return;
+
+        updateComponent(selectedComponent.id, (node) => {
+            node.defaultProps ??= {};
+            node.defaultProps.style ??= {};
+
+            const style = node.defaultProps.style;
+
+            style.paddingTop ??= "0px";
+            style.paddingRight ??= "0px";
+            style.paddingBottom ??= "0px";
+            style.paddingLeft ??= "0px";
+            style.marginTop ??= "0px";
+            style.marginRight ??= "0px";
+            style.marginBottom ??= "0px";
+            style.marginLeft ??= "0px";
+            style.borderBottomLeftRadius ??= "0px";
+            style.borderBottomRightRadius ??= "0px";
+            style.borderTopLeftRadius ??= "0px";
+            style.borderTopRightRadius ??= "0px";
+        });
+
+    }, [selectedComponent?.id]);
 
     const handleFiles = async (fileList) => {
         const file = fileList[0];
@@ -141,70 +207,92 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 });
                                             }} disabled />
                                         </div>
-                                        {selectedComponent.tag !== 'img' && (
-                                            <div className='content'>
-                                                <label htmlFor="">Content</label>
-                                                <input type="text" value={selectedComponent.content} onChange={(e) => {
-                                                    const value = e.target.value
-                                                    updateComponent(selectedComponent.id, (node) => {
-                                                        node.content = value;
-                                                    });
-
-                                                    if(error) {
-                                                        setError("");
-                                                    }
-                                                }}
-                                                onBlur={(e) => {
-                                                    const value = e.target.value;
-                                                    const hasChildren = selectedComponent.children?.length;
-
-                                                    if(!hasChildren && value.trim() === ""){
-                                                        setError("The content must contain a character")
-                                                    }
-                                                }}
+                                        {selectedComponent.tag === "input" && (
+                                            <div className="content">
+                                                <label>Value</label>
+                                                <input
+                                                    type="text"
+                                                    value={selectedComponent.defaultProps?.value || ""}
+                                                    onChange={(e) => {
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.value = e.target.value;
+                                                        });
+                                                    }}
                                                 />
-                                                {error && <p style={{color : "red", fontSize : "14px"}}>{error}</p>}
                                             </div>
                                         )}
-                                        {selectedComponent.tag === 'img' && (
-                                            <div className='content'>
-                                                <label htmlFor="">Source</label>
-                                                <input type="text" value={selectedComponent.defaultProps?.src} onChange={(e) => {
-                                                    updateComponent(selectedComponent.id, (node) => {
-                                                        /*Check for wheather the object is present in the selected component if not it will create the object and then store the data */
-                                                        node.defaultProps ??= {};
-                                                        node.defaultProps.src = e.target.value;
-                                                    })
-                                                }} />
+                                        {!["img", "video", "input"].includes(selectedComponent.tag) && (
+                                            <div className="content">
+                                                <label>Content</label>
+                                                <input
+                                                    type="text"
+                                                    value={selectedComponent.content || ""}
+                                                    onChange={(e) => {
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.content = e.target.value;
+                                                        });
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                        {["img", "video"].includes(selectedComponent.tag) && (
+                                            <div className="content">
+                                                <label>Source</label>
+                                                <input
+                                                    type="text"
+                                                    value={selectedComponent.defaultProps?.src || ""}
+                                                    onChange={(e) => {
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.src = e.target.value;
+                                                        });
+                                                    }}
+                                                />
                                             </div>
                                         )}
 
                                     </div>
                                 </Heading>
 
-                                <Heading icon={<Zap size={18}></Zap>} title={'Events'} >
-                                    <div className="properties-general properties-event">
-                                        <div>
-                                            <select value={eventType} onChange={(e) => {
-                                                setEventType(e.target.value)
-                                            }}>
-                                                <option value="">Select Event</option>
+                                <DynamicProps
+                                    selectedComponent={selectedComponent}
+                                    updateComponent={updateComponent}
+                                />
 
-                                                {allowedEvents.includes("navigation") && (
-                                                    <option value="navigation">Navigation Actions</option>
-                                                )}
+                                {selectedComponent?.tag === "select" && (
+                                    <SelectOption
+                                        selectedComponent={selectedComponent}
+                                        updateComponent={updateComponent}
+                                    />
+                                )}
 
-                                                {allowedEvents.includes("visibility") && (
-                                                    <option value="visibility">Visibility Actions</option>
-                                                )}
+                                {allowedEvents.length > 0 && (
+                                    <Heading icon={<Zap size={18}></Zap>} title={'Events'} >
+                                        <div className="properties-general properties-event">
+                                            <div>
+                                                <select value={eventType} onChange={(e) => {
+                                                    setEventType(e.target.value)
+                                                }}>
+                                                    <option value="">Select Event</option>
 
-                                                {allowedEvents.includes("style") && (
-                                                    <option value="style">Style & Layout Actions</option>
-                                                )}
-                                            </select>
+                                                    {allowedEvents.includes("navigation") && (
+                                                        <option value="navigation">Navigation Actions</option>
+                                                    )}
+
+                                                    {allowedEvents.includes("visibility") && (
+                                                        <option value="visibility">Visibility Actions</option>
+                                                    )}
+
+                                                    {allowedEvents.includes("style") && (
+                                                        <option value="style">Style & Layout Actions</option>
+                                                    )}
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Heading>
+                                    </Heading>
+                                )}
+
                                 {eventType !== "" && (
                                     <Heading icon={<Workflow size={18} />} title="Behavior">
                                         {eventType === "navigation" && (
@@ -267,6 +355,22 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                         })
                                                     }
                                                 />
+                                                <label>Border Color</label>
+
+                                                <ColorPalette
+                                                    value={
+                                                        selectedComponent.defaultProps?.events?.style?.borderColor || "#000000"
+                                                    }
+                                                    onChange={(color) =>
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.events ??= {};
+                                                            node.defaultProps.events.style ??= {};
+
+                                                            node.defaultProps.events.style.borderColor = color;
+                                                        })
+                                                    }
+                                                />
                                             </div>
                                         )}
 
@@ -312,50 +416,54 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <option value="none">None</option>
                                         </select>
                                     </div>
-                                    <div className='input-child'>
-                                        <label htmlFor="">Position</label>
-                                        <select value={selectedComponent?.defaultProps?.style?.position || "static"} onChange={(e) => {
+                                    {display !== "flex" && (
+                                        <div className='input-child'>
+                                            <label htmlFor="">Position</label>
+                                            <select value={selectedComponent?.defaultProps?.style?.position || "static"} onChange={(e) => {
+                                                updateComponent(selectedComponent.id, (node) => {
+                                                    node.defaultProps ??= {};
+                                                    node.defaultProps.style ??= {};
+                                                    node.defaultProps.style.position = e.target.value;
+                                                })
+                                            }}>
+                                                <option value="static">Static</option>
+                                                <option value="relative">Relative</option>
+                                                <option value="absolute">Absolute</option>
+                                                <option value="fixed">Fixed</option>
+                                                <option value="sticky">Sticky</option>
+                                            </select>
+                                        </div>
+                                    )}
+                                </div>
+                                {display !== 'flex' && (
+                                    <FourSideInput
+                                        label={'position value'}
+                                        names={["Top", "Right", "Bottom", "Left"]}
+                                        values={[
+                                            parseInt(selectedComponent.defaultProps?.style?.top || 0),
+                                            parseInt(selectedComponent.defaultProps?.style?.right) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.bottom) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.left) || 0,
+                                        ]}
+                                        onChange={(index, value) => {
                                             updateComponent(selectedComponent.id, (node) => {
+                                                const map = [
+                                                    "top",
+                                                    "right",
+                                                    "bottom",
+                                                    "left",
+                                                ];
+
                                                 node.defaultProps ??= {};
                                                 node.defaultProps.style ??= {};
-                                                node.defaultProps.style.position = e.target.value;
+
+                                                const actualValue = String(value).replace("px", "");
+
+                                                node.defaultProps.style[map[index]] = `${actualValue}px`;
                                             })
-                                        }}>
-                                            <option value="static">Static</option>
-                                            <option value="relative">Relative</option>
-                                            <option value="absolute">Absolute</option>
-                                            <option value="fixed">Fixed</option>
-                                            <option value="sticky">Sticky</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <FourSideInput
-                                    label={'position value'}
-                                    names={["Top", "Right", "Bottom", "Left"]}
-                                    values={[
-                                        parseInt(selectedComponent.defaultProps?.style?.top || 0),
-                                        parseInt(selectedComponent.defaultProps?.style?.right) || 0,
-                                        parseInt(selectedComponent.defaultProps?.style?.bottom) || 0,
-                                        parseInt(selectedComponent.defaultProps?.style?.left) || 0,
-                                    ]}
-                                    onChange={(index, value) => {
-                                        updateComponent(selectedComponent.id, (node) => {
-                                            const map = [
-                                                "top",
-                                                "right",
-                                                "bottom",
-                                                "left",
-                                            ];
-
-                                            node.defaultProps ??= {};
-                                            node.defaultProps.style ??= {};
-
-                                            const actualValue = String(value).replace("px", "");
-
-                                            node.defaultProps.style[map[index]] = `${actualValue}px`;
-                                        })
-                                    }}
-                                />
+                                        }}
+                                    />
+                                )}
                                 <div className="double-input">
                                     <div className='input-child'>
                                         <SizeInput
@@ -574,10 +682,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         label="Padding"
                                         names={["Top", "Right", "Bottom", "Left"]}
                                         values={[
-                                            parseInt(selectedComponent.defaultProps?.style?.paddingTop) || 0,
-                                            parseInt(selectedComponent.defaultProps?.style?.paddingRight) || 0,
-                                            parseInt(selectedComponent.defaultProps?.style?.paddingBottom) || 0,
-                                            parseInt(selectedComponent.defaultProps?.style?.paddingLeft) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.paddingTop) ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.paddingRight) ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.paddingBottom) ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.paddingLeft) ?? 0,
                                         ]}
                                         onChange={(index, value) => {
                                             updateComponent(selectedComponent.id, (node) => {
@@ -601,10 +709,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         label="Margin"
                                         names={["Top", "Right", "Bottom", "Left"]}
                                         values={[
-                                            parseInt(selectedComponent.defaultProps?.style?.marginTop) || 0,
-                                            parseInt(selectedComponent.defaultProps?.style?.marginRight) || 0,
-                                            parseInt(selectedComponent.defaultProps?.style?.marginBottom) || 0,
-                                            parseInt(selectedComponent.defaultProps?.style?.marginLeft) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.marginTop) ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.marginRight) ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.marginBottom) ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.marginLeft) ?? 0,
                                         ]}
                                         onChange={(index, value) => {
                                             updateComponent(selectedComponent.id, (node) => {
@@ -663,7 +771,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         </div>
                                     </div>
                                     <ColorPalette
-                                        value={selectedComponent.defaultProps?.style?.borderColor}
+                                        value={selectedComponent.defaultProps?.style?.borderColor ?? "#000000"}
                                         onChange={(v) =>
                                             updateComponent(selectedComponent.id, (node) => {
                                                 node.defaultProps ??= {};
@@ -677,10 +785,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         label="Border Radius"
                                         names={["Top", "Right", "Bottom", "Left"]}
                                         values={[
-                                            parseInt(selectedComponent.defaultProps?.style?.borderTopLeftRadius) || 0,
-                                            parseInt(selectedComponent.defaultProps?.style?.borderTopRightRadius) || 0,
-                                            parseInt(selectedComponent.defaultProps?.style?.borderBottomRightRadius) || 0,
-                                            parseInt(selectedComponent.defaultProps?.style?.borderBottomLeftRadius) || 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.borderTopLeftRadius) ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.borderTopRightRadius) ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.borderBottomRightRadius) ?? 0,
+                                            parseInt(selectedComponent.defaultProps?.style?.borderBottomLeftRadius) ?? 0,
                                         ]}
                                         onChange={(index, value) => {
                                             updateComponent(selectedComponent.id, (node) => {
@@ -1050,24 +1158,6 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                 <FileUpload onFilesAdded={handleFiles} />
                                 <ImportedFiles files={files} />
                             </Heading>
-                            <Heading icon={<Database size={18} />} title={'Database Connection'} >
-                                <div className="data-source">
-                                    <label htmlFor="">Data source</label>
-                                    <div className='data-row'>
-                                        <span className='data-icon'>
-                                            <Webhook size={12} />
-                                        </span>
-                                        <input type="text" value={'Postgre_SQL'} />
-                                        <span className='data-pencil'><Pencil size={12} /></span>
-                                    </div>
-                                </div>
-                                <div className="sql-editor">
-                                    <pre className="sql-code">
-                                        SELECT revenue, month FROM sales_2024 LIMIT 10
-                                    </pre>
-                                    <span className="sql-badge">SQL</span>
-                                </div>
-                            </Heading>
 
                             <Heading icon={<Webhook size={18} />} title={'API Connection'} >
                                 <div className="api-connection">
@@ -1309,6 +1399,131 @@ const SizeInput = ({ label, value, onChange }) => {
             </div>
         </div>
     );
+};
+
+const DynamicProps = ({ selectedComponent, updateComponent }) => {
+    const tag = selectedComponent?.tag;
+    const props = COMPONENT_PROPS_MAP[tag];
+
+    if (!props || props.length === 0) {
+        return null
+    }
+
+    const getValue = (key) => {
+        return selectedComponent?.defaultProps?.[key] ?? "";
+    }
+
+    const handleChange = (key, value) => {
+        updateComponent(selectedComponent.id, (node) => {
+            node.defaultProps ??= {};
+            node.defaultProps[key] = value;
+        });
+    }
+
+    return (
+        <Heading icon={<Settings size={18} />} title={'Component-Properties'}>
+            <div className='properties-general'>
+                {props.map((prop) => (
+                    <div key={prop.key}>
+                        <label htmlFor={prop.key}>{prop.label}</label>
+
+                        {prop.type === "text" && (
+                            <input
+                                id={prop.key}
+                                type="text"
+                                value={getValue(prop.key)}
+                                onChange={(e) => handleChange(prop.key, e.target.value)}
+                            />
+                        )}
+
+                        {prop.type === "number" && (
+                            <input
+                                id={prop.key}
+                                type="number"
+                                min={0}
+                                value={getValue(prop.key)}
+                                onChange={(e) => handleChange(prop.key, e.target.value)}
+                            />
+                        )}
+
+                        {prop.type === "select" && (
+                            <select
+                                id={prop.key}
+                                value={getValue(prop.key)}
+                                onChange={(e) => handleChange(prop.key, e.target.value)}
+                            >
+                                {prop.options.map((opt) => (
+                                    <option key={opt} value={opt}>{opt}</option>
+                                ))}
+                            </select>
+                        )}
+
+                        {prop.type === "checkbox" && (
+                            <label>
+                                <input
+                                    id='property-check'
+                                    type="checkbox"
+                                    checked={!!getValue(prop.key)}
+                                    onChange={(e) => handleChange(prop.key, e.target.checked)}
+                                />
+                                {/* {prop.label} */}
+                            </label>
+
+                        )}
+                    </div>
+                ))}
+            </div>
+        </Heading>
+    );
+};
+
+const SelectOption = ({ selectedComponent, updateComponent }) => {
+    const options = selectedComponent.children ?? [];
+
+    const addOption = () => {
+        updateComponent(selectedComponent.id, (node) => {
+            node.children ??= [];
+            node.children.push({
+                tag: 'option',
+                content: "New Option",
+                defaultProps: { value: Date.now().toString() }
+            })
+        })
+    }
+
+    const updateOption = (index, value) => {
+        updateComponent(selectedComponent.id, (node) => {
+            node.children[index].content = value;
+        })
+    }
+
+    const deleteOption = (index) => {
+        updateComponent(selectedComponent.id, (node) => {
+            node.children.splice(index, 1);
+        });
+    }
+
+    return (
+        <>
+            <Heading icon={<ListPlus size={18} />} title={'Select options'}>
+                {options.map((option, index) => (
+                    <>
+                        <div key={index} className='image-input option-row'>
+                            <input
+                                type="text"
+                                value={option.content || ""}
+                                onChange={(e) => {
+                                    updateOption(index, e.target.value);
+                                }} />
+
+                            <button onClick={() => deleteOption(index)}>Delete</button>
+                        </div>
+                    </>
+                ))}
+                <button onClick={addOption} className='add-option'>Add option</button>
+            </Heading>
+        </>
+    )
 };
 
 
