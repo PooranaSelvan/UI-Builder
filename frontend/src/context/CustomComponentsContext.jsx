@@ -1,6 +1,6 @@
-import axios from "axios";
 import { createContext, useState, useEffect, useContext } from "react";
 import toast from "react-hot-toast";
+import api from "../utils/axios.js";
 
 export const CustomComponentsContext = createContext(null);
 
@@ -19,16 +19,12 @@ export const CustomComponentsProvider = ({ children, user }) => {
     ]);
   };
 
-  const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
-
   // FETCH COMPONENTS
   const fetchCustomComponents = async () => {
     if (!user?.userId) return;
 
     try {
-      const res = await axios.get(`${baseUrl}builder/components/${user.userId}`, {
-        withCredentials: true,
-      });
+      const res = await api.get(`/builder/components/${user.userId}`);
 
       const normalized = (res.data.components || []).map(c => ({
         _id: c._id,
@@ -52,7 +48,7 @@ export const CustomComponentsProvider = ({ children, user }) => {
     if (!user?.userId) return null;
 
     try {
-      const res = await axios.post(`${baseUrl}builder/components`, { userId: user.userId, ...payload }, { withCredentials: true });
+      const res = await api.post(`builder/components`, { userId: user.userId, ...payload });
       const saved = res.data.component || res.data;
       addCustomComponentToState(saved);
 
@@ -69,9 +65,8 @@ export const CustomComponentsProvider = ({ children, user }) => {
     if (!user?.userId) return;
 
     try {
-      await axios.delete(`${baseUrl}builder/components/${componentId}`, {
-        data: { userId: user.userId },
-        withCredentials: true,
+      await api.delete(`/builder/components/${componentId}`, {
+        data: { userId: user.userId }
       });
 
       setCustomComponents(prev => prev.filter(c => c._id !== componentId));

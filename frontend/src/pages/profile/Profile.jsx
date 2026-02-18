@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import './profile.css'
 import { User, TriangleAlert } from 'lucide-react';
 import Button from '../../components/Button';
-import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Loading from "../../components/Loading";
+import api from "../../utils/axios.js";
 
 const Profile = ({ setIsAuthenticated }) => {
   const [user, setUser] = useState(null);
-  const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
   let navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -17,9 +16,7 @@ const Profile = ({ setIsAuthenticated }) => {
     async function fetchUser(params) {
       setLoading(true);
       try {
-        let res = await axios.get(`${baseUrl}checkme`, {
-          withCredentials: true
-        });
+        let res = await api.get(`/checkme`);
 
         if (res.data?.user) {
           setUser(res.data.user);
@@ -39,8 +36,7 @@ const Profile = ({ setIsAuthenticated }) => {
     if (window.confirm("Are you sure want to delete your account?")) {
       setLoading(true);
       try {
-        let res = await axios.delete(`${baseUrl}users/del`, {
-          withCredentials: true,
+        let res = await api.delete(`/users/del`, {
           data: {
             userId: user?.userId
           }

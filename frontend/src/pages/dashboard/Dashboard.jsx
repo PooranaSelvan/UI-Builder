@@ -5,8 +5,8 @@ import CreateForm from "./CreateForm";
 import { Plus, MoreVertical, FileText, Search, Clock, ArrowRight, Pencil, Copy, Edit3, Eye, Trash2, Rocket } from "lucide-react";
 import "./Dashboard.css";
 import toast from "react-hot-toast";
-import axios from "axios";
 import Loading from "../../components/Loading";
+import api from "../../utils/axios.js";
 
 const Dashboard = () => {
   let navigate = useNavigate();
@@ -15,7 +15,6 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
-  const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -31,7 +30,7 @@ const Dashboard = () => {
 
 
   const getUserId = async () => {
-    let res = await axios.get(`${baseUrl}checkme/`, { withCredentials: true });
+    let res = await api.get("/checkme/");
 
     return res.data.user.userId;
   }
@@ -70,7 +69,7 @@ const Dashboard = () => {
     let userId = await getUserId();
 
     try {
-      let res = await axios.get(`${baseUrl}builder/pages/${userId}`, { withCredentials: true });
+      let res = await api.get(`/builder/pages/${userId}`);
 
       let formattedJSON = buildJSON(res.data.pages);
       setProjects(formattedJSON);
@@ -99,7 +98,7 @@ const Dashboard = () => {
 
     try {
       setLoading(true);
-      let res = await axios.post(`${baseUrl}builder/pages/`, {
+      let res = await api.post("/builder/pages/", {
         projectId: selectedApp.id,
         pageName: name,
         description,
@@ -147,7 +146,7 @@ const Dashboard = () => {
 
     try {
       setLoading(true);
-      let res = await axios.post(`${baseUrl}builder/projects/`, {
+      let res = await api.post("/builder/projects/", {
         userId,
         projectName: name,
         description
@@ -183,8 +182,8 @@ const Dashboard = () => {
     }
 
     try {
-      let res = await axios.delete(`${baseUrl}builder/projects/`, {
-        withCredentials: true, data: {
+      let res = await api.delete("/builder/projects/", {
+        data: {
           projectId
         }
       });
@@ -210,8 +209,8 @@ const Dashboard = () => {
     }
 
     try {
-      let res = await axios.delete(`${baseUrl}builder/pages/`, {
-        withCredentials: true, data: {
+      let res = await api.delete("/builder/pages/", {
+        data: {
           pageId
         }
       });
@@ -245,7 +244,7 @@ const Dashboard = () => {
 
     setLoading(true);
     try {
-      let res = await axios.get(`${baseUrl}builder/page/${pageId}`);
+      let res = await api.get(`/builder/page/${pageId}`);
 
       if (res.data.data) {
         console.log(res.data.data);

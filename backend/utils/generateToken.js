@@ -1,30 +1,28 @@
 import jwt from "jsonwebtoken";
 
 
-export const generateToken = (res, userId) => {
-     let token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-          expiresIn: "7d"
-     });
-
-     let isLive = process.env.SITE_TYPE === "production" || process.env.NODE_ENV === "production";
-
-     res.cookie("authauth", token, {
-          httpOnly: true,
-          secure: isLive,
-          sameSite: isLive ? "none" : "lax",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-          path : "/"
-     });
-}
+export const generateToken = (userId) => {
+     return jwt.sign(
+          { id: userId },
+          process.env.JWT_SECRET,
+          { expiresIn: "7d" }
+     );
+};
 
 
 export const verifyUser = (req, res, next) => {
      try {
-          let token = req.cookies.authauth;
+          const authHeader = req.headers.authorization;
 
-          if (!token) {
-               return res.status(401).json({ message: "Unauthorized - No Token Provided" });
+          if (!authHeader) {
+               return res.status(401).json({ message: "Authorization header missing" });
           }
+
+          if (!authHeader.startsWith("Bearer ")) {
+               return res.status(401).json({ message: "Invalid token format" });
+          }
+
+          const token = authHeader.split(" ")[1];
 
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
           req.user = decoded;

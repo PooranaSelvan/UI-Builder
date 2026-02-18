@@ -15,7 +15,11 @@ import con from "./db/config.js";
 const PORT = process.env.PORT || 5000;
 const app = express();
 dotenv.config();
-app.use(cors({ origin: "*", credentials: true}));
+app.use(cors({
+     origin: "*",
+     methods: ["GET", "POST", "PUT", "DELETE"],
+     allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
@@ -39,6 +43,11 @@ app.use("/builder/", builderRoutes);
 // Checking Whether the User is Logged in or Not
 app.get("/checkme", verifyUser, async (req, res) => {
      let user = await getUserById(req.user.id);
+
+     if (!user) {
+          return res.status(404).json({ message: "User not found" });
+     }
+
      res.json({ user });
 });
 
@@ -89,9 +98,9 @@ app.get("/auth/zoho/callback", async (req, res) => {
                          }
 
                          let userId = result.insertId;
-                         generateToken(res, userId);
+                         let token = generateToken(userId);
 
-                         return res.redirect(siteUrl);
+                         return res.redirect(`${siteUrl}?token=${token}`);
                     });
                } else {
                     con.query(loginUserQuery, [zohoUser.Email], async (err, result) => {
@@ -105,10 +114,9 @@ app.get("/auth/zoho/callback", async (req, res) => {
                          }
 
                          let user = result[0];
-                         generateToken(res, user.userId);
+                         let token = generateToken(user.userId);
 
-                         
-                         return res.redirect(siteUrl);
+                         return res.redirect(`${siteUrl}?token=${token}`);
                     });
                }
           } else {

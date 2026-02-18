@@ -4,14 +4,13 @@ import "./navbar.css";
 import Button from './Button';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Menu, X, Settings, User, LogOut, CircleUserRound } from 'lucide-react';
-import axios from "axios";
 import toast from 'react-hot-toast';
+import api from "../utils/axios.js";
 
 const Navbar = ({ isAuthenticated, setIsAuthenticated, user }) => {
   const [open, setOpen] = useState(false);
   const [openDropDown, setDropDown] = useState(false);
   let dropDownRef = useRef(null);
-  const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -28,10 +27,11 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, user }) => {
 
   const logoutHandler = async () => {
     try {
-      let res = await axios.get(`${baseUrl}auth/logout`, { withCredentials: true });
+      let res = await api.get("/auth/logout");
       // console.log(res.data);
-      toast.success(res.data.message);
 
+      localStorage.removeItem("token");
+      toast.success(res.data.message);
       setIsAuthenticated(false);
     } catch (err) {
       setIsAuthenticated(true);

@@ -13,13 +13,12 @@ import "./workspace.css";
 import Button from "../../components/Button.jsx";
 import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save } from 'lucide-react';
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import api from "../../utils/axios.js";
 
 const Workspace = ({ isAuthenticated }) => {
   const [components, setComponents] = useState([]);
   const [zoom, setZoom] = useState(1);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
-  const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
   const { pageId } = useParams();
   const { customComponents } = useContext(CustomComponentsContext);
 
@@ -27,9 +26,7 @@ const Workspace = ({ isAuthenticated }) => {
   useEffect(() => {
     async function fetchComponents() {
       try {
-        let res = await axios.get(`${baseUrl}builder/page/${pageId}`, {
-          withCredentials: true
-        });
+        let res = await api.get(`/builder/page/${pageId}`);
 
         // console.log(res.data);
 
@@ -51,9 +48,9 @@ const Workspace = ({ isAuthenticated }) => {
     }
 
     try {
-      let res = await axios.put(`${baseUrl}builder/pages/${pageId}`, {
+      let res = await api.put(`/builder/pages/${pageId}`, {
         data: components
-      }, { withCredentials: true });
+      });
 
       localStorage.setItem("previewComponents", JSON.stringify(components));
       toast.success("Pages Saved Successfully!");

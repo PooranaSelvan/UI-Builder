@@ -36,9 +36,9 @@ const registerUser = async (req, res) => {
 
                let userId = result.insertId;
 
-               generateToken(res, userId);
+               let token = generateToken(userId);
 
-               return res.status(200).json({ message: "SignUp Successful!" });
+               return res.status(200).json({ token, message: "SignUp Successful!" });
           });
      } catch (error) {
           console.log(error);
@@ -52,12 +52,8 @@ const loginUser = async (req, res) => {
      if (!email || !password) {
           return res.status(400).json({ message: "Email and password required" });
      }
-
      if (!validator.isEmail(email)) {
           return res.status(400).json({ message: "Invalid Email Format!" });
-     }
-     if (!validator.isStrongPassword(password)) {
-          return res.status(400).json({ message: "Not a Strong Password!" });
      }
 
      con.query(loginUserQuery, [email], async (err, result) => {
@@ -77,11 +73,11 @@ const loginUser = async (req, res) => {
                return res.status(401).json({ message: "Invalid Credentials" });
           }
 
-          generateToken(res, user.userId);
+          let token = generateToken(user.userId);
 
 
           if (result.length > 0) {
-               return res.status(200).json({ message: "Login Successful!" });
+               return res.status(200).json({ token, message: "Login Successful!" });
           }
      });
 }

@@ -6,7 +6,7 @@ import { EyeOff } from 'lucide-react';
 import ZohoLogo from "../../assets/zohologo.ico";
 import { NavLink, useNavigate } from "react-router-dom";
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import api from "../../utils/axios.js";
 
 const buttonStyle = {
     width: '100%',
@@ -48,15 +48,17 @@ const LoginPage = ({ setIsAuthenticated }) => {
         }
 
         try {
-            let res = await axios.post(`${baseUrl}users/login/`, {
+            let res = await api.post(`/users/login/`, {
                 email,
                 password
-            }, { withCredentials: true });
+            });
+
+            localStorage.setItem("token", res.data.token);
             setIsAuthenticated(true);
             toast.success(res.data.message);
             navigate("/");
         } catch (err) {
-            console.log(err);
+            console.log(err.response);
             setIsAuthenticated(false);
             toast.error(err.response?.data.message);
         }

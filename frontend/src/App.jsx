@@ -10,7 +10,6 @@ import ComponentEditor from './pages/component-editor/ComponentEditor';
 import { Toaster } from 'react-hot-toast';
 import PreviewCanvas from './pages/workspace/preview/PreviewCanvas';
 import { useEffect } from 'react';
-import axios from "axios";
 import ComponentEditorPreview from "./pages/component-editor/ComponentEditorPreview.jsx";
 import { CustomComponentsProvider } from "./context/CustomComponentsContext";
 import Dashboard from "./pages/dashboard/Dashboard.jsx";
@@ -18,21 +17,19 @@ import Features from "./pages/features/Features.jsx";
 import Templates from "./pages/templates/Templates.jsx";
 import Profile from "./pages/profile/Profile.jsx";
 import Publish from "./pages/publish/Publish.jsx";
+import api from "./utils/axios.js";
 
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   let location = useLocation();
-  const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
 
 
   useEffect(() => {
     const checkMe = async () => {
       try {
-        let res = await axios.get(`${baseUrl}checkme`, {
-          withCredentials: true
-        });
+        let res = await api.get("/checkme");
 
         if (res.data?.user) {
           setIsAuthenticated(true);
@@ -41,13 +38,26 @@ function App() {
           setIsAuthenticated(false);
         }
       } catch (err) {
+        console.log(err.response);
         setIsAuthenticated(false);
         setUser(null);
       }
     }
 
     checkMe();
+
+
+    let urlToken = new URLSearchParams(window.location.search);
+    let token = urlToken.get("token");
+
+    if (token) {
+      localStorage.setItem("token", token);
+      window.history.replaceState({}, document.title, "/");
+    }
   }, []);
+
+
+
   const hideNavbar = location.pathname.startsWith("/preview") || location.pathname.startsWith("/component-editor-preview") || location.pathname.startsWith("/publish");
 
   return (
@@ -69,7 +79,7 @@ function App() {
           <Route path="/component-editor-preview" element={<ComponentEditorPreview />} />
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/profile' element={<Profile setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path='/publish/:pageId' element={<Publish />}/>
+          <Route path='/publish/:pageId' element={<Publish />} />
         </Routes>
         <Toaster />
       </>

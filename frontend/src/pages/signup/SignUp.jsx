@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import './SignUp.css';
 import { Eye, EyeOff, User, Mail, Lock, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
-import axios from "axios";
 import ZohoLogo from "../../assets/zohologo.ico";
 import toast from 'react-hot-toast';
+import api from "../../utils/axios.js";
 
 
 const SignUp = ({ setIsAuthenticated }) => {
@@ -39,11 +39,13 @@ const SignUp = ({ setIsAuthenticated }) => {
     }
 
     try {
-      let res = await axios.post(`${baseUrl}users/signup/`, {
+      let res = await api.post(`/users/signup/`, {
         name,
         email,
         password
-      }, { withCredentials: true });
+      });
+
+      localStorage.setItem("token", res.data.token);
       setIsAuthenticated(true);
       toast.success(res.data.message);
       navigate("/");
