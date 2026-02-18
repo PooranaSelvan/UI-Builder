@@ -152,6 +152,19 @@
     background-color: #F9FAFB;
 }
 
+.properties-general div select{
+    padding: 3%;
+    color: gray;
+    background-color: #F9FAFB;
+    border-radius: 5px;
+    border: 1px solid #e5e7eb;
+    width: 100%;
+}
+
+#property-check{
+    width: 30%;
+}
+
 .properties-event div select {
     padding: 3%;
     color: gray;
@@ -224,7 +237,6 @@
 .input-child {
     width: 48%;
 }
-
 
 .input-child select {
     border-radius: 5px;
@@ -493,6 +505,7 @@
     border: 1px solid #e5e7eb;
     background-color: #F9FAFB;
     padding: 2%;
+    margin-bottom: 4%;
 }
 
 .image-input button {
@@ -504,6 +517,15 @@
     padding: 2%;
     cursor: pointer;
     border-radius: 5px;
+    margin-bottom: 4%;
+}
+
+.add-option{
+    padding: 2% 4%;
+    background-color: #dc2626;
+    color: white;
+    border-radius: 5px;
+    font-weight: 400;
 }
 
 .border {
