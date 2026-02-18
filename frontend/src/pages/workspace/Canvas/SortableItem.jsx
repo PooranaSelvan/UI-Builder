@@ -29,17 +29,15 @@ const SortableItem = ({ ele, isSelected, onSelect, selectedComponentId }) => {
           transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : "",
           transition,
           border: isSelected ? "2px solid var(--red-300)" : "none",
-          position : "relative"
+          position: "relative"
      };
 
      return (
-          <div ref={(node) => { setNodeRef(node); setDropRef(node) }} style={style} {...attributes} onDoubleClick={selectComponent} {...listeners}>
+          <div ref={(node) => { setNodeRef(node); setDropRef(node) }} style={style} {...attributes} onDoubleClick={selectComponent} {...listeners} className="test-component">
                {isVoid ? (
-                    <div onClick={selectComponent}>
-                         {React.createElement(tag, defaultProps)}
-                    </div>
+                    React.createElement(tag, { ...defaultProps, onClick: selectComponent })
                ) : (
-                    React.createElement(tag, {...defaultProps, onClick: selectComponent}, children?.length > 0 ? children.map((child) => (<SortableItem key={child.id} ele={child} isSelected={child.id === selectedComponentId} selectedComponentId={selectedComponentId} onSelect={onSelect} />)) : content)
+                    React.createElement(tag, { ...defaultProps, onClick: selectComponent }, children?.length > 0 ? children.map((child) => (<SortableItem key={child.id} ele={child} isSelected={child.id === selectedComponentId} selectedComponentId={selectedComponentId} onSelect={onSelect} />)) : content)
                )}
           </div>
      );

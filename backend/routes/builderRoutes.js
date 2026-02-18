@@ -1,5 +1,5 @@
 import express from "express";
-import { getPages, savePage, getCustomComponents, saveCustomComponent, getProjects, saveProject, updatePage, getPageByPageId, deleteProject, deletePage, deleteCustomComponent, deleteAllCustomComponent } from "../controllers/builderController.js";
+import { getPages, savePage, getCustomComponents, saveCustomComponent, getProjects, saveProject, updatePage, getPageByPageId, deleteProject, deletePage, deleteCustomComponent, deleteAllCustomComponent, getPublishedPage } from "../controllers/builderController.js";
 
 const router = express.Router();
 
@@ -20,6 +20,10 @@ router.route("/pages").delete(deletePage);
 router.route("/projects/:userId").get(getProjects);
 router.route("/projects").post(saveProject);
 router.route("/projects").delete(deleteProject);
+
+
+// Published
+router.route("/publish/:pageId").get(getPublishedPage);
 
 
 export default router;

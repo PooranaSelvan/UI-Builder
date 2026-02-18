@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Folder,
   MoreVertical,
@@ -16,6 +16,18 @@ const FolderCard = ({
   setSelectedApp,
   handleDeleteProject
 }) => {
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setActiveMenu(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   return (
     <div
       className="folder-card"
@@ -39,13 +51,13 @@ const FolderCard = ({
           />
 
           {activeMenu === index && (
-            <div className="dropdown-menu">
+            <div className="dropdown-menu" ref={menuRef}>
               <div className="menu-item">
                 <Pencil size={16} />
                 Rename
               </div>
               <div className="menu-divider" />
-              <button className="menu-item delete" style={{width : "100%", backgroundColor : "transparent"}} onClick={(e) => {e.stopPropagation(); handleDeleteProject(app.id)}}>
+              <button className="menu-item delete" style={{ width: "100%", backgroundColor: "transparent" }} onClick={(e) => { e.stopPropagation(); handleDeleteProject(app.id) }}>
                 <Trash2 size={16} />
                 Delete
               </button>

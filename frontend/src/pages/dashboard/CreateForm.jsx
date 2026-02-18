@@ -36,6 +36,33 @@ export default function CreateForm({ isOpen, onClose, title, nameLabel, descript
     setDescription("");
   }
 
+  const formDatas = [
+    {
+      tag : "label",
+      content : nameLabel
+    }, 
+    {
+      tag : "input",
+      type : "text",
+      placeholder : `Enter ${nameLabel.toLowerCase()}...`,
+      value : name,
+      defaultProps : {
+        onChange : (e) => setName(e.target.value)
+      }
+    }, 
+    {
+      tag : "label",
+      content : descriptionLabel
+    },
+    {
+      tag : "textarea",
+      value : description,
+      defaultProps : {
+        onChange : (e) => setDescription(e.target.value)
+      }
+    }
+  ];
+
   return (
     <div className="modal-overlay">
       <div className="modal-box">
@@ -52,17 +79,13 @@ export default function CreateForm({ isOpen, onClose, title, nameLabel, descript
         </div>
 
         <div className="modal-body">
-          <label>{nameLabel}</label>
-          <input
-            type="text"
-            placeholder={`Enter ${nameLabel.toLowerCase()}...`}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <form action="" onSubmit={handleCreate}>
+            <label>{nameLabel}</label>
+            <input type="text" placeholder={`Enter ${nameLabel.toLowerCase()}...`} value={name} onChange={(e) => setName(e.target.value)} />
 
-          <label>{descriptionLabel}</label>
-          <textarea placeholder="Brief description..." value={description}
-            onChange={(e) => setDescription(e.target.value)} />
+            <label>{descriptionLabel}</label>
+            <textarea placeholder="Brief description..." value={description} onChange={(e) => setDescription(e.target.value)} />
+          </form>
         </div>
 
         <div className="modal-footer">

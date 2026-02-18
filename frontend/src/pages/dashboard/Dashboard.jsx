@@ -6,9 +6,7 @@ import { Plus, MoreVertical, FileText, Search, Clock, ArrowRight, Pencil, Copy, 
 import "./Dashboard.css";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { formatDistanceToNow } from "date-fns";
 import Loading from "../../components/Loading";
-import Button from "../../components/Button";
 
 const Dashboard = () => {
   let navigate = useNavigate();
@@ -239,6 +237,30 @@ const Dashboard = () => {
 
   }
 
+  const handlePreviewpage = async (pageId) => {
+    if (!pageId) {
+      toast.error("Invalid Page Id!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      let res = await axios.get(`${baseUrl}builder/page/${pageId}`);
+
+      if (res.data.data) {
+        console.log(res.data.data);
+        localStorage.setItem("previewComponents", JSON.stringify(res?.data.data));
+        window.open("/preview", "_blank");
+      } else {
+        toast.error("No preview Found!");
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="dashboard-container">
@@ -348,17 +370,14 @@ const Dashboard = () => {
             <div key={index} className="page-card">
               <div className="page-top">
                 {/* HEADER */}
+                {console.log(page)}
                 <div className="page-header">
                   <div className="folder-icon folder-color">
                     <FileText size={26} />
                   </div>
                   <br />
                   <div className="page-header-right">
-                    <span
-                      className={`status ${page.status === "Published"
-                        ? "published"
-                        : "draft"
-                        }`}>
+                    <span className={`status ${page.status === "Published" ? "published" : "draft"}`}>
                       {page.status}
                     </span>
                     <div className="menu-wrapper">
@@ -372,18 +391,22 @@ const Dashboard = () => {
                       {activeMenu === index && (
                         <div className="dropdown-menu" onClick={(e) => e.stopPropagation()} ref={menuRef}>
                           <div className="menu-item">
-                            <Edit3 size={16} />
-                            Rename
+                            <button style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                              <Edit3 size={16} />
+                              Rename
+                            </button>
                           </div>
                           <div className="menu-item">
-                            <button style={{ width: "100%", borderRadius: "5px", color: "var(--primary)", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                            <button onClick={(e) => { e.stopPropagation(); handlePreviewpage(page.id) }} style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
                               <Eye size={16} />
                               Preview
                             </button>
                           </div>
                           <div className="menu-item">
-                            <Rocket size={16} />
-                            Publish
+                            <button style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                              <Rocket size={16} />
+                              Publish
+                            </button>
                           </div>
                           <div className="menu-divider" />
                           <div className="menu-item delete">
@@ -410,12 +433,6 @@ const Dashboard = () => {
 
               {/* FOOTER */}
               <div className="page-footer">
-                {/* <div className="last-modified">
-                  <Clock size={14} />
-                  <span>
-                    {page.modified ? formatDistanceToNow(new Date(page.modified), { addSuffix: true }) : "Just now"}
-                  </span>
-                </div> */}
                 <div
                   className="open-page"
                   onClick={() => navigate(`/workspace/${page.id}`)}>

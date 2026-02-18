@@ -1,5 +1,5 @@
-import { useEffect, useState,useContext } from "react";
-import { DndContext } from "@dnd-kit/core";
+import { useEffect, useState, useContext } from "react";
+import { DndContext, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import LeftPanel from "./LeftSideBar/LeftPanel";
 import Canvas from "./Canvas/Canvas";
@@ -15,7 +15,7 @@ import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save } from 
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-const Workspace = () => {
+const Workspace = ({ isAuthenticated }) => {
   const [components, setComponents] = useState([]);
   const [zoom, setZoom] = useState(1);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
@@ -45,6 +45,11 @@ const Workspace = () => {
 
 
   const handleSavePage = async () => {
+    if (!isAuthenticated) {
+      toast.error("Login to Save Page!");
+      return;
+    }
+
     try {
       let res = await axios.put(`${baseUrl}builder/pages/${pageId}`, {
         data: components
@@ -340,38 +345,46 @@ const Workspace = () => {
       return;
     }
 
-    window.open("/preview", "_blank");
-
     localStorage.setItem("previewComponents", JSON.stringify(components));
+    window.open("/preview", "_blank");
   }
 
   const combinedComponents = [
     ...componentLibrary,
     ...(customComponents.length
       ? [
-          {
-            title: "Custom Components",
-            type: "grid",
-            items: customComponents.map(c => ({
-              id: c._id,
-              originalId: c._id,
-              label: c.componentName,
-              iconName: c.icon || "Square",
-              isRootCustom: true,
-              children: c.data ? JSON.parse(c.data) : [],
-            })),
-          },
-        ]
+        {
+          title: "Custom Components",
+          type: "grid",
+          items: customComponents.map(c => ({
+            id: c._id,
+            originalId: c._id,
+            label: c.componentName,
+            iconName: c.icon || "Square",
+            isRootCustom: true,
+            children: c.data ? JSON.parse(c.data) : [],
+          })),
+        },
+      ]
       : []),
   ];
+
+
   
+  let sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8
+      }
+    })
+  );
 
 
   // console.log(components);
 
   return (
     <>
-      <DndContext onDragEnd={handleDragEnd}>
+      <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
         <div style={{ display: "flex", height: "93vh", overflow: "hidden", position: "relative" }}>
           <div className="workspace-topbar">
             <div className="workspace-topbar-screens">

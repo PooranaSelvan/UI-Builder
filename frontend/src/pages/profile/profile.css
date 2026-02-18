@@ -1,17 +1,20 @@
-.profile-container{
-    width: 100%;
+.profile-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
     background-color: #FEECEC;
-    padding: 2% 32%;
+    min-height: 100vh;
 }
 
-.profile-card{
+.profile-card {
     background-color: white;
-    padding: 6% 4%;
-    box-shadow: 0px -10px 0px 0px #F15656;
+    padding: 50px 40px;
+    box-shadow: 0px -5px 1px 0px var(--primary);
     border-radius: 15px;
 }
 
-.profile-image{
+.profile-image {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,29 +22,29 @@
     margin-bottom: 4%;
 }
 
-.profile-image div{
+.profile-image div {
     padding: 6%;
     border-radius: 75px;
-    background-color: #E23B3B;
-    box-shadow: 7px 12px 29px -8px #E23B3B;
+    background-color: var(--primary);
+    box-shadow: 7px 12px 29px -8px var(--red-500);
 }
 
-.profile-image div h1{
+.profile-image div h1 {
     font-size: 40px;
     font-weight: 300;
     color: white;
 }
 
-.profile-image h3{
+.profile-image h3 {
     margin-top: 3%;
 }
 
-.profile-details{
+.profile-details {
     width: 100%;
-    padding: 0 3%;
+    padding-top: 20px;
 }
 
-.profile-details h2{
+.profile-details h2 {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -50,19 +53,13 @@
     margin-bottom: 4%;
 }
 
-.profile-details h2 span{
-    background-color: #FEE2E2;
-    padding: 5px 7px;
-    border-radius: 100%;
-    color: red;
-}
 
-.profile-form label{
+.profile-form label {
     display: block;
     margin-bottom: 1%;
 }
 
-.profile-form input{
+.profile-form input {
     width: 100%;
     padding: 2%;
     border-radius: 25px;
@@ -74,7 +71,7 @@
     font-weight: 300;
 }
 
-.profile-form .mail{
+.profile-form .mail {
     display: flex;
     align-items: center;
     background-color: #FEF8F8;
@@ -85,7 +82,7 @@
     margin-bottom: 7%;
 }
 
-#personal-mail{
+#personal-mail {
     padding: 2%;
     margin: 0;
     font-size: 18px;
@@ -93,152 +90,131 @@
     border: none;
 }
 
-.profile-form .hr{
-    width: 60%;
+.profile-form .hr {
+    width: 100%;
     height: 1px;
-    margin-left: 20%;
-    background-color: #E23B3B;
+    background-color: var(--red-200);
     margin-bottom: 4%;
 }
 
-.delete-account{
+.delete-account {
     display: flex;
+    flex-wrap: wrap;
     padding: 3%;
     align-items: center;
     justify-content: space-evenly;
     background-color: #FEF8F8;
     border: 1px solid #FEE2E2;
+    border-radius: 12px;
+    gap: 20px;
 }
 
-.delete-account .alert-icon{
+.delete-account-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.delete-account .alert-icon {
     padding: 12px 15px;
     border-radius: 50px;
     background-color: #FEE2E2;
 }
 
-.delete-description span{
+.delete-description {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: column;
+}
+.delete-description span {
     color: var(--primary-active);
     font-weight: 500;
-}   
+}
 
-.delete-description p{
+.delete-description p {
     font-size: 12px;
     color: #E23B3B;
     font-weight: 300;
 }
 
-.profile-delete-btn{
+.profile-delete-btn {
     padding: 2% 6%;
-    background-color: #FEE2E2;
+    background-color: var(--primary);
     border-radius: 10px;
-    color: var(--primary);
+    color: white;
     font-weight: 400;
 }
 
-.delete-account{
-    margin-bottom: 5%;
-}
-
-.save-changes{
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 2% 0;
-    gap: 10px;
-}
-
-.cancel-btn{
-    padding: 2% 4%;
-    color: black;
-    border-radius: 10px;
-    border: 1px solid #FEE2E2;
-}
-
-.cancel-btn:hover{
-    background-color: #FEF2F2;
-    color: black;   
-}
-
-.save-changes-btn{
-    background-color: var(--primary);
-    padding: 2% 4%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    gap: 10px;
-    font-size: 16px;
-    border-radius: 15px;
-}
-
 @media (max-width: 1440px) {
-    .profile-container{
+    .profile-container {
         padding: 2% 24%;
     }
 }
 
 @media (max-width: 1100px) {
-    .profile-container{
+    .profile-container {
         padding: 32px 16%;
     }
 
-    .profile-form input{
+    .profile-form input {
         font-size: 16px;
     }
 
-    #personal-mail{
+    #personal-mail {
         font-size: 16px;
     }
 }
 
 @media (max-width: 700px) {
-    .profile-container{
+    .profile-container {
         padding: 20px 5%;
     }
 
-    .profile-card{
+    .profile-card {
         padding: 24px 16px;
     }
 
-    .profile-image div h1{
+    .profile-image div h1 {
         font-size: 32px;
     }
 
-    .profile-details{
+    .profile-details {
         padding: 0;
     }
 
-    .profile-details h2{
+    .profile-details h2 {
         font-size: 16px;
         flex-wrap: wrap;
     }
 
-    .profile-form input{
+    .profile-form input {
         padding: 12px 14px;
     }
 
-    .profile-form .mail{
+    .profile-form .mail {
         padding: 0 12px;
     }
 
-    .delete-account{
+    .delete-account {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
     }
 
-    .profile-delete-btn{
+    .profile-delete-btn {
         width: 100%;
         padding: 12px 14px;
     }
 
-    .save-changes{
+    .save-changes {
         flex-direction: column-reverse;
         align-items: stretch;
     }
 
     .cancel-btn,
-    .save-changes-btn{
+    .save-changes-btn {
         width: 100%;
         padding: 12px 14px;
     }

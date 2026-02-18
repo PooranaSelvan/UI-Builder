@@ -1,8 +1,9 @@
 import con from "../db/config.js";
 import validator from "validator";
-import { loginUserQuery, signUpUserQuery } from "../utils/queries.js";
+import { deleteUserQuery, loginUserQuery, signUpUserQuery } from "../utils/queries.js";
 import { generateToken } from "../utils/generateToken.js";
 import bcrypt from "bcrypt";
+import { getUserById } from "../utils/finders.js";
 
 const registerUser = async (req, res) => {
      let { name, email, password } = req.body;
@@ -86,4 +87,28 @@ const loginUser = async (req, res) => {
 }
 
 
-export { registerUser, loginUser };
+const deleteUser = async (req, res) => {
+     const { userId } = req.body;
+
+     if (!userId) {
+          return res.status(400).json({ message: "All fields are required!" });
+     }
+
+     let user = getUserById(userId);
+
+     if (user === null) {
+          return res.status(400).json({ message: "Invalid User!" });
+     }
+
+
+     con.query(deleteUserQuery, [userId], (err, result) => {
+          if (err) {
+               return res.status(500).json({ message: err?.sqlMessage, err });
+          }
+
+          return res.status(200).json({ message: "Account Deleted Successfully!" });
+     });
+}
+
+
+export { registerUser, loginUser, deleteUser };

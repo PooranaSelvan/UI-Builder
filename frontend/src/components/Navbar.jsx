@@ -50,8 +50,8 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, user }) => {
       {/* Desktop */}
       <ul className='nav-flex desktop-navbar'>
         <li><NavLink to='/features' className='nav-btns'>Features</NavLink></li>
-        <li><NavLink to='/docs' className='nav-btns'>Docs</NavLink></li>
         <li><NavLink to='/dashboard' className='nav-btns'>Dashboard</NavLink></li>
+        <li><NavLink to='/component-editor' className='nav-btns'>Component Editor</NavLink></li>
         <li><NavLink to='/templates' className='nav-btns'>Templates</NavLink></li>
       </ul>
       <div className='nav-flex desktop-navbar'>
@@ -94,14 +94,37 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, user }) => {
       {open && (
         <div className="mobile-menu">
           <NavLink to="/features" onClick={() => setOpen(false)}>Features</NavLink>
-          <NavLink to="/docs" onClick={() => setOpen(false)}>Docs</NavLink>
           <NavLink to="/dashboard" onClick={() => setOpen(false)}>Dashboard</NavLink>
+          <NavLink to="/component-editor" onClick={() => setOpen(false)}>Component Editor</NavLink>
           <NavLink to="/templates" onClick={() => setOpen(false)}>Templates</NavLink>
 
-          <div className="mobile-actions">
-            <NavLink className='nav-btn nav-btn-primary' to='/login'>Login</NavLink>
-            <NavLink className='nav-btn primary-button' to='/signup'>Get Started</NavLink>
-          </div>
+          {isAuthenticated ? (
+            <>
+              <Button className='nav-btn-profile' onClick={(e) => { e.preventDefault(); setDropDown(!openDropDown) }}>
+                <CircleUserRound size={30} />
+                {user?.name.split(" ")[0]}
+              </Button>
+
+              <div id="nav-dropdown" style={{ display: openDropDown ? "flex" : "none", cursor: "pointer" }} ref={dropDownRef}>
+                <div id="nav-dropdown-wrapper">
+                  <X id='nav-dropdown-close' onClick={() => setDropDown(!openDropDown)} />
+                  <Button onClick={() => navigate("/profile")}>
+                    <User />
+                    Profile
+                  </Button>
+                  <Button onClick={logoutHandler}>
+                    <LogOut />
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="mobile-actions">
+              <NavLink className='nav-btn nav-btn-primary' to='/login'>Login</NavLink>
+              <NavLink className='nav-btn primary-button' to='/signup'>Get Started</NavLink>
+            </div>
+          )}
         </div>
       )}
 

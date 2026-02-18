@@ -1,44 +1,103 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './profile.css'
-import { User, Mail, Settings, TriangleAlert, Check } from 'lucide-react';
+import { User, TriangleAlert } from 'lucide-react';
 import Button from '../../components/Button';
-import Footer from '../../components/Footer'
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import Loading from "../../components/Loading";
 
-const Profile = () => {
+const Profile = ({ setIsAuthenticated }) => {
+  const [user, setUser] = useState(null);
+  const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
+  let navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchUser(params) {
+      setLoading(true);
+      try {
+        let res = await axios.get(`${baseUrl}checkme`, {
+          withCredentials: true
+        });
+
+        if (res.data?.user) {
+          setUser(res.data.user);
+        }
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+        toast.error("Something Went Wrong! Please Try again Later!");
+      }
+    }
+
+    fetchUser();
+  }, []);
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm("Are you sure want to delete your account?")) {
+      setLoading(true);
+      try {
+        let res = await axios.delete(`${baseUrl}users/del`, {
+          withCredentials: true,
+          data: {
+            userId: user?.userId
+          }
+        });
+
+        toast.success(res.data.message);
+        setLoading(false);
+        setIsAuthenticated(false);
+        navigate("/login");
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+        toast.error("Something Went Wrong! Please Try again Later!");
+      }
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="profile-container">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="profile-container">
         <div className="profile-card">
           <div className="profile-image">
             <div>
-              <h1>JD</h1>
+              <h1>{user?.name.split(" ").length === 2 ? user?.name.split(" ")[0][0] + user?.name.split(" ")[1][0] : user?.name.split(" ")[0][0]}</h1>
             </div>
-            <h3>John Doe</h3>
+            <h3>{user?.name || "NaN"}</h3>
           </div>
           <div className="profile-details">
-            <h2><span><User size={18} /></span> Personal Details</h2>
+            <h2>
+              <User size={18} />
+              Personal Details
+            </h2>
             <div className="profile-form">
               <label htmlFor="">Name</label>
-              <input type="text" value={'John'} />
-              <label htmlFor="">Email Address</label>
+              <input type="text" readOnly value={user?.name || "NaN"} />
+              <label htmlFor="">Email</label>
               <div className='mail'>
-                <span><Mail size={18}/></span>
-                <input id='personal-mail' type="text" />
+                <input id='personal-mail' type="email" readOnly value={user?.email || "NaN"} />
               </div>
               <div className='hr'></div>
-              <h2><span><Settings size={18} /></span> Manage Account</h2>
               <div className="delete-account">
-                <span className='alert-icon' ><TriangleAlert size={18} /></span>
-                <div className="delete-description">
-                  <span>Danger Zone</span>
-                  <p>Permanently delete your account and all projects.</p>
+                <div className="delete-account-wrapper">
+                  <span className='alert-icon' ><TriangleAlert size={18} /></span>
+                  <div className="delete-description">
+                    <span>Danger Zone</span>
+                    <p>Permanently delete your account and all projects.</p>
+                  </div>
                 </div>
-                <Button className='profile-delete-btn' >Delete Account</Button>
-              </div>
-              <div className='hr'></div>
-              <div className="save-changes">
-                <Button className='cancel-btn'>Cancel</Button>
-                <Button className='save-changes-btn'><Check size={16}/>Save Changes</Button>
+                <Button className='profile-delete-btn' onClick={handleDeleteAccount}>Delete Account</Button>
               </div>
             </div>
           </div>

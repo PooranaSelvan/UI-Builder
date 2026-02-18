@@ -1,6 +1,6 @@
 import con from "../db/config.js";
 import { getProjectById, getUserById } from "../utils/finders.js";
-import { deleteAllCustomComponentsQuery, deleteCustomComponentQuery, deletePageQuery, deleteProjectQuery, getPageByPageIdQuery, saveNewComponent, saveNewPage, saveNewProject, selectProjectByUserId, updatePageData } from "../utils/queries.js";
+import { deleteAllCustomComponentsQuery, deleteCustomComponentQuery, deletePageQuery, deleteProjectQuery, getPageByPageIdQuery, getPublishedPageQuery, saveNewComponent, saveNewPage, saveNewProject, selectProjectByUserId, updatePageData } from "../utils/queries.js";
 import { getUserComponentsQuery } from "../utils/queries.js";
 import { getUserPagesQuery } from "../utils/queries.js";
 
@@ -166,6 +166,38 @@ const getPageByPageId = async (req, res) => {
      });
 }
 
+
+const getPublishedPage = async (req, res) => {
+     const { pageId } = req.params;
+
+     if (!pageId) {
+          return res.status(400).json({ message: "Invalid Page Id!" });
+     }
+
+     con.query(getPublishedPageQuery, [pageId], (err, result) => {
+          if (err) {
+               console.log(err);
+               return res.status(500).json({ message: err?.sqlMessage, error: err });
+          }
+
+          if (result.length === 0) {
+               return res.status(404).json({ message: "This Page is Not Published!"});
+          }
+
+          let page = result[0];
+
+          return res.status(200).json({
+               id: page.pageId,
+               name: page.pageName,
+               description: page.description,
+               data: page.data || [],
+               lastModified: page.lastModified,
+               isPublished: page.isPublished
+          });
+     });
+}
+
+
 const savePage = async (req, res) => {
      const { projectId, pageName, description, data } = req.body;
 
@@ -277,22 +309,15 @@ const saveCustomComponent = async (req, res) => {
                return res.status(404).json({ message: "User Not Found!" });
           }
 
-          con.query(
-               saveNewComponent,
-               [userId, icon, componentName, JSON.stringify(data), new Date()],
-               (err, result) => {
-                    if (err) {
-                         console.log("SQL ERROR:", err);
-                         return res.status(500).json({
-                              message: err?.sqlMessage,
-                              error: err
-                         });
-                    }
-
-                    return res.status(200).json({
-                         message: "Component Created Successfully!"
-                    });
+          con.query(saveNewComponent, [userId, icon, componentName, JSON.stringify(data), new Date()], (err, result) => {
+               if (err) {
+                    return res.status(500).json({ message: err?.sqlMessage, error: err });
                }
+
+               return res.status(200).json({
+                    message: "Component Created Successfully!"
+               });
+          }
           );
      } catch (error) {
           console.log("CATCH ERROR:", error);
@@ -344,4 +369,4 @@ const deleteAllCustomComponent = async (req, res) => {
      });
 }
 
-export { getProjects, saveProject, deleteProject, getPages, getPageByPageId, savePage, updatePage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent };
+export { getProjects, saveProject, deleteProject, getPages, getPublishedPage, getPageByPageId, savePage, updatePage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent };

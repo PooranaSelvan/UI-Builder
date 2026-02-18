@@ -17,6 +17,7 @@ import Dashboard from "./pages/dashboard/Dashboard.jsx";
 import Features from "./pages/features/Features.jsx";
 import Templates from "./pages/templates/Templates.jsx";
 import Profile from "./pages/profile/Profile.jsx";
+import Publish from "./pages/publish/Publish.jsx";
 
 
 function App() {
@@ -47,7 +48,7 @@ function App() {
 
     checkMe();
   }, []);
-  const hideNavbar = location.pathname.startsWith("/preview") || location.pathname.startsWith("/component-editor-preview");
+  const hideNavbar = location.pathname.startsWith("/preview") || location.pathname.startsWith("/component-editor-preview") || location.pathname.startsWith("/publish");
 
   return (
     <CustomComponentsProvider user={user}>
@@ -62,12 +63,13 @@ function App() {
           <Route path='/login' element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
           <Route path='/features' element={<Features />} />
           <Route path='/templates' element={<Templates />} />
-          <Route path="/workspace/:pageId" element={<Workspace />} />
+          <Route path="/workspace/:pageId" element={<Workspace isAuthenticated={isAuthenticated} />} />
           <Route path="/preview" element={<PreviewCanvas />} />
           <Route path="/component-editor" element={<ComponentEditor />} />
           <Route path="/component-editor-preview" element={<ComponentEditorPreview />} />
           <Route path='/dashboard' element={<Dashboard />} />
-          <Route path='/profile' element={<Profile />} />
+          <Route path='/profile' element={<Profile setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path='/publish/:pageId' element={<Publish />}/>
         </Routes>
         <Toaster />
       </>
