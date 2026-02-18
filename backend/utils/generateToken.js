@@ -6,9 +6,7 @@ export const generateToken = (res, userId) => {
           expiresIn: "7d"
      });
 
-     let isLive = process.env.SITE_TYPE === "production";
-
-     console.log(isLive);
+     let isLive = process.env.SITE_TYPE === "production" || process.env.NODE_ENV === "production";
 
      res.cookie("authauth", token, {
           httpOnly: true,
