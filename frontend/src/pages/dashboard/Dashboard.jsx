@@ -247,7 +247,6 @@ const Dashboard = () => {
       let res = await api.get(`/builder/page/${pageId}`);
 
       if (res.data.data) {
-        console.log(res.data.data);
         localStorage.setItem("previewComponents", JSON.stringify(res?.data.data));
         window.open("/preview", "_blank");
       } else {
@@ -255,7 +254,7 @@ const Dashboard = () => {
       }
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
       setLoading(false);
     }
   }
@@ -369,7 +368,6 @@ const Dashboard = () => {
             <div key={index} className="page-card">
               <div className="page-top">
                 {/* HEADER */}
-                {console.log(page)}
                 <div className="page-header">
                   <div className="folder-icon folder-color">
                     <FileText size={26} />

@@ -15,6 +15,6 @@ export const deletePageQuery = "DELETE FROM pages WHERE pageId = ?";
 export const deleteCustomComponentQuery = "DELETE FROM components WHERE userId = ? and id = ?";
 export const deleteAllCustomComponentsQuery = "DELETE FROM components WHERE userId = ?";
 export const updatePageData = "UPDATE pages SET data = ?, lastModified = NOW() WHERE pageId = ?";
-export const getPageByPageIdQuery = "SELECT pageId, pageName, description, data, lastModified, isPublished FROM pages WHERE pageId = ?";
+export const getPageByPageIdQuery = `SELECT p.pageId, p.pageName, p.description, p.data, p.lastModified, p.isPublished, pr.userId FROM pages p JOIN projects pr ON p.projectId = pr.projectId WHERE p.pageId = ?`;
 export const deleteUserQuery = "DELETE FROM users where userId = ?";
 export const getPublishedPageQuery = "SELECT * FROM pages where pageId = ? AND isPublished = 1";

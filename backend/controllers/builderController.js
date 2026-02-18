@@ -155,13 +155,20 @@ const getPageByPageId = async (req, res) => {
 
           let page = result[0];
 
+          let user = getUserById(page.userId);
+
+          if (!user || user === null) {
+               return res.status(404).json({ message: "User Not Found!" });
+          }
+
           return res.status(200).json({
                id: page.pageId,
                name: page.pageName,
                description: page.description,
                data: page.data || [],
                lastModified: page.lastModified,
-               isPublished: page.isPublished
+               isPublished: page.isPublished,
+               userId: page.userId
           });
      });
 }
@@ -181,7 +188,7 @@ const getPublishedPage = async (req, res) => {
           }
 
           if (result.length === 0) {
-               return res.status(404).json({ message: "This Page is Not Published!"});
+               return res.status(404).json({ message: "This Page is Not Published!" });
           }
 
           let page = result[0];

@@ -12,7 +12,7 @@ import { CustomComponentsContext } from "../../context/CustomComponentsContext";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
 import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save } from 'lucide-react';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/axios.js";
 
 const Workspace = ({ isAuthenticated }) => {
@@ -20,15 +20,37 @@ const Workspace = ({ isAuthenticated }) => {
   const [zoom, setZoom] = useState(1);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
   const { pageId } = useParams();
+  const [user, setUser] = useState(null);
   const { customComponents } = useContext(CustomComponentsContext);
-
+  let navigate = useNavigate();
 
   useEffect(() => {
+    async function getUser() {
+      try {
+        let res = await api.get("/checkme");
+        setUser(res.data.user);
+      } catch (error) {
+        console.log(error.response);
+      }
+    }
+
+    getUser();
+  }, []);
+
+  useEffect(() => {
+    if(!user) return;
+
     async function fetchComponents() {
       try {
         let res = await api.get(`/builder/page/${pageId}`);
 
-        // console.log(res.data);
+        // console.log(res.data.userId, user.userId);
+
+        if(res.data.userId !== user.userId){
+          toast.error("You can't access this Page!");
+          navigate("/dashboard");
+          return;
+        }
 
         setComponents(res.data.data || []);
       } catch (error) {
@@ -38,7 +60,7 @@ const Workspace = ({ isAuthenticated }) => {
     }
 
     fetchComponents();
-  }, [pageId]);
+  }, [pageId, user]);
 
 
   const handleSavePage = async () => {
@@ -367,7 +389,7 @@ const Workspace = ({ isAuthenticated }) => {
   ];
 
 
-  
+
   let sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
