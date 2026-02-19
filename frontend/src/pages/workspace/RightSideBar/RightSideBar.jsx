@@ -35,7 +35,7 @@ const EVENT_MAP = {
     img: ["visibility", "style"],
     button: ["navigation", "visibility", "style"],
     a: ["navigation", "style"],
-    input: ["visibility", "style"],
+    input: ["visibility", "style", "onchange"],
     textarea: ["visibility", "style"],
     select: ["visibility", "style"],
 };
@@ -142,6 +142,21 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
     }, [selectedComponent?.id]);
 
+    useEffect(() => {
+        const event = selectedComponent?.defaultProps?.events;
+        if (event?.visibility) {
+            setEventType("visibility");
+        } else if (event?.navigation) {
+            setEventType("navigation");
+        } else if (event?.style) {
+            setEventType("style");
+        } else if (event?.onchange) {
+            setEventType("onchange");
+        } else {
+            setEventType("");
+        }
+    }, [selectedComponent?.id])
+
     const handleFiles = async (fileList) => {
         const file = fileList[0];
 
@@ -222,7 +237,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 />
                                             </div>
                                         )}
-                                        {!["img", "video", "input"].includes(selectedComponent.tag) && (
+                                        {!["img", "video", "input", "hr"].includes(selectedComponent.tag) && (
                                             <div className="content">
                                                 <label>Content</label>
                                                 <input
@@ -272,7 +287,22 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                         <div className="properties-general properties-event">
                                             <div>
                                                 <select value={eventType} onChange={(e) => {
-                                                    setEventType(e.target.value)
+                                                    const newEvent = e.target.value;
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        const updatedEvents = { ...(node.defaultProps?.events || {}) };
+
+                                                        if (eventType && eventType !== newEvent) {
+                                                            delete updatedEvents[eventType];
+                                                        }
+
+                                                        updatedEvents[newEvent] = {};
+
+                                                        node.defaultProps = {
+                                                            ...node.defaultProps,
+                                                            events: updatedEvents
+                                                        };
+                                                    })
+                                                    setEventType(newEvent)
                                                 }}>
                                                     <option value="">Select Event</option>
 
@@ -286,6 +316,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
                                                     {allowedEvents.includes("style") && (
                                                         <option value="style">Style & Layout Actions</option>
+                                                    )}
+
+                                                    {allowedEvents.includes("onchange") && (
+                                                        <option value="onChange">Onchange Actions</option>
                                                     )}
                                                 </select>
                                             </div>
@@ -317,6 +351,22 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
                                         {eventType === "visibility" && (
                                             <div className="event-form">
+                                                <label>Trigger</label>
+
+                                                <select
+                                                    onChange={(e) => {
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.events ??= {};
+                                                            node.defaultProps.events.visibility ??= {};
+                                                            node.defaultProps.events.visibility.trigger = e.target.value;
+                                                        })
+                                                    }}
+                                                >
+                                                    <option value="click">Click</option>
+                                                    <option value="hover">Hover</option>
+                                                </select>
+
                                                 <label>Action</label>
 
                                                 <select
@@ -324,9 +374,8 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                         updateComponent(selectedComponent.id, (node) => {
                                                             node.defaultProps ??= {};
                                                             node.defaultProps.events ??= {};
-                                                            node.defaultProps.events.visibility = {
-                                                                action: e.target.value,
-                                                            };
+                                                            node.defaultProps.events.visibility = {};
+                                                            node.defaultProps.events.visibility.action = e.target.value;
                                                         })
                                                     }
                                                 >
@@ -334,6 +383,21 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                     <option value="hide">Hide</option>
                                                     <option value="toggle">Toggle</option>
                                                 </select>
+
+                                                <label>Target component</label>
+
+                                                <input
+                                                    type="text"
+                                                    placeholder='Enter the component Id'
+                                                    onChange={(e) => {
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.events ??= {};
+                                                            node.defaultProps.events.visibility ??= {};
+                                                            node.defaultProps.events.visibility.targetId = e.target.value;
+                                                        })
+                                                    }}
+                                                />
                                             </div>
                                         )}
 
@@ -370,6 +434,75 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                             node.defaultProps.events.style.borderColor = color;
                                                         })
                                                     }
+                                                />
+                                                <label>Text Color</label>
+
+                                                <ColorPalette
+                                                    value={
+                                                        selectedComponent.defaultProps?.events?.style?.color || "#000000"
+                                                    }
+                                                    onChange={(color) =>
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.events ??= {};
+                                                            node.defaultProps.events.style ??= {};
+                                                            node.defaultProps.events.style.color = color;
+                                                        })
+                                                    }
+                                                />
+                                            </div>
+                                        )}
+
+                                        {eventType === "onChange" && (
+                                            <div className="event-form">
+                                                <label>Change Event</label>
+                                                <select
+                                                    value={selectedComponent.defaultProps?.events?.onChange ?? ""}
+                                                    onChange={(e) => {
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.events ??= {};
+                                                            node.defaultProps.events.onChange ??= {};
+                                                            node.defaultProps.events.onChange.action = e.target.value;
+                                                        });
+                                                    }}
+
+                                                >
+                                                    <option value="">None</option>
+                                                    <option value="log">Console Log</option>
+                                                    <option value="alert">Show Alert</option>
+                                                    <option value="visibility">Toggle Visibility</option>
+                                                    <option value="update">Update </option>
+                                                </select>
+
+                                                <label>Target component</label>
+
+                                                <input
+                                                    type="text"
+                                                    placeholder='Enter the component Id'
+                                                    onChange={(e) => {
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.events ??= {};
+                                                            node.defaultProps.events.onChange ??= {};
+                                                            node.defaultProps.events.onChange.targetId = e.target.value
+                                                        })
+                                                    }}
+                                                />
+
+                                                <label>Target component</label>
+
+                                                <input
+                                                    type="text"
+                                                    placeholder='Enter the message'
+                                                    onChange={(e) => {
+                                                        updateComponent(selectedComponent.id, (node) => {
+                                                            node.defaultProps ??= {};
+                                                            node.defaultProps.events ??= {};
+                                                            node.defaultProps.events.onChange ??= {};
+                                                            node.defaultProps.events.onChange.message = e.target.value
+                                                        })
+                                                    }}
                                                 />
                                             </div>
                                         )}
@@ -1404,6 +1537,9 @@ const SizeInput = ({ label, value, onChange }) => {
 const DynamicProps = ({ selectedComponent, updateComponent }) => {
     const tag = selectedComponent?.tag;
     const props = COMPONENT_PROPS_MAP[tag];
+    if (!props || props.length === 0) return null;
+    const checkBoxInput = props.filter(e => e.type === 'checkbox');
+    const otherInputs = props.filter(e => e.type !== 'checkbox');
 
     if (!props || props.length === 0) {
         return null
@@ -1423,55 +1559,71 @@ const DynamicProps = ({ selectedComponent, updateComponent }) => {
     return (
         <Heading icon={<Settings size={18} />} title={'Component-Properties'}>
             <div className='properties-general'>
-                {props.map((prop) => (
+                {otherInputs.map((prop) => (
                     <div key={prop.key}>
-                        <label htmlFor={prop.key}>{prop.label}</label>
 
                         {prop.type === "text" && (
-                            <input
-                                id={prop.key}
-                                type="text"
-                                value={getValue(prop.key)}
-                                onChange={(e) => handleChange(prop.key, e.target.value)}
-                            />
+                            <>
+                                <label htmlFor={prop.key}>{prop.label}</label>
+                                <input
+                                    className='property-input'
+                                    id={prop.key}
+                                    type="text"
+                                    value={getValue(prop.key)}
+                                    onChange={(e) => handleChange(prop.key, e.target.value)}
+                                />
+                            </>
+
                         )}
 
                         {prop.type === "number" && (
-                            <input
-                                id={prop.key}
-                                type="number"
-                                min={0}
-                                value={getValue(prop.key)}
-                                onChange={(e) => handleChange(prop.key, e.target.value)}
-                            />
+                            <>
+                                <label htmlFor={prop.key}>{prop.label}</label>
+                                <input
+                                    className='property-input'
+                                    id={prop.key}
+                                    type="number"
+                                    min={0}
+                                    value={getValue(prop.key)}
+                                    onChange={(e) => handleChange(prop.key, e.target.value)}
+                                />
+                            </>
+
                         )}
 
                         {prop.type === "select" && (
-                            <select
-                                id={prop.key}
-                                value={getValue(prop.key)}
-                                onChange={(e) => handleChange(prop.key, e.target.value)}
-                            >
-                                {prop.options.map((opt) => (
-                                    <option key={opt} value={opt}>{opt}</option>
-                                ))}
-                            </select>
-                        )}
+                            <>
+                                <label htmlFor={prop.key}>{prop.label}</label>
+                                <select
+                                    className='property-select'
+                                    id={prop.key}
+                                    value={getValue(prop.key)}
+                                    onChange={(e) => handleChange(prop.key, e.target.value)}
+                                >
+                                    {prop.options.map((opt) => (
+                                        <option key={opt} value={opt}>{opt}</option>
+                                    ))}
+                                </select>
+                            </>
 
-                        {prop.type === "checkbox" && (
-                            <label>
+                        )}
+                    </div>
+                ))}
+                {checkBoxInput.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4%' }}>
+                        {checkBoxInput.map((prop) => (
+                            <label key={prop.key} id="checkbox-row">
                                 <input
                                     id='property-check'
                                     type="checkbox"
                                     checked={!!getValue(prop.key)}
                                     onChange={(e) => handleChange(prop.key, e.target.checked)}
                                 />
-                                {/* {prop.label} */}
+                                <span>{prop.label}</span>
                             </label>
-
-                        )}
+                        ))}
                     </div>
-                ))}
+                )}
             </div>
         </Heading>
     );
