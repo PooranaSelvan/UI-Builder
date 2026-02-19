@@ -1,4 +1,4 @@
-import { useState,useContext} from "react";
+import { useState, useContext, useEffect } from "react";
 import { DndContext } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { v4 as uuidv4 } from "uuid";
@@ -12,18 +12,38 @@ import { Search, X, Eye } from "lucide-react";
 import { BasicComponents } from "../workspace/utils/basicComponentsData";
 import Button from "../../components/Button.jsx";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
+import api from "../../utils/axios.js";
+import { useNavigate } from "react-router-dom";
 
 const ComponentEditor = () => {
   /* ---------------- State ---------------- */
   const [components, setComponents] = useState([]);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
-  const { customComponents, addCustomComponent, deleteCustomComponent ,updateCustomComponent,   addCustomComponentToState  } = useContext(CustomComponentsContext);
+  const { customComponents, addCustomComponent, deleteCustomComponent, updateCustomComponent, addCustomComponentToState } = useContext(CustomComponentsContext);
   const [customIconName, setCustomIconName] = useState("Square");
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [customComponentName, setCustomComponentName] = useState("");
   const [showNameInput, setShowNameInput] = useState(false);
   const [iconSearch, setIconSearch] = useState("");
   const [editingSavedComponentId, setEditingSavedComponentId] = useState(null);
+  let navigate = useNavigate();
+
+
+  useEffect(() => {
+    async function getUser() {
+      try {
+        await api.get("/checkme");
+      } catch (error) {
+        console.log(error.response);
+
+        if (error.response?.status === 401) {
+          navigate("/login", { replace: true });
+        }
+      }
+    }
+
+    getUser();
+  }, []);
 
   /* ---------------- Helpers ---------------- */
 
@@ -96,7 +116,7 @@ const ComponentEditor = () => {
         : [],
     };
   };
-  
+
 
   const startEditingSavedComponent = (savedComponent) => {
     setEditingSavedComponentId(savedComponent.id);
@@ -154,7 +174,7 @@ const ComponentEditor = () => {
       if (componentData.isRootCustom) {
         setEditingSavedComponentId(componentData.originalId || componentData.id);
       }
-      
+
 
       return;
     }
@@ -297,12 +317,12 @@ const ComponentEditor = () => {
       toast.error("Canvas is empty");
       return;
     }
-  
+
     if (editingSavedComponentId) {
       setShowIconPicker(true);
       return;
     }
-  
+
     setCustomComponentName("");
     setCustomIconName("Square");
     setShowNameInput(true);
@@ -310,48 +330,48 @@ const ComponentEditor = () => {
 
   const selectedComponent = selectedComponentId ? findComponentById(components, selectedComponentId) : null;
 
- 
+
   const combinedComponents = [
     ...BasicComponents,
     ...(customComponents.length
       ? [
-          {
-            title: "Custom Components",
-            type: "grid",
-            items: customComponents.map((comp) => {
-              let parsedData = [];
-              try {
-                parsedData = comp.data
-                  ? typeof comp.data === "string"
-                    ? JSON.parse(comp.data)
-                    : comp.data
-                  : [];
-              } catch (err) {
-                parsedData = [];
-              }
-  
-              const uniqueId = comp._id || uuidv4();
-  
-              return {
-                id: `custom-${uniqueId}`,
-                originalId: comp._id || uniqueId,
-                label: comp.componentName || "My Component",
-                iconName: comp.icon || "Square",
-                isRootCustom: true,
-                children: parsedData,
-                rank: 1,             
-                defaultProps: {},    
-                tag: "div",         
-              };
-            }),
-          },
-        ]
+        {
+          title: "Custom Components",
+          type: "grid",
+          items: customComponents.map((comp) => {
+            let parsedData = [];
+            try {
+              parsedData = comp.data
+                ? typeof comp.data === "string"
+                  ? JSON.parse(comp.data)
+                  : comp.data
+                : [];
+            } catch (err) {
+              parsedData = [];
+            }
+
+            const uniqueId = comp._id || uuidv4();
+
+            return {
+              id: `custom-${uniqueId}`,
+              originalId: comp._id || uniqueId,
+              label: comp.componentName || "My Component",
+              iconName: comp.icon || "Square",
+              isRootCustom: true,
+              children: parsedData,
+              rank: 1,
+              defaultProps: {},
+              tag: "div",
+            };
+          }),
+        },
+      ]
       : []),
   ];
-  
-  
-  
-  
+
+
+
+
 
   const handleNameSubmit = () => {
     if (!customComponentName.trim()) return;
@@ -365,67 +385,67 @@ const ComponentEditor = () => {
       children: rest.children ? deepCloneWithoutIds(rest.children) : [],
     }));
 
-    const handleIconSelect = async (iconName) => {
-      setCustomIconName(iconName);
-    
-      const componentPayload = {
-        icon: iconName,
-        componentName: customComponentName,
-        data: JSON.stringify(deepCloneWithoutIds(components)), 
-      };
-    
-      try {
-        let savedComponent;
-    
-        if (editingSavedComponentId) {
-          savedComponent = await updateCustomComponent(editingSavedComponentId, componentPayload);
-          toast.success("Custom Component Updated!");
-        } else {
-          savedComponent = await addCustomComponent(componentPayload);
-          if (!savedComponent) return;
-    
-          toast.success("Custom Component Saved!");
-    
-          addCustomComponentToState({
-            _id: savedComponent._id,
-            componentName: savedComponent.componentName,
-            icon: savedComponent.icon || "Square",
-            data: savedComponent.data || "[]",
-          });
-        }
-    
-        setComponents([]);  
-        setSelectedComponentId(null);
-        setEditingSavedComponentId(null);
-        setShowIconPicker(false);
-        setCustomComponentName("");
-        setCustomIconName("Square");
-    
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to save component");
-      }
-    };
-    
-    
-    
-    
+  const handleIconSelect = async (iconName) => {
+    setCustomIconName(iconName);
 
-    const handleRenameComponent = async (component) => {
-      const newName = prompt("Enter new name", component.label);
-      if (!newName) return;
-    
-      try {
-        await updateCustomComponent(component.id, {
-          componentName: newName,
-        });
-    
-        toast.success("Component renamed!");
-      } catch (err) {
-        toast.error("Rename failed");
-      }
+    const componentPayload = {
+      icon: iconName,
+      componentName: customComponentName,
+      data: JSON.stringify(deepCloneWithoutIds(components)),
     };
-    
+
+    try {
+      let savedComponent;
+
+      if (editingSavedComponentId) {
+        savedComponent = await updateCustomComponent(editingSavedComponentId, componentPayload);
+        toast.success("Custom Component Updated!");
+      } else {
+        savedComponent = await addCustomComponent(componentPayload);
+        if (!savedComponent) return;
+
+        toast.success("Custom Component Saved!");
+
+        addCustomComponentToState({
+          _id: savedComponent._id,
+          componentName: savedComponent.componentName,
+          icon: savedComponent.icon || "Square",
+          data: savedComponent.data || "[]",
+        });
+      }
+
+      setComponents([]);
+      setSelectedComponentId(null);
+      setEditingSavedComponentId(null);
+      setShowIconPicker(false);
+      setCustomComponentName("");
+      setCustomIconName("Square");
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to save component");
+    }
+  };
+
+
+
+
+
+  const handleRenameComponent = async (component) => {
+    const newName = prompt("Enter new name", component.label);
+    if (!newName) return;
+
+    try {
+      await updateCustomComponent(component.id, {
+        componentName: newName,
+      });
+
+      toast.success("Component renamed!");
+    } catch (err) {
+      toast.error("Rename failed");
+    }
+  };
+
 
   const handleChangeIcon = (component) => {
     setEditingSavedComponentId(component.id);
@@ -435,15 +455,15 @@ const ComponentEditor = () => {
 
   const handleDeleteComponent = async (component) => {
     if (!window.confirm("Delete this component?")) return;
-  
+
     try {
       await deleteCustomComponent(component.id);
-  
+
       if (editingSavedComponentId === component.id) {
         setComponents([]);
         setEditingSavedComponentId(null);
       }
-  
+
       toast.success("Component deleted!");
     } catch (err) {
       toast.error("Delete failed");
@@ -471,15 +491,15 @@ const ComponentEditor = () => {
                 toast.error("There is no component to preview!", toastErrorStyle);
                 return;
               }
-            
+
               localStorage.setItem(
                 "componentEditorPreview",
                 JSON.stringify(components)
               );
-            
+
               window.open("/component-editor-preview", "_blank");
             }}
-            
+
           >
             <Eye size={20} />
             Preview
@@ -497,15 +517,15 @@ const ComponentEditor = () => {
 
         <div className="editor-body">
           <LeftPanel components={combinedComponents}
-         onAddJsonComponent={async (newComp) => {
-          try {
-            await addCustomComponent(newComp);
-            toast.success("JSON component added!");
-          } catch (err) {
-            toast.error("Failed to add JSON component");
-          }
-        }}
-        
+            onAddJsonComponent={async (newComp) => {
+              try {
+                await addCustomComponent(newComp);
+                toast.success("JSON component added!");
+              } catch (err) {
+                toast.error("Failed to add JSON component");
+              }
+            }}
+
             onEditSavedComponent={startEditingSavedComponent}
             onRenameComponent={handleRenameComponent}
             onChangeIcon={handleChangeIcon}

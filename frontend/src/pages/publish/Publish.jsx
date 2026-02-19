@@ -44,7 +44,7 @@ const Project = () => {
 
   if (components.length === 0) {
     return (
-      <div>There is No Components to Preview!</div>
+      <div>There is No Published Components!</div>
     );
   }
 

@@ -13,7 +13,7 @@ const PreviewCanvas = () => {
           <div className='preview-container' style={{ flex: 1 }}>
                {components.length && (
                     <RenderComponents>
-                    {components}
+                         {components}
                     </RenderComponents>
                )}
           </div>

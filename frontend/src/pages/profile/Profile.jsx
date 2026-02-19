@@ -23,9 +23,16 @@ const Profile = ({ setIsAuthenticated }) => {
         }
         setLoading(false);
       } catch (error) {
-        setLoading(false);
         console.log(error);
-        toast.error("Something Went Wrong! Please Try again Later!");
+
+        if (error.response?.status === 401) {
+          setIsAuthenticated(false);
+          navigate("/login");
+        } else {
+          toast.error("Something Went Wrong! Please Try again Later!");
+        }
+      } finally {
+        setLoading(false);
       }
     }
 

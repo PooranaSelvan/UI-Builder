@@ -53,7 +53,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
                 password
             });
 
-            localStorage.setItem("token", res.data.token);
+            localStorage.setItem("sirpam-token", res.data.token);
             setIsAuthenticated(true);
             toast.success(res.data.message);
             navigate("/");

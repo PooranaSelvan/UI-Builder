@@ -30,9 +30,13 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, user }) => {
       let res = await api.get("/auth/logout");
       // console.log(res.data);
 
-      localStorage.removeItem("token");
+      localStorage.removeItem("sirpam-token");
+      if (localStorage.getItem("previewComponents")) {
+        localStorage.removeItem("previewComponents");
+      }
       toast.success(res.data.message);
       setIsAuthenticated(false);
+      navigate("/");
     } catch (err) {
       setIsAuthenticated(true);
     }

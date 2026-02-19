@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FolderCard from "./FolderCard";
 import CreateForm from "./CreateForm";
-import { Plus, MoreVertical, FileText, Search, Clock, ArrowRight, Pencil, Copy, Edit3, Eye, Trash2, Rocket } from "lucide-react";
+import { Plus, MoreVertical, FileText, Search, ArrowRight, Copy, Edit3, Eye, Trash2, Rocket, Undo2, Download } from "lucide-react";
 import "./Dashboard.css";
 import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
 import api from "../../utils/axios.js";
+import Button from "../../components/Button.jsx";
 
 const Dashboard = () => {
   let navigate = useNavigate();
@@ -30,10 +31,19 @@ const Dashboard = () => {
 
 
   const getUserId = async () => {
-    let res = await api.get("/checkme/");
+    try {
+      let res = await api.get("/checkme/");
+      return res.data.user.userId;
+    } catch (error) {
+      if (error.response?.status === 401) {
+        navigate("/login", { replace: true });
+      } else {
+        toast.error("Something went wrong!");
+      }
+      return null;
+    }
+  };
 
-    return res.data.user.userId;
-  }
 
   function buildJSON(rows) {
     let project = {};
@@ -53,11 +63,12 @@ const Dashboard = () => {
       if (data.pageName) {
         project[projectId].pages.push({
           id: data.pageId,
+          projectId: projectId,
           name: data.pageName,
           description: data.pageDescription,
-          status: data.pagePublished ? "Published" : "Draft",
           modified: data.lastModified,
-          data: data.pageData || {}
+          data: data.pageData || [],
+          isPublished: !!data.pagePublished
         });
       }
     });
@@ -67,6 +78,11 @@ const Dashboard = () => {
   async function fetchPages() {
     setLoading(true);
     let userId = await getUserId();
+
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
 
     try {
       let res = await api.get(`/builder/pages/${userId}`);
@@ -96,6 +112,11 @@ const Dashboard = () => {
       return;
     }
 
+    if (!name || !description) {
+      toast.error("All fields Required!");
+      return;
+    }
+
     try {
       setLoading(true);
       let res = await api.post("/builder/pages/", {
@@ -109,11 +130,13 @@ const Dashboard = () => {
 
       let newPage = {
         id: res.data.pageId,
+        projectId,
         name: name,
         description,
         status: "Draft",
         modified: new Date().toLocaleString(),
-        data: []
+        data: [],
+        isPublished: false
       };
 
       setSelectedApp(ele => ({
@@ -141,6 +164,11 @@ const Dashboard = () => {
 
     if (userId < 1) {
       toast.error("Invalid User! Refresh & Try Again!");
+      return;
+    }
+
+    if (!name || !description) {
+      toast.error("All fields Required!");
       return;
     }
 
@@ -181,6 +209,10 @@ const Dashboard = () => {
       return;
     }
 
+    if (!window.confirm("Are You sure Want to Delete this Project & its Page?")) {
+      return;
+    }
+
     try {
       let res = await api.delete("/builder/projects/", {
         data: {
@@ -208,6 +240,10 @@ const Dashboard = () => {
       return;
     }
 
+    if (!window.confirm("Are You sure Want to Delete this Page?")) {
+      return;
+    }
+
     try {
       let res = await api.delete("/builder/pages/", {
         data: {
@@ -225,6 +261,66 @@ const Dashboard = () => {
     } catch (err) {
       console.log(err);
       toast.error(err.response?.data.message);
+    }
+  }
+
+
+  const handlePublishPage = async (pageId, projectId) => {
+    if (!pageId || !projectId) {
+      toast.error("Invalid Page or Project Id!");
+      return;
+    }
+
+    try {
+      let res = await api.post("/builder/publish", {
+        pageId,
+        projectId
+      });
+
+      setSelectedApp(project => ({
+        ...project,
+        pages: project.pages.map(pg => pg.id === pageId ? { ...pg, isPublished: true } : pg)
+      }));
+      setProjects(ele => ele.map(project => project.id === selectedApp.id ? { ...project, pages: project.pages.map(pg => pg.id === pageId ? { ...pg, isPublished: true, status: "Pub lished" } : pg) } : project));
+      toast.success(res.data.message);
+    } catch (error) {
+      console.log(error.response);
+      toast.error(error.response?.data.message);
+    }
+  }
+
+  const handleUnPublishPage = async (pageId, projectId) => {
+    if (!pageId || !projectId) {
+      toast.error("Invalid Page or Project Id!");
+      return;
+    }
+
+    try {
+      let res = await api.post("/builder/publish/un", {
+        pageId,
+        projectId
+      });
+
+      setSelectedApp(project => ({
+        ...project,
+        pages: project.pages.map(pg => pg.id === pageId ? { ...pg, isPublished: false } : pg)
+      }));
+      setProjects(ele => ele.map(project => project.id === selectedApp.id ? { ...project, pages: project.pages.map(pg => pg.id === pageId ? { ...pg, isPublished: false, status: "Draft" } : pg) } : project));
+      toast.success(res.data.message);
+    } catch (error) {
+      console.log(error);
+      console.log(error.response);
+      toast.error(error.response?.data.message);
+    }
+  }
+
+  const handleCopyLink = async (pageId) => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/publish/${pageId}`);
+      toast.success("Link Copied Successfully!");
+    } catch (error) {
+      console.log(error);
+      toast.error("Error Copying Link!");
     }
   }
 
@@ -374,8 +470,8 @@ const Dashboard = () => {
                   </div>
                   <br />
                   <div className="page-header-right">
-                    <span className={`status ${page.status === "Published" ? "published" : "draft"}`}>
-                      {page.status}
+                    <span className={`status ${page.isPublished ? "published" : "draft"}`}>
+                      {page.isPublished ? "Published" : "Draft"}
                     </span>
                     <div className="menu-wrapper">
                       <MoreVertical
@@ -399,18 +495,33 @@ const Dashboard = () => {
                               Preview
                             </button>
                           </div>
+                          {page.isPublished ? (
+                            <div className="menu-item">
+                              <Button style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }} onClick={() => handleUnPublishPage(page.id, page.projectId)}>
+                                <Undo2 size={16} />
+                                Un Publish
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="menu-item">
+                              <Button style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }} onClick={() => handlePublishPage(page.id, page.projectId)}>
+                                <Rocket size={16} />
+                                Publish
+                              </Button>
+                            </div>
+                          )}
                           <div className="menu-item">
-                            <button style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
-                              <Rocket size={16} />
-                              Publish
+                            <button onClick={(e) => { e.stopPropagation(); handlePreviewpage(page.id) }} style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                              <Download size={16} />
+                              Export
                             </button>
                           </div>
                           <div className="menu-divider" />
                           <div className="menu-item delete">
-                            <button onClick={(e) => { e.stopPropagation(); deletePage(page.id) }} style={{ width: "100%", borderRadius: "5px", color: "var(--primary)", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                            <Button onClick={(e) => { e.stopPropagation(); deletePage(page.id) }} style={{ width: "100%", borderRadius: "5px", color: "var(--primary)", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
                               <Trash2 size={16} />
                               Delete
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       )}
@@ -424,15 +535,19 @@ const Dashboard = () => {
               <br />
               {/* TITLE */}
               <div className="page-title">
-                <p>{page.name}</p>
+                <h3>{page.name}</h3>
+                <p className="page-description">{page.description}</p>
               </div>
-              <p className="page-description">{page.description}</p>
 
               {/* FOOTER */}
-              <div className="page-footer">
-                <div
-                  className="open-page"
-                  onClick={() => navigate(`/workspace/${page.id}`)}>
+              <div className="page-footer" style={{ justifyContent: page.isPublished ? "space-between" : "flex-end" }}>
+                {page.isPublished && (
+                  <div className="page-link">
+                    <p onClick={() => window.open(`/publish/${page.id}`, "_blank")}>Link</p>
+                    <Copy size={15} onClick={() => handleCopyLink(page.id)} />
+                  </div>
+                )}
+                <div className="open-page" onClick={() => navigate(`/workspace/${page.id}`)}>
                   <ArrowRight size={24} />
                 </div>
               </div>
@@ -440,17 +555,9 @@ const Dashboard = () => {
           ))
           }
         </div>
-        <CreateForm
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          title="Create New Page"
-          nameLabel="Page Name"
-          descriptionLabel="Page Description"
-          buttonText="Create Page"
-          createNewPage={handleCreateNewPage}
-        />
-      </div>
-    </div>
+        <CreateForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Create New Page" nameLabel="Page Name" descriptionLabel="Page Description" buttonText="Create Page" createNewPage={handleCreateNewPage} />
+      </div >
+    </div >
   );
 };
 export default Dashboard;

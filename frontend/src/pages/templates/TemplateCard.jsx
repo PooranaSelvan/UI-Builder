@@ -4,22 +4,24 @@ import "./templateCard.css"
 import { Eye, ExternalLink } from 'lucide-react'
 import Button from '../../components/Button.jsx'
 
-const TemplateCard = () => {
-  return (
-    <div className="template-card">
-        <div className="image-part">
-            <img src={sales} alt="template" className='template-img'/>
+const TemplateCard = ({ name, description }) => {
+    return (
+        <div className="template-card">
+            <div className="image-part">
+                <img src={sales} alt="template" className='template-img' />
+            </div>
+            <div className="template-content">
+                <div className="content-part">
+                    <h3 className='template-heading'>{name}</h3>
+                    <p className='template-description'>{description}</p>
+                </div>
+                <div className="button-part">
+                    <Button className='btn-view'><Eye size={16} />View Page</Button>
+                    <Button className='btn-open'><ExternalLink size={16} />Open Page</Button>
+                </div>
+            </div>
         </div>
-        <div className="content-part">
-            <h3 className='template-heading'>Sample-template</h3>
-            <p className='template-description'>sample template description</p>
-        </div>
-        <div className="button-part">
-            <Button className='btn-view'><Eye size={16}/>View Template</Button>
-            <Button className='btn-open'><ExternalLink size={16}/>Open Template</Button>
-        </div>
-    </div>
-  );
+    );
 }
 
 export default TemplateCard 

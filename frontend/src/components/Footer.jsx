@@ -1,7 +1,7 @@
 import React from 'react';
 import "./footer.css";
 import sirpamLogo from '../assets/sirpam-logo.png';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { Twitter, Github, Linkedin } from 'lucide-react';
 
 const Footer = () => {
@@ -22,16 +22,16 @@ const Footer = () => {
                     </div>
                     <div className="footer-product">
                          <h3>Product</h3>
-                         <Link to='/docs'>Docs</Link>
-                         <Link to='/features'>Features</Link>
-                         <Link to='/dashboard'>Dashboard</Link>
-                         <Link to='/templates'>Templates</Link>
+                         <NavLink to='/features'>Features</NavLink>
+                         <NavLink to='/dashboard'>Dashboard</NavLink>
+                         <NavLink to='/component-editor'>Component Editor</NavLink>
+                         <NavLink to='/templates'>Templates</NavLink>
                     </div>
                     <div className="footer-legal">
                          <h3>Legal</h3>
-                         <Link to='/privacy'>Privacy</Link>
-                         <Link to='/terms'>Terms</Link>
-                         <Link to='/security'>Security</Link>
+                         <NavLink to='/privacy'>Privacy</NavLink>
+                         <NavLink to='/terms'>Terms</NavLink>
+                         <NavLink to='/security'>Security</NavLink>
                     </div>
                </div>
 

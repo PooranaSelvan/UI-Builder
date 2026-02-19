@@ -43,27 +43,29 @@
 
 .build-btn {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     color: white;
     background-color: var(--primary);
-    padding: 20px 40px;
-    border-radius: 15px;
-    font-size: 20px;
+    padding: 15px 40px;
+    border-radius: 8px;
+    font-size: 18px;
+    gap: 10px;
 }
 
 .demo-btn {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 10px;
     color: black;
     background-color: white;
     border: 1px solid var(--primary);
-    padding: 20px 40px;
+    padding: 15px 40px;
     font-size: 18px;
-    font-weight: 400;
-    border-radius: 15px;
+    border-radius: 8px;
 }
 
 .features-content {
@@ -79,7 +81,11 @@
 }
 
 .feature-image {
-    width: 45%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: 40%;
     padding: 40px;
     background-color: var(--red-100);
     border-radius: 25px;
@@ -88,13 +94,13 @@
 .floating-box {
     width: 100%;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    padding: 80px 0;
 }
 
 .floating-box img {
-    width: 50%;
+    width: 70%;
     border-radius: 25px;
 }
 
@@ -110,8 +116,8 @@
     font-size: 14px;
     gap: 5px;
     background-color: var(--red-100);
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 5px 20px;
+    border-radius: 999px;
 }
 
 .feature-text span svg {
@@ -142,8 +148,7 @@
 
 .feature-text p {
     margin-top: 30px;
-    font-size: 20px;
-    padding: 0 150px 0 0;
+    font-size: 16px;
     opacity: 0.5;
 }
 
@@ -160,7 +165,7 @@
 
 .feature-text ul li span {
     padding: 4px;
-    border-radius: 60px;
+    border-radius: 999px;
 }
 
 #publish-dot {
@@ -170,13 +175,8 @@
 }
 
 #connectivity-image {
-    width: 80%;
+    width: 70%;
 }
-
-.connect-float {
-    padding: 10px 0;
-}
-
 .feature-bottom {
     padding: 150px 380px;
     background-color: #FFEAEA;
@@ -194,17 +194,7 @@
 }
 
 #publish {
-    width: 100%;
-}
-
-.publish-float {
-    padding: 0;
-}
-
-.publish-image {
-    display: flex;
-    align-items: center;
-    padding: 40px 60px;
+    width: 80%;
 }
 
 @media (max-width: 1440px) {

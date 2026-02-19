@@ -1,6 +1,6 @@
 import con from "../db/config.js";
 import { getProjectById, getUserById } from "../utils/finders.js";
-import { deleteAllCustomComponentsQuery, deleteCustomComponentQuery, deletePageQuery, deleteProjectQuery, getPageByPageIdQuery, getPublishedPageQuery, saveNewComponent, saveNewPage, saveNewProject, selectProjectByUserId, updatePageData } from "../utils/queries.js";
+import { deleteAllCustomComponentsQuery, deleteCustomComponentQuery, deletePageQuery, deleteProjectQuery, getPageByPageIdQuery, getPublishedPageQuery, publishPageQuery, saveNewComponent, saveNewPage, saveNewProject, selectProjectByUserId, unPublishPageQuery, updatePageData } from "../utils/queries.js";
 import { getUserComponentsQuery } from "../utils/queries.js";
 import { getUserPagesQuery } from "../utils/queries.js";
 
@@ -49,8 +49,8 @@ const saveProject = async (req, res) => {
      if (projectName.length < 3 || projectName.length > 20) {
           return res.status(400).json({ message: "Name can't be less than 3 & more than 30 characters!" });
      }
-     if (description.length < 10 || description.length > 90) {
-          return res.status(400).json({ message: "Description can't be less than 10 & more than 90 Characters!" });
+     if (description.length < 1 || description.length > 90) {
+          return res.status(400).json({ message: "Description can't be less than 1 & more than 90 Characters!" });
      }
 
 
@@ -163,6 +163,7 @@ const getPageByPageId = async (req, res) => {
 
           return res.status(200).json({
                id: page.pageId,
+               projectId: page.projectId,
                name: page.pageName,
                description: page.description,
                data: page.data || [],
@@ -215,8 +216,8 @@ const savePage = async (req, res) => {
      if (pageName.length < 3 || pageName.length > 20) {
           return res.status(400).json({ message: "Name can't be less than 3 & more than 20 Characters!" });
      }
-     if (description.length < 5 || description.length > 50) {
-          return res.status(400).json({ message: "Description can't be less than 5 & more than 50 Characters!" });
+     if (description.length < 1 || description.length > 50) {
+          return res.status(400).json({ message: "Description can't be less than 1 & more than 50 Characters!" });
      }
 
 
@@ -261,6 +262,46 @@ const updatePage = async (req, res) => {
           return res.status(200).json({
                message: "Page updated successfully"
           });
+     });
+}
+
+const publishPage = async (req, res) => {
+     const { pageId, projectId } = req.body;
+
+     if (!pageId || !projectId) {
+          return res.status(400).json({ message: "All fields are required!" });
+     }
+
+     con.query(publishPageQuery, [pageId, projectId], (err, result) => {
+          if (err) {
+               return res.status(500).json({ message: err?.sqlMessage, error: err });
+          }
+
+          if (result.length === 0) {
+               return res.status(404).json({ message: "Page Not Found!" });
+          }
+
+          return res.status(200).json({ message: "Page Published Successfully!" });
+     });
+}
+
+const unPublishPage = async (req, res) => {
+     const { pageId, projectId } = req.body;
+
+     if (!pageId || !projectId) {
+          return res.status(400).json({ message: "All fields are required!" });
+     }
+
+     con.query(unPublishPageQuery, [pageId, projectId], (err, result) => {
+          if (err) {
+               return res.status(500).json({ message: err?.sqlMessage, error: err });
+          }
+
+          if (result.length === 0) {
+               return res.status(404).json({ message: "Page Not Found!" });
+          }
+
+          return res.status(200).json({ message: "Page Un Published Successfully!" });
      });
 }
 
@@ -376,4 +417,4 @@ const deleteAllCustomComponent = async (req, res) => {
      });
 }
 
-export { getProjects, saveProject, deleteProject, getPages, getPublishedPage, getPageByPageId, savePage, updatePage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent };
+export { getProjects, saveProject, deleteProject, getPages, getPublishedPage, getPageByPageId, savePage, publishPage, unPublishPage, updatePage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent };

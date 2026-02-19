@@ -4,9 +4,9 @@ import {
   MoreVertical,
   ChevronRight,
   Pencil,
-  Copy,
   Trash2
 } from "lucide-react";
+import Button from "../../components/Button";
 
 const FolderCard = ({
   app,
@@ -52,15 +52,17 @@ const FolderCard = ({
 
           {activeMenu === index && (
             <div className="dropdown-menu" ref={menuRef}>
-              <div className="menu-item">
-                <Pencil size={16} />
-                Rename
+              <div style={{ width: "100%", backgroundColor: "transparent" }} onClick={(e) => { e.stopPropagation(); handleDeleteProject(app.id) }}>
+                <Button className="menu-item" style={{ width: "100%", backgroundColor: "transparent" }}>
+                  <Pencil size={16} />
+                  Rename
+                </Button>
               </div>
               <div className="menu-divider" />
-              <button className="menu-item delete" style={{ width: "100%", backgroundColor: "transparent" }} onClick={(e) => { e.stopPropagation(); handleDeleteProject(app.id) }}>
+              <Button className="menu-item delete" style={{ width: "100%", backgroundColor: "transparent" }} onClick={(e) => { e.stopPropagation(); handleDeleteProject(app.id) }}>
                 <Trash2 size={16} />
                 Delete
-              </button>
+              </Button>
             </div>
           )}
         </div>

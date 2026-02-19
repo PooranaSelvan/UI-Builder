@@ -11,9 +11,11 @@ import { components as componentLibrary } from "./utils/ComponentsData.js";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
-import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save } from 'lucide-react';
-import { useNavigate, useParams } from "react-router-dom";
+import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save, Undo2 } from 'lucide-react';
+import { data, useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/axios.js";
+import LinkModal from "./components/LinkModal.jsx";
+
 
 const Workspace = ({ isAuthenticated }) => {
   const [components, setComponents] = useState([]);
@@ -22,6 +24,7 @@ const Workspace = ({ isAuthenticated }) => {
   const { pageId } = useParams();
   const [user, setUser] = useState(null);
   const { customComponents } = useContext(CustomComponentsContext);
+  const [page, setPage] = useState(null);
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -31,6 +34,10 @@ const Workspace = ({ isAuthenticated }) => {
         setUser(res.data.user);
       } catch (error) {
         console.log(error.response);
+
+        if (error.response?.status === 401) {
+          navigate("/login", { replace: true });
+        }
       }
     }
 
@@ -38,7 +45,7 @@ const Workspace = ({ isAuthenticated }) => {
   }, []);
 
   useEffect(() => {
-    if(!user) return;
+    if (!user) return;
 
     async function fetchComponents() {
       try {
@@ -46,16 +53,21 @@ const Workspace = ({ isAuthenticated }) => {
 
         // console.log(res.data.userId, user.userId);
 
-        if(res.data.userId !== user.userId){
+        if (res.data.userId !== user.userId) {
           toast.error("You can't access this Page!");
           navigate("/dashboard");
           return;
         }
 
+        setPage(res.data);
         setComponents(res.data.data || []);
       } catch (error) {
-        console.log(error);
-        toast.error("Something Went Wrong! Please Refresh & Try Again!");
+        console.log(error.response);
+
+        if (error.response?.status === 404) {
+          toast.error(error.response.data.message);
+          navigate("/dashboard");
+        }
       }
     }
 
@@ -74,14 +86,59 @@ const Workspace = ({ isAuthenticated }) => {
         data: components
       });
 
+      let updatedPage = { ...page, data: components };
+
+      setPage(ele => ({ ...ele, data: components }));
       localStorage.setItem("previewComponents", JSON.stringify(components));
       toast.success("Pages Saved Successfully!");
+
+      return updatedPage;
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
   }
 
 
+  const handlePublishPage = async () => {
+    if (components.length === 0) {
+      toast.error("Add any Components to Publish the Page!", toastErrorStyle);
+      return;
+    }
+
+    let updatedPage = await handleSavePage();
+
+    try {
+      let res = await api.post("/builder/publish", {
+        pageId: updatedPage.id,
+        projectId: updatedPage.projectId
+      });
+
+      setPage(ele => ({ ...ele, isPublished: true }));
+      toast.success(res.data.message);
+    } catch (error) {
+      console.log(error.response);
+      toast.error(error.response?.data.message);
+    }
+  }
+
+
+  const handleUnPublishPage = async () => {
+    let updatedPage = await handleSavePage();
+
+    try {
+      let res = await api.post("/builder/publish/un", {
+        pageId: updatedPage.id,
+        projectId: updatedPage.projectId
+      });
+
+      setPage(ele => ({ ...ele, isPublished: false }));
+      toast.success(res.data.message);
+    } catch (error) {
+      console.log(error);
+      console.log(error.response);
+      toast.error(error.response?.data.message);
+    }
+  }
 
   // Zoom Functions
   const handleZoomIn = () => {
@@ -430,10 +487,17 @@ const Workspace = ({ isAuthenticated }) => {
                 <Eye size={20} />
                 Preview
               </Button>
-              <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }}>
-                <Rocket size={20} />
-                Publish
-              </Button>
+              {page?.isPublished ? (
+                <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleUnPublishPage}>
+                  <Undo2 size={20} />
+                  Un publish
+                </Button>
+              ) : (
+                <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handlePublishPage}>
+                  <Rocket size={20} />
+                  Publish
+                </Button>
+              )}
             </div>
           </div>
           <LeftPanel components={combinedComponents} />
@@ -441,6 +505,7 @@ const Workspace = ({ isAuthenticated }) => {
           <RightSideBar selectedComponent={selectedComponent} updateComponent={updateComponent} deleteComponent={deleteComponent} />
         </div >
         <Dock zoom={zoom} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
+        {/* <LinkModal /> */}
       </DndContext >
     </>
   );

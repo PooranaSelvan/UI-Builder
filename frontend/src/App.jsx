@@ -51,7 +51,7 @@ function App() {
     let token = urlToken.get("token");
 
     if (token) {
-      localStorage.setItem("token", token);
+      localStorage.setItem("sirpam-token", token);
       window.history.replaceState({}, document.title, "/");
     }
   }, []);
