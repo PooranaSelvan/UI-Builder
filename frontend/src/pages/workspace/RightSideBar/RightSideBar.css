@@ -161,8 +161,17 @@
     width: 100%;
 }
 
-#property-check{
-    width: 30%;
+#checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+#property-check {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
 }
 
 .properties-event div select {
@@ -190,15 +199,17 @@
     border-radius: 5px;
     border: 1px solid #e5e7eb;
     background-color: #F9FAFB;
+    margin-bottom: 4%;
 }
 
 .event-form select{
-    padding: 3%;
+    padding: 2%;
     color: gray;
     background-color: #F9FAFB;
     border-radius: 5px;
     border: 1px solid #e5e7eb;
     width: 100%;
+    margin-bottom: 4%;
 }
 
 .double-input {
@@ -458,6 +469,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-bottom: 4%;
 }
 
 .color-pallette input[type="color"] {
@@ -468,6 +480,14 @@
     cursor: pointer;
     background-color: #F9FAFB;
     border-radius: 5px;
+}
+
+.property-input{
+    margin-bottom: 5%;
+}
+
+.property-select{
+    margin-bottom: 10%;
 }
 
 .color-box {
