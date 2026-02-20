@@ -328,8 +328,13 @@ const Dashboard = () => {
 
   }
 
-  const renamePage = async () => {
-
+  const renamePage = async (pageName, pageDescription) => {
+    if (!pageName || !pageDescription) {
+      toast.error("All fields are Required!");
+      return;
+    }
+    
+    
   }
 
   const handlePreviewpage = async (pageId) => {
@@ -484,16 +489,16 @@ const Dashboard = () => {
                       {activeMenu === index && (
                         <div className="dropdown-menu" onClick={(e) => e.stopPropagation()} ref={menuRef}>
                           <div className="menu-item">
-                            <button style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                            <Button onClick={() => renamePage(page.name, page.description)} style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
                               <Edit3 size={16} />
                               Rename
-                            </button>
+                            </Button>
                           </div>
                           <div className="menu-item">
-                            <button onClick={(e) => { e.stopPropagation(); handlePreviewpage(page.id) }} style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                            <Button onClick={(e) => { e.stopPropagation(); handlePreviewpage(page.id) }} style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
                               <Eye size={16} />
                               Preview
-                            </button>
+                            </Button>
                           </div>
                           {page.isPublished ? (
                             <div className="menu-item">

@@ -1,75 +1,140 @@
-import React from 'react'
-import { VOID_TAGS } from '../pages/workspace/utils/voidTags';
+import React, { useState } from "react";
+import { VOID_TAGS } from "../pages/workspace/utils/voidTags";
 
 const RenderComponents = ({ children }) => {
-     // Remove Classes and Add Events
-     const renderComponents = (arr) => {
-          let res = arr.map(ele => {
-               const { id, tag, content, defaultProps, children = [] } = ele;
-               let { res, style } = getEventProps(defaultProps.events, defaultProps.style);
-               let props = { key: id, ...defaultProps, ...res, style };
-               delete props.events;
+     const [hiddenIds, setHiddenIds] = useState({});
 
-               if (typeof tag === "string" && VOID_TAGS.has(tag)) {
-                    return React.createElement(tag, { key: id, ...{ ...props, className: removeClass(defaultProps?.className, ["test-component"]) } });
+     const changeVisibility = (id, action) => {
+          if (!id) return;
+
+          setHiddenIds((prev) => {
+               const updated = { ...prev };
+
+               if (action === "hide") {
+                    updated[id] = true;
+               } else if (action === "show") {
+                    delete updated[id];
+               } else if (action === "toggle") {
+                    updated[id] ? delete updated[id] : (updated[id] = true);
                }
 
-               return React.createElement(tag, { key: id, ...{ ...props, className: removeClass(defaultProps?.className, ["test-component"]) } }, children?.length > 0 ? renderComponents(children) : content);
+               return updated;
           });
-
-          return res;
      };
 
      const removeClass = (className = "", remove = []) => {
           return className.split(" ").filter(ele => ele && !remove.includes(ele)).join(" ");
      };
 
-     const getEventProps = (events = {}, baseStyle = {}) => {
-          let res = {};
+
+     const createEventHandlers = (events = {}, baseStyle = {}, id) => {
+          const handlers = {};
           let style = { ...baseStyle };
 
+          // Click Navigation
+          if (events?.navigation?.type === "navigate") {
+               handlers.onClick = () => {
+                    window.open(events.navigation.target, "_blank");
+               };
+          }
 
-          // Navigation & Visibility
-          if (events.navigation || events.visibility) {
-               res.onClick = () => {
-                    if (events.navigation?.type === "navigate") {
-                         window.location.href = events.navigation.target;
-                    }
+          // Visibility Events
+          if (events?.visibility) {
+               const { trigger = "click", action, targetId } = events.visibility;
+               const target = targetId || id;
 
+               if (trigger === "click") {
+                    handlers.onClick = () => changeVisibility(target, action);
+               }
 
-                    if (events.visibility?.action === "hide") {
-                         style.display = "none";
-                    }
-                    if (events.visibility?.action === "show") {
-                         style.display = "block";
-                    }
-                    if (events.visibility?.action === "toggle") {
-                         style.display = style.display === "block" ? "none" : "block";
-                    }
+               if (trigger === "hover") {
+                    handlers.onMouseEnter = () => changeVisibility(target, action);
+
+                    handlers.onMouseLeave = () => {
+                         const reverse =
+                              action === "show"
+                                   ? "hide"
+                                   : action === "hide"
+                                        ? "show"
+                                        : "toggle";
+
+                         changeVisibility(target, reverse);
+                    };
                }
           }
 
+          // Hover Style Effects
+          if (events?.style) {
+               const { hoverColor, borderColor, color } = events.style;
 
-          // Hover
-          if (events.style?.hoverColor) {
-               let originalColor = baseStyle?.backgroundColor;
-
-               res.onMouseEnter = (e) => {
-                    e.currentTarget.style.backgroundColor = events.style.hoverColor;
+               handlers.onMouseEnter = (e) => {
+                    if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
+                    if (borderColor) e.currentTarget.style.borderColor = borderColor;
+                    if (color) e.currentTarget.style.color = color;
                };
-               res.onMouseLeave = (e) => {
-                    e.currentTarget.style.backgroundColor = originalColor || "";
+
+               handlers.onMouseLeave = (e) => {
+                    e.currentTarget.style.backgroundColor =
+                         baseStyle.backgroundColor || "";
+                    e.currentTarget.style.borderColor =
+                         baseStyle.borderColor || "";
+                    e.currentTarget.style.color = baseStyle.color || "";
                };
           }
 
+          // Input onChange
+          if (events?.onChange) {
+               handlers.onChange = (e) => {
+                    const value = e.target.value;
 
-          return { res, style };
-     }
+                    if (events.onChange.action === "log") {
+                         console.log(value);
+                    }
+
+                    if (events.onChange.action === "alert") {
+                         alert(value);
+                    }
+
+                    if (events.onChange.action === "visibility") {
+                         changeVisibility(events.onChange.targetId, "toggle");
+                    }
+
+                    if (events.onChange.action === "update") {
+                         const el = document.getElementById(events.onChange.targetId);
+                         if (el) el.textContent = value;
+                    }
+               };
+          }
+
+          return { handlers, style };
+     };
 
 
+     const renderElements = (elements) => {
+          return elements.map((element) => {
+               const { id, tag, content, defaultProps = {}, children = [] } = element;
+
+               const { handlers, style } = createEventHandlers(defaultProps.events, defaultProps.style, id);
+
+               // If element is hidden, add display none
+               const finalStyle = hiddenIds[id] ? { ...style, display: "none" } : style;
+
+               const props = { ...defaultProps, ...handlers, style: finalStyle, id };
+               delete props.events;
+
+               if (typeof tag === "string" && VOID_TAGS.has(tag)) {
+                    return React.createElement(tag, { key: id, ...{...props, className: removeClass(defaultProps?.className, ["test-component"])} });
+               }
+
+               return React.createElement(tag, { key: id, ...{...props, className: removeClass(defaultProps?.className, ["test-component"])} }, children.length > 0 ? renderElements(children) : content);
+          });
+     };
+
+
+     
      return (
-          renderComponents(children)
+          renderElements(children)
      )
-}
+};
 
 export default RenderComponents;

@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { DndContext, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { DndContext, PointerSensor, useSensor, useSensors, DragOverlay } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import LeftPanel from "./LeftSideBar/LeftPanel";
 import Canvas from "./Canvas/Canvas";
@@ -12,7 +12,7 @@ import { CustomComponentsContext } from "../../context/CustomComponentsContext";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
 import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save, Undo2 } from 'lucide-react';
-import { data, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/axios.js";
 import LinkModal from "./components/LinkModal.jsx";
 
@@ -241,7 +241,7 @@ const Workspace = ({ isAuthenticated }) => {
       if (!draggedComponent) return;
 
       if (draggedComponent.rank === 4) {
-        toast.error("Basic elements must inside a Layout Component", toastErrorStyle);
+        toast.error("Basic elements must be inside a Layout Component", toastErrorStyle);
         return;
       }
 
@@ -417,7 +417,7 @@ const Workspace = ({ isAuthenticated }) => {
 
   const handleNavigatePreview = () => {
     if (components.length === 0) {
-      toast.error("There is no Components Load Preview!", toastErrorStyle);
+      toast.error("There are no Components Load Preview!", toastErrorStyle);
       return;
     }
 
@@ -455,12 +455,9 @@ const Workspace = ({ isAuthenticated }) => {
     })
   );
 
-
-  // console.log(components);
-
   return (
     <>
-      <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
+      <DndContext onDragEnd={(e) => { handleDragEnd(e)}} sensors={sensors}>
         <div style={{ display: "flex", height: "93vh", overflow: "hidden", position: "relative" }}>
           <div className="workspace-topbar">
             <div className="workspace-topbar-screens">
@@ -490,7 +487,7 @@ const Workspace = ({ isAuthenticated }) => {
               {page?.isPublished ? (
                 <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleUnPublishPage}>
                   <Undo2 size={20} />
-                  Un publish
+                  Unpublish
                 </Button>
               ) : (
                 <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handlePublishPage}>
@@ -505,6 +502,7 @@ const Workspace = ({ isAuthenticated }) => {
           <RightSideBar selectedComponent={selectedComponent} updateComponent={updateComponent} deleteComponent={deleteComponent} />
         </div >
         <Dock zoom={zoom} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
+        <DragOverlay dropAnimation={{ duration: 120 }} />
         {/* <LinkModal /> */}
       </DndContext >
     </>

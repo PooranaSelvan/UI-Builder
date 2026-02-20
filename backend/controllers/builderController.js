@@ -46,8 +46,8 @@ const saveProject = async (req, res) => {
           return res.status(400).json({ message: "All fields are required!" });
      }
 
-     if (projectName.length < 3 || projectName.length > 20) {
-          return res.status(400).json({ message: "Name can't be less than 3 & more than 30 characters!" });
+     if (projectName.length < 1 || projectName.length > 30) {
+          return res.status(400).json({ message: "Name can't be less than 1 & more than 30 characters!" });
      }
      if (description.length < 1 || description.length > 90) {
           return res.status(400).json({ message: "Description can't be less than 1 & more than 90 Characters!" });
@@ -213,8 +213,8 @@ const savePage = async (req, res) => {
           return res.status(400).json({ message: "All fields are required!" });
      }
 
-     if (pageName.length < 3 || pageName.length > 20) {
-          return res.status(400).json({ message: "Name can't be less than 3 & more than 20 Characters!" });
+     if (pageName.length < 1 || pageName.length > 30) {
+          return res.status(400).json({ message: "Name can't be less than 1 & more than 30 Characters!" });
      }
      if (description.length < 1 || description.length > 50) {
           return res.status(400).json({ message: "Description can't be less than 1 & more than 50 Characters!" });

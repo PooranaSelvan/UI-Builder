@@ -3,6 +3,7 @@ import React from "react";
 import "./work-canvas.css";
 import { useDroppable } from "@dnd-kit/core";
 import { VOID_TAGS } from "../utils/voidTags";
+import { CSS } from '@dnd-kit/utilities';
 
 const SortableItem = ({ ele, isSelected, onSelect, selectedComponentId }) => {
      const { id, tag, content, defaultProps, children = [], rank } = ele;
@@ -26,10 +27,11 @@ const SortableItem = ({ ele, isSelected, onSelect, selectedComponentId }) => {
      });
 
      const style = {
-          transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : "",
+          transform: CSS.Translate.toString(transform),
           transition,
-          border: isSelected ? "2px solid var(--red-300)" : "none",
-          position: "relative"
+          outline: isSelected ? "2px solid var(--red-300)" : "none",
+          position: "relative",
+          outlineOffset: "2px"
      };
 
      return (

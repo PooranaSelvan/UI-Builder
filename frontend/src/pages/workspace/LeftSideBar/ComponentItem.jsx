@@ -1,6 +1,7 @@
 import { useDraggable } from "@dnd-kit/core";
 import * as LucideIcons from "lucide-react";
 import { useState, useEffect } from "react";
+import { CSS } from '@dnd-kit/utilities';
 
 export default function ComponentItem({ item, onEditSavedComponent, onRenameComponent, onChangeIcon, onDeleteComponent }) {
   const { id, iconName, icon, label } = item;
@@ -9,14 +10,14 @@ export default function ComponentItem({ item, onEditSavedComponent, onRenameComp
   const Icon = iconName ? LucideIcons[iconName] || LucideIcons.Square : icon || LucideIcons.Square;
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =
-  useDraggable({
-    id: item.id,
-    data: { component: item }, 
-  });
+    useDraggable({
+      id: item.id,
+      data: { component: item },
+    });
 
 
   const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transform: CSS.Translate.toString(transform),
     cursor: "grab",
     zIndex: isDragging ? 999 : "auto",
     backgroundColor: isDragging ? "#f0f0f0" : "",
