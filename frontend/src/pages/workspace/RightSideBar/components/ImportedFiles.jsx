@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import "./ImportedFile.css";
 
-export default function ImportedFiles({ files }) {
+export default function ImportedFiles({ files, onDelete }) {
   return (
     <div className="imported-files">
       <div className="imported-header">
@@ -20,13 +20,13 @@ export default function ImportedFiles({ files }) {
       </div>
 
       {files.map((file) => (
-        <FileRow key={file.id} file={file} />
+        <FileRow key={file.id} file={file} onDelete={onDelete} />
       ))}
     </div>
   );
 }
 
-function FileRow({ file }) {
+function FileRow({ file, onDelete }) {
   const iconMap = {
     csv: "green",
     json: "orange",
@@ -74,9 +74,10 @@ function FileRow({ file }) {
       </div>
 
       {file.actions && (
-        <div className="file-actions">
-          <Eye size={14} />
-          <Pencil size={14} />
+        <div
+          className="file-actions"
+          onClick={() => onDelete(file.id)}
+        >
           <Trash2 size={14} />
         </div>
       )}
