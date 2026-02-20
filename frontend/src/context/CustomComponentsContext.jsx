@@ -7,27 +7,17 @@ export const CustomComponentsContext = createContext(null);
 export const CustomComponentsProvider = ({ children, user }) => {
   const [customComponents, setCustomComponents] = useState([]);
 
-  const addCustomComponentToState = (component) => {
-    setCustomComponents(prev => [
-      ...prev,
-      {
-        _id: component._id,
-        componentName: component.componentName || "My Component",
-        icon: component.icon || "Square",
-        data: typeof component.data === "string" ? component.data : JSON.stringify(component.data),
-      },
-    ]);
-  };
-
   // FETCH COMPONENTS
   const fetchCustomComponents = async () => {
+
+
     if (!user?.userId) return;
 
     try {
       const res = await api.get(`/builder/components/${user.userId}`);
 
       const normalized = (res.data.components || []).map(c => ({
-        _id: c._id,
+        _id: c.id,
         componentName: c.componentName || "Unnamed Component",
         icon: c.icon || "Square",
         data: typeof c.data === "string" ? c.data : JSON.stringify(c.data),
@@ -39,6 +29,7 @@ export const CustomComponentsProvider = ({ children, user }) => {
     }
   };
 
+
   useEffect(() => {
     if (user?.userId) fetchCustomComponents();
   }, [user]);
@@ -48,17 +39,15 @@ export const CustomComponentsProvider = ({ children, user }) => {
     if (!user?.userId) return null;
 
     try {
-      const res = await api.post(`builder/components`, { userId: user.userId, ...payload });
-      const saved = res.data.component || res.data;
-      addCustomComponentToState(saved);
-
-      return saved;
+      await api.post("/builder/components", { userId: user.userId, ...payload });
+      await fetchCustomComponents();
+      return true;
     } catch (err) {
       console.error(err);
-      toast.error("Failed to save component");
       return null;
     }
   };
+
 
   // DELETE
   const deleteCustomComponent = async (componentId) => {
@@ -76,7 +65,37 @@ export const CustomComponentsProvider = ({ children, user }) => {
     }
   };
 
+  //UPDATE
+  const updateCustomComponent = async (componentId, payload) => {
+    if (!componentId) return false;
 
+    const body = {
+      data: payload.data,
+    };
+
+    if (payload.componentName !== undefined && payload.componentName !== null) {
+      body.componentName = payload.componentName;
+    }
+
+    if (payload.icon !== undefined && payload.icon !== null) {
+      body.icon = payload.icon;
+    }
+
+    try {
+      await api.put(
+        `/builder/components/${componentId}`,
+        body
+      );
+
+      await fetchCustomComponents();
+      return true;
+
+    } catch (error) {
+      console.error("Update failed:", error.response?.data || error.message);
+      toast.error("Failed to update component");
+      return false;
+    }
+  };
 
   return (
     <CustomComponentsContext.Provider
@@ -84,9 +103,9 @@ export const CustomComponentsProvider = ({ children, user }) => {
         customComponents,
         addCustomComponent,
         deleteCustomComponent,
-        setCustomComponents,
-        addCustomComponentToState,
+        updateCustomComponent
       }}
+
     >
       {children}
     </CustomComponentsContext.Provider>
