@@ -106,3 +106,68 @@
 .upload-text {
   color: #2563eb;
 }
+
+.api-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e8ede8;
+  border-radius: 10px;
+  margin-top: 5%;
+}
+
+.api-card-icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #edf7f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3dbd6e;
+}
+
+.api-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.api-card-url {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1f1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.api-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #93a393;
+  text-transform: capitalize;
+}
+
+.api-card-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.api-card-trash {
+  flex-shrink: 0;
+  color: #c0c8c0;
+  cursor: pointer;
+  transition: color 0.15s;
+}

@@ -17,7 +17,7 @@ import { FileUp } from 'lucide-react';
 import { Database } from 'lucide-react';
 import { Webhook } from 'lucide-react';
 import { Pencil } from 'lucide-react';
-import { Cloud, Braces } from 'lucide-react';
+import { Cloud, Trash2 } from 'lucide-react';
 import { MoveLeft, MoveRight, MoveDown, MoveUp } from 'lucide-react';
 import { Workflow } from 'lucide-react';
 import ImportedFiles from './components/ImportedFiles';
@@ -82,17 +82,16 @@ const COMPONENT_PROPS_MAP = {
     ],
 };
 
+const FILE_IMPORT_TAGS = ["p", "h1", "h2", "h3", "h4", "h5", "h6"];
+
 const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) => {
     const [activeTab, setActiveTab] = useState("properties");
-    // const [activeButton, setActiveButton] = useState('row');
-    // const [opacity, setOpacity] = useState(100);
-    // const [font, setFont] = useState(16);
     const [files, setFiles] = useState([]);
+    const [apis, setApis] = useState([]);
     const [apiUrl, setApiUrl] = useState("");
     const [loadingApi, setLoadingApi] = useState(false);
     const [eventType, setEventType] = useState("");
     const [error, setError] = useState("");
-    // const fileRef = useRef(null);
     const display = selectedComponent?.defaultProps?.style?.display || "block";
     const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
 
@@ -106,16 +105,43 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
             const res = await fetch(apiUrl);
             const data = await res.json();
+            const formattedText = JSON.stringify(data, null, 2);
+
+            const newApi = {
+                id: uuidv4(),
+                url: apiUrl,
+                status: "connected",
+                content: formattedText
+            }
 
             updateComponent(selectedComponent.id, (node) => {
-                node.content = JSON.stringify(data, null, 2);
+                node.content = formattedText;
+                node.defaultProps ??= {};
+                node.apiId = newApi.id;
             })
+
+            setApis(api => [...api, newApi])
         } catch (err) {
             alert("Api fetch failed");
         } finally {
             setLoadingApi(false)
         }
     }
+
+    const deleteApi = (apiId) => {
+        setApis(e => e.filter(api => api.id !== apiId));
+
+        updateComponent(selectedComponent.id, (node) => {
+            if (node.apiId === apiId) {
+                node.content = "enter data";
+                delete node.apiId;
+            }
+        })
+    }
+
+    const filteredApi = apis.filter(a => a.id === selectedComponent?.apiId);
+
+    console.log(selectedComponent);
 
     useEffect(() => {
         if (!selectedComponent) return;
@@ -168,10 +194,6 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
         const formattedText = rows.map(row => row.join(" - ")).join("\n");
 
-        updateComponent(selectedComponent.id, (node) => {
-            node.content = formattedText;
-        });
-
         const newFile = {
             id: uuidv4(),
             name: file.name,
@@ -182,8 +204,28 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
             actions: true
         };
 
+        updateComponent(selectedComponent.id, (node) => {
+            node.content = formattedText;
+            node.defaultProps ??= {};
+            node.defaultProps.fileId ??= newFile.id;
+        });
+
         setFiles(prev => [...prev, newFile]);
     };
+
+
+    const deleteFile = (fileId) => {
+        setFiles(e => e.filter(file => file.id !== fileId));
+
+        updateComponent(selectedComponent.id, (node) => {
+            if (node.defaultProps?.fileId === fileId) {
+                node.content = "enter data";
+                delete node.defaultProps.fileId
+            }
+        })
+    }
+
+    const filteredFiles = files.filter(f => f.id === selectedComponent?.defaultProps?.fileId);
 
     /*Render the right panel only if a component is selected */
     if (!selectedComponent) {
@@ -237,13 +279,17 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 />
                                             </div>
                                         )}
-                                        {!["img", "video", "input", "hr"].includes(selectedComponent.tag) && (
+                                        {!["img", "video", "input"].includes(selectedComponent.tag) && (
                                             <div className="content">
                                                 <label>Content</label>
                                                 <input
                                                     type="text"
-                                                    value={selectedComponent.content || ""}
+                                                    value={selectedComponent.content || " "}
                                                     onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        if (value.length === 0) {
+                                                            return;
+                                                        }
                                                         updateComponent(selectedComponent.id, (node) => {
                                                             node.content = e.target.value;
                                                         });
@@ -374,7 +420,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                         updateComponent(selectedComponent.id, (node) => {
                                                             node.defaultProps ??= {};
                                                             node.defaultProps.events ??= {};
-                                                            node.defaultProps.events.visibility = {};
+                                                            node.defaultProps.events.visibility ??= {};
                                                             node.defaultProps.events.visibility.action = e.target.value;
                                                         })
                                                     }
@@ -457,7 +503,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <div className="event-form">
                                                 <label>Change Event</label>
                                                 <select
-                                                    value={selectedComponent.defaultProps?.events?.onChange ?? ""}
+                                                    value={selectedComponent.defaultProps?.events?.onChange.action ?? ""}
                                                     onChange={(e) => {
                                                         updateComponent(selectedComponent.id, (node) => {
                                                             node.defaultProps ??= {};
@@ -1287,44 +1333,80 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                     )}
                     {activeTab === 'resources' && (
                         <div className="properties-content">
-                            <Heading icon={<FileUp size={18} />} title={'External Data Source'} >
-                                <FileUpload onFilesAdded={handleFiles} />
-                                <ImportedFiles files={files} />
-                            </Heading>
+                            {!FILE_IMPORT_TAGS.includes(selectedComponent.tag) && (
+                                <div className='warn-msg'>
+                                    <p>This component doesn't support file upload</p>
+                                </div>
+                            )}
+                            {FILE_IMPORT_TAGS.includes(selectedComponent.tag) && (
+                                <>
+                                    <Heading icon={<FileUp size={18} />} title={'External Data Source'}>
+                                        <FileUpload onFilesAdded={handleFiles} />
+                                        <ImportedFiles files={filteredFiles} onDelete={deleteFile} />
+                                    </Heading>
 
-                            <Heading icon={<Webhook size={18} />} title={'API Connection'} >
-                                <div className="api-connection">
-                                    <div className="api-row">
-                                        <div className='api-text'>
-                                            <span className='api-icon'><Cloud size={28} /></span>
-                                            <div>
-                                                <p>User API</p>
-                                                <p className='link'>https://api.users.com</p>
+                                    <Heading icon={<Webhook size={18} />} title={'API Connection'}>
+                                        <div className="api-connection">
+                                            <div className="api-row">
+                                                <div className='api-text'>
+                                                    <span className='api-icon'><Cloud size={28} /></span>
+                                                    <div>
+                                                        <p>User API</p>
+                                                        <p className='link'>https://api.users.com</p>
+                                                    </div>
+                                                </div>
+                                                <div className='green-dot'></div>
                                             </div>
                                         </div>
-                                        <div className='green-dot'>
 
+                                        <div className="api-form">
+                                            <label>API Endpoint</label>
+                                            <input
+                                                type="text"
+                                                placeholder="https://api.example.com/data"
+                                                value={apiUrl}
+                                                onChange={(e) => setApiUrl(e.target.value)}
+                                            />
+
+                                            <button
+                                                className="api-button"
+                                                onClick={fetchApiData}
+                                            >
+                                                {loadingApi ? "Fetching..." : "Fetch Data"}
+                                            </button>
+                                            {filteredApi.map((api) => (
+                                                <div key={api.id} className="api-card">
+
+                                                    <div className="api-card-icon">
+                                                        <Cloud size={16} strokeWidth={2} />
+                                                    </div>
+
+                                                    <div className="api-card-info">
+                                                        <span className="api-card-url" title={api.url}>
+                                                            {api.url.replace(/^https?:\/\//, "")}
+                                                        </span>
+                                                        <div className="api-card-meta">
+                                                            <span
+                                                                className="api-card-dot"
+                                                                style={{ background: api.status === "connected" ? "#3dbd6e" : "#e0a030" }}
+                                                            />
+                                                            <span>{api.status}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <Trash2
+                                                        size={14}
+                                                        strokeWidth={2}
+                                                        className="api-card-trash"
+                                                        onClick={() => deleteApi(api.id)}
+                                                    />
+
+                                                </div>
+                                            ))}
                                         </div>
-                                    </div>
-                                </div>
-                                <div className="api-form">
-                                    <label>API Endpoint</label>
-
-                                    <input
-                                        type="text"
-                                        placeholder="https://api.example.com/data"
-                                        value={apiUrl}
-                                        onChange={(e) => setApiUrl(e.target.value)}
-                                    />
-
-                                    <button
-                                        className="api-button"
-                                        onClick={fetchApiData}
-                                    >
-                                        {loadingApi ? "Fetching..." : "Fetch Data"}
-                                    </button>
-                                </div>
-                            </Heading>
+                                    </Heading>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>
@@ -1540,9 +1622,10 @@ const DynamicProps = ({ selectedComponent, updateComponent }) => {
     if (!props || props.length === 0) return null;
     const checkBoxInput = props.filter(e => e.type === 'checkbox');
     const otherInputs = props.filter(e => e.type !== 'checkbox');
+    const inputType = selectedComponent?.defaultProps?.type || "text";
 
     if (!props || props.length === 0) {
-        return null
+        return null;
     }
 
     const getValue = (key) => {
@@ -1556,11 +1639,51 @@ const DynamicProps = ({ selectedComponent, updateComponent }) => {
         });
     }
 
+    const filteredOtherInputs = otherInputs.filter((prop) => {
+        if (selectedComponent.tag !== "input") return true;
+
+        if (prop.key === "type") return true;
+
+        if (inputType === "number") {
+            return ["placeholder", "min", "max", "type"].includes(prop.key);
+        }
+
+        if (inputType === "checkbox" || inputType === "radio") {
+            return false;
+        }
+
+        if (inputType === "text" || inputType === "email" || inputType === "password") {
+            return ["placeholder", "minLength", "maxLength", "type"].includes(prop.key);
+        }
+
+        if (inputType === "tel") {
+            return ["minLength", "maxLength", "placeholder"].includes(prop.key);
+        }
+
+        if (inputType === "date") {
+            return ["min", "max"].includes(prop.key);
+        }
+
+        if (inputType === "url") {
+            return ["minLength", "maxLength", "placeholder"].includes(prop.key);
+        }
+
+        return true;
+    });
+
+    const filteredCheckboxInputs = checkBoxInput.filter((prop) => {
+        if (inputType === "checkbox" || inputType === "radio") {
+            return ["type", "required", "disabled"].includes(prop.key);
+        }
+
+        return true;
+    });
+
     return (
         <Heading icon={<Settings size={18} />} title={'Component-Properties'}>
             <div className='properties-general'>
-                {otherInputs.map((prop) => (
-                    <div key={prop.key}>
+                {filteredOtherInputs.map((prop) => (
+                    <div key={prop.key} className='property-select'>
 
                         {prop.type === "text" && (
                             <>
@@ -1595,7 +1718,6 @@ const DynamicProps = ({ selectedComponent, updateComponent }) => {
                             <>
                                 <label htmlFor={prop.key}>{prop.label}</label>
                                 <select
-                                    className='property-select'
                                     id={prop.key}
                                     value={getValue(prop.key)}
                                     onChange={(e) => handleChange(prop.key, e.target.value)}
@@ -1609,9 +1731,9 @@ const DynamicProps = ({ selectedComponent, updateComponent }) => {
                         )}
                     </div>
                 ))}
-                {checkBoxInput.length > 0 && (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4%' }}>
-                        {checkBoxInput.map((prop) => (
+                {filteredCheckboxInputs.length > 0 && (
+                    <div className='checkbox-group'>
+                        {filteredCheckboxInputs.map((prop) => (
                             <label key={prop.key} id="checkbox-row">
                                 <input
                                     id='property-check'
