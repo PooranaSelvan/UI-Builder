@@ -299,8 +299,6 @@ const saveCustomComponent = async (req, res) => {
      }
 };
 
-
-
 const deleteCustomComponent = async (req, res) => {
      const { userId } = req.body;
      const { componentId } = req.params;
@@ -330,7 +328,6 @@ const deleteAllCustomComponent = async (req, res) => {
           return res.status(400).json({ message: "All fields are required!" });
      }
 
-
      con.query(deleteAllCustomComponentsQuery, [userId], (err, result) => {
           if (err) {
                if (err.code === 'ER_BAD_NULL_ERROR') {
@@ -344,4 +341,54 @@ const deleteAllCustomComponent = async (req, res) => {
      });
 }
 
-export { getProjects, saveProject, deleteProject, getPages, getPageByPageId, savePage, updatePage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent };
+const updateCustomComponent = async (req, res) => {
+     const { componentId } = req.params;
+     const { componentName, icon, data } = req.body;
+
+     if (!componentId) {
+       return res.status(400).json({ message: "Component ID is required!" });
+     }
+     if (!data) {
+       return res.status(400).json({ message: "Data is required!" });
+     }
+   
+     try {
+       const fields = ["data = ?"];
+       const values = [JSON.stringify(data)];
+   
+       if (componentName !== undefined) {
+         fields.push("componentName = ?");
+         values.push(componentName);
+       }
+   
+       if (icon !== undefined) {
+         fields.push("icon = ?");
+         values.push(icon);
+       }
+   
+       values.push(componentId);
+   
+       const sql = `UPDATE components SET ${fields.join(", ")}, lastModified = NOW() WHERE id = ?`;
+   
+       con.query(sql, values, (err, result) => {
+         if (err) {
+           console.log("SQL ERROR:", err);
+           return res.status(500).json({
+             message: err?.sqlMessage,
+             error: err
+           });
+         }
+   
+         return res.status(200).json({
+           message: "Component Updated Successfully!"
+         });
+       });
+   
+     } catch (error) {
+       console.log("CATCH ERROR:", error);
+       return res.status(500).json({ message: "Something went wrong!" });
+     }
+   };
+   
+
+export { getProjects, saveProject, deleteProject, getPages, getPageByPageId, savePage, updatePage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent ,updateCustomComponent};

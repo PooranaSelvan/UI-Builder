@@ -1,5 +1,5 @@
 import express from "express";
-import { getPages, savePage, getCustomComponents, saveCustomComponent, getProjects, saveProject, updatePage, getPageByPageId, deleteProject, deletePage, deleteCustomComponent, deleteAllCustomComponent } from "../controllers/builderController.js";
+import { getPages, savePage, getCustomComponents, saveCustomComponent, getProjects, saveProject, updatePage, getPageByPageId, deleteProject, deletePage, deleteCustomComponent, deleteAllCustomComponent,  updateCustomComponent } from "../controllers/builderController.js";
 
 const router = express.Router();
 
@@ -8,6 +8,7 @@ router.route("/components/:userId").get(getCustomComponents);
 router.route("/components").post(saveCustomComponent);
 router.route("/components").delete(deleteAllCustomComponent);
 router.route("/components/:componentId").delete(deleteCustomComponent);
+router.route("/components/:componentId").put(updateCustomComponent);
 
 // Page
 router.route("/pages/:userId").get(getPages);

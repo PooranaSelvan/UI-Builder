@@ -35,7 +35,6 @@ export default function ComponentItem({ item, onEditSavedComponent, onRenameComp
     setMenuPos({ x: e.clientX, y: e.clientY });
   };
 
-
   return (
     <>
       <div
