@@ -15,10 +15,6 @@ export default function CreateForm({ isOpen, onClose, title, nameLabel, descript
       return;
     }
 
-    if (name.length < 1 || name.length > 12) {
-      toast.error("Name must be greater than 1 & less than 12 characters!");
-      return;
-    }
     if (description.length < 1 || description.length > 50) {
       toast.error("Description must be greater than 1 & less than 50 characters!");
       return;

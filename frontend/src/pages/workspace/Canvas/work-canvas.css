@@ -21,7 +21,8 @@
 
 /* Component Style */
 .test-component:hover {
-     border: 2px solid var(--red-300);
+     outline: 2px solid var(--red-300);
+     outline-offset: 2px;
 }
 
 .component-drag {
