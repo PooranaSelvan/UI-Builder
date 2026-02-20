@@ -1,5 +1,5 @@
-import { useEffect, useState,useContext } from "react";
-import { DndContext } from "@dnd-kit/core";
+import { useEffect, useState, useContext } from "react";
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import LeftPanel from "./LeftSideBar/LeftPanel";
 import Canvas from "./Canvas/Canvas";
@@ -11,7 +11,7 @@ import { components as componentLibrary } from "./utils/ComponentsData.js";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
-import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save } from 'lucide-react';
+import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save ,AlertCircle ,Trash2} from 'lucide-react';
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
@@ -22,6 +22,8 @@ const Workspace = () => {
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
   const { pageId } = useParams();
   const { customComponents } = useContext(CustomComponentsContext);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+
 
 
   useEffect(() => {
@@ -172,18 +174,59 @@ const Workspace = () => {
       return;
     }
 
-    // Re-Order Canvas Elements - Sorting
-    if (!isChild && components.some((c) => c.id === over.id)) {
-      setComponents((items) => {
-        const oldIndex = items.findIndex((i) => i.id === active.id);
-        const newIndex = items.findIndex((i) => i.id === over.id);
+    const findParentComponent = (items, childId) => {
+      for (let item of items) {
+        if (item.children?.some(child => child.id === childId)) {
+          return item;
+        }
 
-        if (oldIndex === -1 || newIndex === -1) return items;
+        if (item.children?.length) {
+          const found = findParentComponent(item.children, childId);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
 
-        return arrayMove(items, oldIndex, newIndex);
-      });
-      return;
+    const isOverChild = isChildComponent(components, over.id);
+
+    if (!isChild && !isOverChild && over.id !== "canvas") {
+      const oldIndex = components.findIndex(i => i.id === active.id);
+      const newIndex = components.findIndex(i => i.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        setComponents(items => arrayMove(items, oldIndex, newIndex));
+        return;
+      }
     }
+
+
+    // Re-Order Canvas Elements - Sorting
+    if (isChild) {
+      const parent = findParentComponent(components, active.id);
+      if (!parent) return;
+
+      const oldIndex = parent.children.findIndex(c => c.id === active.id);
+      const newIndex = parent.children.findIndex(c => c.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        setComponents(prev => {
+          const cloned = cloneComponents(prev);
+          const parentClone = findParentComponent(cloned, active.id);
+
+          parentClone.children = arrayMove(
+            parentClone.children,
+            oldIndex,
+            newIndex
+          );
+
+          return cloned;
+        });
+
+        return;
+      }
+    }
+
 
     // Putting Into Another Component
     if (over.id !== "canvas") {
@@ -267,10 +310,14 @@ const Workspace = () => {
 
   // Right SideBar Methods - Gowtham
   const deleteComponent = () => {
+    if (!selectedComponentId) return;
+    setDeleteTargetId(selectedComponentId);
+  };
+  const confirmDelete = () => {
+    if (!deleteTargetId) return;
     const cloned = cloneComponents(components);
-
     const remove = (items) => {
-      const index = items.findIndex(i => i.id === selectedComponentId);
+      const index = items.findIndex(i => i.id === deleteTargetId);
 
       if (index !== -1) {
         items.splice(index, 1);
@@ -283,9 +330,15 @@ const Workspace = () => {
     };
 
     remove(cloned);
+
     setComponents(cloned);
+    setSelectedComponentId(null);
+    setDeleteTargetId(null);
   };
 
+  const cancelDelete = () => {
+    setDeleteTargetId(null);
+  };
   const clearComponentSelection = () => {
     setSelectedComponentId(null);
   };
@@ -333,7 +386,6 @@ const Workspace = () => {
     return false
   }
 
-
   const handleNavigatePreview = () => {
     if (components.length === 0) {
       toast.error("There is no Components Load Preview!", toastErrorStyle);
@@ -349,29 +401,36 @@ const Workspace = () => {
     ...componentLibrary,
     ...(customComponents.length
       ? [
-          {
-            title: "Custom Components",
-            type: "grid",
-            items: customComponents.map(c => ({
-              id: c._id,
-              originalId: c._id,
-              label: c.componentName,
-              iconName: c.icon || "Square",
-              isRootCustom: true,
-              children: c.data ? JSON.parse(c.data) : [],
-            })),
-          },
-        ]
+        {
+          title: "Custom Components",
+          type: "grid",
+          items: customComponents.map(c => ({
+            id: c._id,
+            originalId: c._id,
+            label: c.componentName,
+            iconName: c.icon || "Square",
+            isRootCustom: true,
+            children: c.data ? JSON.parse(c.data) : [],
+          })),
+        },
+      ]
       : []),
   ];
-  
 
+  //Layers Logic
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   // console.log(components);
 
   return (
     <>
-      <DndContext onDragEnd={handleDragEnd}>
+      <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
         <div style={{ display: "flex", height: "93vh", overflow: "hidden", position: "relative" }}>
           <div className="workspace-topbar">
             <div className="workspace-topbar-screens">
@@ -404,11 +463,40 @@ const Workspace = () => {
               </Button>
             </div>
           </div>
-          <LeftPanel components={combinedComponents} />
+          <LeftPanel components={combinedComponents} canvasElements={components} onSelectComponent={setSelectedComponentId}  onDeleteCanvasComponent={(id) => { setDeleteTargetId(id);  }}  selectedComponentId={selectedComponentId}/>
           <Canvas components={components} zoom={zoom} selectedComponentId={selectedComponentId} onSelectComponent={(id) => setSelectedComponentId(id)} clearComponentSelection={clearComponentSelection} />
           <RightSideBar selectedComponent={selectedComponent} updateComponent={updateComponent} deleteComponent={deleteComponent} />
         </div >
         <Dock zoom={zoom} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
+        {deleteTargetId && (
+          <div className="delete-modal-overlay">
+            <div className="delete-modal">
+
+              <div className="delete-header">
+                <div className="delete-icon">
+                  <AlertCircle size={22} />
+                </div>
+                <h3>Delete Component</h3>
+              </div>
+
+              <p className="delete-description">
+                Are you sure you want to delete this component?
+              </p>
+
+              <div className="delete-modal-actions">
+                <button className="cancel-btn" onClick={cancelDelete}>
+                  Cancel
+                </button>
+
+                <button className="confirm-btn" onClick={confirmDelete}>
+                  <Trash2 size={16} />
+                  Delete
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
       </DndContext >
     </>
   );

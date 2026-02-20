@@ -6,23 +6,12 @@ export const CustomComponentsContext = createContext(null);
 
 export const CustomComponentsProvider = ({ children, user }) => {
   const [customComponents, setCustomComponents] = useState([]);
-
-  const addCustomComponentToState = (component) => {
-    setCustomComponents(prev => [
-      ...prev,
-      {
-        _id: component._id,
-        componentName: component.componentName || "My Component",
-        icon: component.icon || "Square",
-        data: typeof component.data === "string" ? component.data : JSON.stringify(component.data),
-      },
-    ]);
-  };
-
   const baseUrl = import.meta.env.VITE_SITE_TYPE === "development" ? import.meta.env.VITE_BACKEND_LOCAL : import.meta.env.VITE_BACKEND_PROD;
 
   // FETCH COMPONENTS
   const fetchCustomComponents = async () => {
+
+
     if (!user?.userId) return;
 
     try {
@@ -31,7 +20,7 @@ export const CustomComponentsProvider = ({ children, user }) => {
       });
 
       const normalized = (res.data.components || []).map(c => ({
-        _id: c._id,
+        _id: c.id,
         componentName: c.componentName || "Unnamed Component",
         icon: c.icon || "Square",
         data: typeof c.data === "string" ? c.data : JSON.stringify(c.data),
@@ -42,6 +31,7 @@ export const CustomComponentsProvider = ({ children, user }) => {
       console.error(err);
     }
   };
+  
 
   useEffect(() => {
     if (user?.userId) fetchCustomComponents();
@@ -50,19 +40,17 @@ export const CustomComponentsProvider = ({ children, user }) => {
   // CREATE
   const addCustomComponent = async (payload) => {
     if (!user?.userId) return null;
-
+  
     try {
-      const res = await axios.post(`${baseUrl}builder/components`, { userId: user.userId, ...payload }, { withCredentials: true });
-      const saved = res.data.component || res.data;
-      addCustomComponentToState(saved);
-
-      return saved;
+      await axios.post(`${baseUrl}builder/components`, { userId: user.userId, ...payload }, { withCredentials: true });
+      await fetchCustomComponents();
+      return true;
     } catch (err) {
       console.error(err);
-      toast.error("Failed to save component");
       return null;
     }
   };
+  
 
   // DELETE
   const deleteCustomComponent = async (componentId) => {
@@ -81,17 +69,48 @@ export const CustomComponentsProvider = ({ children, user }) => {
     }
   };
 
+  //UPDATE
+  const updateCustomComponent = async (componentId, payload) => {
+    if (!componentId) return false;
 
-
+    const body = {
+      data: payload.data, 
+    };
+  
+    if (payload.componentName !== undefined && payload.componentName !== null) {
+      body.componentName = payload.componentName;
+    }
+  
+    if (payload.icon !== undefined && payload.icon !== null) {
+      body.icon = payload.icon;
+    }
+  
+    try {
+      await axios.put(
+        `${baseUrl}builder/components/${componentId}`,
+        body,
+        { withCredentials: true }
+      );
+  
+      await fetchCustomComponents();
+      return true;
+  
+    } catch (error) {
+      console.error("Update failed:", error.response?.data || error.message);
+      toast.error("Failed to update component");
+      return false;
+    }
+  };
+  
   return (
     <CustomComponentsContext.Provider
-      value={{
-        customComponents,
-        addCustomComponent,
-        deleteCustomComponent,
-        setCustomComponents,
-        addCustomComponentToState,
-      }}
+    value={{
+      customComponents,
+      addCustomComponent,
+      deleteCustomComponent,
+      updateCustomComponent
+    }}
+    
     >
       {children}
     </CustomComponentsContext.Provider>

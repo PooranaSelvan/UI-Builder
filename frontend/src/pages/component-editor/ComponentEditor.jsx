@@ -1,5 +1,5 @@
-import { useState,useContext} from "react";
-import { DndContext } from "@dnd-kit/core";
+import { useState, useContext } from "react";
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { v4 as uuidv4 } from "uuid";
 import toast from "react-hot-toast";
@@ -8,7 +8,7 @@ import LeftPanel from "../workspace/LeftSideBar/LeftPanel";
 import Canvas from "../workspace/Canvas/Canvas";
 import RightSideBar from "../workspace/RightSideBar/RightSideBar";
 import IconPicker from "./IconPicker";
-import { Search, X, Eye } from "lucide-react";
+import { Search, X, Eye ,Trash2,AlertCircle} from "lucide-react";
 import { BasicComponents } from "../workspace/utils/basicComponentsData";
 import Button from "../../components/Button.jsx";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
@@ -17,13 +17,17 @@ const ComponentEditor = () => {
   /* ---------------- State ---------------- */
   const [components, setComponents] = useState([]);
   const [selectedComponentId, setSelectedComponentId] = useState(null);
-  const { customComponents, addCustomComponent, deleteCustomComponent ,updateCustomComponent,   addCustomComponentToState  } = useContext(CustomComponentsContext);
+  const { customComponents, addCustomComponent, deleteCustomComponent, updateCustomComponent } = useContext(CustomComponentsContext);
   const [customIconName, setCustomIconName] = useState("Square");
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [customComponentName, setCustomComponentName] = useState("");
   const [showNameInput, setShowNameInput] = useState(false);
   const [iconSearch, setIconSearch] = useState("");
   const [editingSavedComponentId, setEditingSavedComponentId] = useState(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [editingComponent, setEditingComponent] = useState(null);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+
 
   /* ---------------- Helpers ---------------- */
 
@@ -96,16 +100,17 @@ const ComponentEditor = () => {
         : [],
     };
   };
-  
+
 
   const startEditingSavedComponent = (savedComponent) => {
-    setEditingSavedComponentId(savedComponent.id);
+    setEditingSavedComponentId(savedComponent.originalId);
     setCustomComponentName(savedComponent.label);
     setCustomIconName(savedComponent.iconName || "Square");
 
     const cloned = cloneComponentWithNewIds(savedComponent);
     setComponents([cloned]);
     setSelectedComponentId(cloned.id);
+    setHasUnsavedChanges(false);
   }
 
   /* ---------------- Drag Logic ---------------- */
@@ -125,6 +130,7 @@ const ComponentEditor = () => {
 
     const isFromSidebar = !!active.data.current?.component;
     const isChild = isChildComponent(components, active.id);
+    const isOverChild = isChildComponent(components, over.id);
 
     /* Sidebar to Canvas */
     if (isFromSidebar && over.id === "canvas") {
@@ -154,8 +160,7 @@ const ComponentEditor = () => {
       if (componentData.isRootCustom) {
         setEditingSavedComponentId(componentData.originalId || componentData.id);
       }
-      
-
+      setHasUnsavedChanges(true);
       return;
     }
 
@@ -181,16 +186,25 @@ const ComponentEditor = () => {
         children: [],
       };
 
-      setComponents(prev => addChildToComponent(prev, over.id, newChild));
+
+      setComponents(prev => {
+        setHasUnsavedChanges(true);
+        return addChildToComponent(prev, over.id, newChild);
+      });
       return;
     }
 
-    /* Child to Canvas (blocked) */
-    if (isChild && over.id === "canvas") {
-      toast.error(
-        "Child elements must be inside a layout component",
-        toastErrorStyle
-      );
+    /* Root → Root Reorder */
+    if (!isFromSidebar && !isChild && !isOverChild && over.id !== "canvas") {
+      setComponents(prev => {
+        const oldIndex = prev.findIndex(i => i.id === active.id);
+        const newIndex = prev.findIndex(i => i.id === over.id);
+
+        if (oldIndex === -1 || newIndex === -1) return prev;
+
+        setHasUnsavedChanges(true);
+        return arrayMove(prev, oldIndex, newIndex);
+      });
       return;
     }
 
@@ -211,7 +225,9 @@ const ComponentEditor = () => {
           updatedTree = prev.filter(i => i.id !== active.id);
         }
 
-        return addChildToComponent(updatedTree, over.id, movingItem);
+        const newTree = addChildToComponent(updatedTree, over.id, movingItem);
+        setHasUnsavedChanges(true);
+        return newTree;
       });
       return;
     }
@@ -222,39 +238,52 @@ const ComponentEditor = () => {
         const oldIndex = prev.findIndex(i => i.id === active.id);
         const newIndex = prev.findIndex(i => i.id === over.id);
         if (oldIndex === -1 || newIndex === -1) return prev;
+        setHasUnsavedChanges(true);
         return arrayMove(prev, oldIndex, newIndex);
       });
     }
   };
 
+  //Delete
   const deleteComponent = () => {
     if (!selectedComponentId) return;
-    const newComponents = cloneComponents(components);
-    let stack = [{ items: newComponents }];
-    while (stack.length > 0) {
-      const { items } = stack.pop();
-      const index = items.findIndex(
-        item => item.id === selectedComponentId
-      );
+    setDeleteTargetId(selectedComponentId);
+  };
+  const confirmDelete = () => {
+    if (!deleteTargetId) return;
+    const cloned = cloneComponents(components);
+    const remove = (items) => {
+      const index = items.findIndex(i => i.id === deleteTargetId);
+
       if (index !== -1) {
         items.splice(index, 1);
-        break;
+        return true;
       }
-      items.forEach(item => {
-        if (item.children?.length) {
-          stack.push({ items: item.children });
-        }
-      });
-    }
-    setComponents(newComponents);
+
+      return items.some(item =>
+        item.children && remove(item.children)
+      );
+    };
+
+    remove(cloned);
+
+    setComponents(cloned);
     setSelectedComponentId(null);
+    setDeleteTargetId(null);
+  };
+
+  const cancelDelete = () => {
+    setDeleteTargetId(null);
   };
 
 
+  //clear components
   const clearComponentSelection = () => {
     setSelectedComponentId(null);
   };
 
+
+  //cloning components
   const cloneComponents = (obj) => {
     if (obj === null || typeof obj !== "object") {
       return obj;
@@ -270,10 +299,11 @@ const ComponentEditor = () => {
         clonedObj[key] = cloneComponents(obj[key]);
       }
     }
-
     return clonedObj;
   };
 
+
+  //for update component
   const updateComponent = (id, updater) => {
     setComponents(prev => {
       const cloned = cloneComponents(prev);
@@ -282,6 +312,7 @@ const ComponentEditor = () => {
         const node = stack.pop();
         if (node.id === id) {
           updater(node);
+          setHasUnsavedChanges(true);
           break;
         }
         if (node.children?.length) {
@@ -290,74 +321,109 @@ const ComponentEditor = () => {
       }
       return cloned;
     });
-  }
+  };
 
-  const saveCanvasAsComponent = () => {
+
+
+  //save component as in the canvas
+  const saveCanvasAsComponent = async () => {
     if (!components.length) {
       toast.error("Canvas is empty");
       return;
     }
-  
-    if (editingSavedComponentId) {
-      setShowIconPicker(true);
-      return;
+
+    const structureOnlyPayload = {
+      data: JSON.stringify(deepCloneWithoutIds(components)),
+    };
+
+    try {
+      if (editingSavedComponentId) {
+        await updateCustomComponent(editingSavedComponentId, structureOnlyPayload);
+
+        toast.success("Component Updated Successfully!");
+        setHasUnsavedChanges(false);
+        setEditingSavedComponentId(null);
+        setComponents([]);
+        setSelectedComponentId(null);
+        return;
+      }
+      setCustomComponentName("");
+      setCustomIconName("Square");
+      setShowNameInput(true);
+
+    } catch (error) {
+      toast.error("Failed to save component");
     }
-  
-    setCustomComponentName("");
-    setCustomIconName("Square");
-    setShowNameInput(true);
   };
+
 
   const selectedComponent = selectedComponentId ? findComponentById(components, selectedComponentId) : null;
 
- 
+
+  //combining components to the left panel
   const combinedComponents = [
     ...BasicComponents,
     ...(customComponents.length
       ? [
-          {
-            title: "Custom Components",
-            type: "grid",
-            items: customComponents.map((comp) => {
-              let parsedData = [];
-              try {
-                parsedData = comp.data
-                  ? typeof comp.data === "string"
-                    ? JSON.parse(comp.data)
-                    : comp.data
-                  : [];
-              } catch (err) {
-                parsedData = [];
-              }
-  
-              const uniqueId = comp._id || uuidv4();
-  
-              return {
-                id: `custom-${uniqueId}`,
-                originalId: comp._id || uniqueId,
-                label: comp.componentName || "My Component",
-                iconName: comp.icon || "Square",
-                isRootCustom: true,
-                children: parsedData,
-                rank: 1,             
-                defaultProps: {},    
-                tag: "div",         
-              };
-            }),
-          },
-        ]
+        {
+          title: "Custom Components",
+          type: "grid",
+          items: customComponents.map((comp) => {
+            let parsedData = [];
+
+            try {
+              parsedData =
+                typeof comp.data === "string"
+                  ? JSON.parse(comp.data)
+                  : comp.data || [];
+            } catch {
+              parsedData = [];
+            }
+
+            return {
+              id: `custom-${comp._id}`,
+              originalId: comp._id,
+              label: comp.componentName,
+              iconName: comp.icon || "Square",
+              isRootCustom: true,
+              children: parsedData,
+              rank: 1,
+              defaultProps: {},
+              tag: "div",
+            };
+          }),
+        },
+      ]
       : []),
   ];
-  
-  
-  
-  
-
-  const handleNameSubmit = () => {
+  const handleNameSubmit = async () => {
     if (!customComponentName.trim()) return;
     setShowNameInput(false);
-    setShowIconPicker(true);
+    if (editingComponent) {
+      try {
+        await updateCustomComponent(editingComponent.originalId, {
+          componentName: customComponentName,
+          icon: editingComponent.iconName || "Square",
+          data: JSON.stringify(editingComponent.children || []),
+        });
+
+        toast.success("Component renamed!");
+        setHasUnsavedChanges(true);
+        const updatedComponents = customComponents.map(comp =>
+          comp._id === editingComponent.originalId
+            ? { ...comp, componentName: customComponentName }
+            : comp
+        );
+        setEditingComponent(null);
+      } catch (err) {
+        toast.error("Rename failed");
+      }
+    } else {
+      setShowIconPicker(true);
+    }
   };
+
+
 
   const deepCloneWithoutIds = (items) =>
     items.map(({ id, ...rest }) => ({
@@ -365,96 +431,95 @@ const ComponentEditor = () => {
       children: rest.children ? deepCloneWithoutIds(rest.children) : [],
     }));
 
-    const handleIconSelect = async (iconName) => {
-      setCustomIconName(iconName);
-    
+
+
+  const handleIconSelect = async (iconName) => {
+    setCustomIconName(iconName);
+
+    if (editingComponent) {
+      try {
+        await updateCustomComponent(editingComponent.originalId, {
+          componentName: customComponentName,
+          icon: iconName,
+          data: JSON.stringify(editingComponent.children || []),
+        });
+
+        toast.success("Icon updated!");
+        setEditingComponent(null);
+        setShowIconPicker(false);
+      } catch (err) {
+        toast.error("Icon update failed");
+      }
+    } else {
       const componentPayload = {
         icon: iconName,
         componentName: customComponentName,
-        data: JSON.stringify(deepCloneWithoutIds(components)), 
+        data: JSON.stringify(deepCloneWithoutIds(components)),
       };
-    
+
       try {
-        let savedComponent;
-    
-        if (editingSavedComponentId) {
-          savedComponent = await updateCustomComponent(editingSavedComponentId, componentPayload);
-          toast.success("Custom Component Updated!");
-        } else {
-          savedComponent = await addCustomComponent(componentPayload);
-          if (!savedComponent) return;
-    
-          toast.success("Custom Component Saved!");
-    
-          addCustomComponentToState({
-            _id: savedComponent._id,
-            componentName: savedComponent.componentName,
-            icon: savedComponent.icon || "Square",
-            data: savedComponent.data || "[]",
-          });
-        }
-    
-        setComponents([]);  
-        setSelectedComponentId(null);
-        setEditingSavedComponentId(null);
+        const success = await addCustomComponent(componentPayload);
         setShowIconPicker(false);
+        if (!success) return;
+
+        toast.success("Custom Component Saved!");
+        setComponents([]);
+        setSelectedComponentId(null);
         setCustomComponentName("");
         setCustomIconName("Square");
-    
       } catch (error) {
-        console.error(error);
+        setShowIconPicker(false);
         toast.error("Failed to save component");
       }
-    };
-    
-    
-    
-    
+    }
+  };
 
-    const handleRenameComponent = async (component) => {
-      const newName = prompt("Enter new name", component.label);
-      if (!newName) return;
-    
-      try {
-        await updateCustomComponent(component.id, {
-          componentName: newName,
-        });
-    
-        toast.success("Component renamed!");
-      } catch (err) {
-        toast.error("Rename failed");
-      }
-    };
-    
+
+  const handleRenameComponent = (component) => {
+    setEditingComponent(component);
+    setCustomComponentName(component.label);
+    setShowNameInput(true);
+  };
+
 
   const handleChangeIcon = (component) => {
-    setEditingSavedComponentId(component.id);
+    setEditingComponent(component);
     setCustomComponentName(component.label);
+    setCustomIconName(component.iconName || "Square");
+    setIconSearch("");
     setShowIconPicker(true);
   };
 
+
   const handleDeleteComponent = async (component) => {
     if (!window.confirm("Delete this component?")) return;
-  
+
     try {
-      await deleteCustomComponent(component.id);
-  
-      if (editingSavedComponentId === component.id) {
+      await deleteCustomComponent(component.originalId);
+
+      if (editingSavedComponentId === component.originalId) {
         setComponents([]);
         setEditingSavedComponentId(null);
       }
-  
+
       toast.success("Component deleted!");
     } catch (err) {
       toast.error("Delete failed");
     }
   };
-  // console.log("customComponents:", customComponents);
 
+  //Layer Logic
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
   /* ---------------- Render ---------------- */
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
       <div className="component-editor-wrapper">
         <div className="editor-top-bar">
           <Button
@@ -471,45 +536,49 @@ const ComponentEditor = () => {
                 toast.error("There is no component to preview!", toastErrorStyle);
                 return;
               }
-            
+
               localStorage.setItem(
                 "componentEditorPreview",
                 JSON.stringify(components)
               );
-            
+
               window.open("/component-editor-preview", "_blank");
-            }}
-            
-          >
+            }}>
             <Eye size={20} />
             Preview
           </Button>
 
           <button
             className="save-component-btn"
-            disabled={!components.length}
+            disabled={!components.length || !hasUnsavedChanges}
             onClick={saveCanvasAsComponent}
           >
-            {editingSavedComponentId ? "Update Component" : "Save Component"}
+            {editingSavedComponentId ? (hasUnsavedChanges ? "Update Component" : "Saved") : "Save Component"}
           </button>
         </div>
 
 
         <div className="editor-body">
           <LeftPanel components={combinedComponents}
-         onAddJsonComponent={async (newComp) => {
-          try {
-            await addCustomComponent(newComp);
-            toast.success("JSON component added!");
-          } catch (err) {
-            toast.error("Failed to add JSON component");
-          }
-        }}
-        
+            onAddJsonComponent={async (newComp) => {
+              try {
+                await addCustomComponent(newComp);
+                toast.success("JSON component added!");
+              } catch (err) {
+                toast.error("Failed to add JSON component");
+              }
+            }}
+
             onEditSavedComponent={startEditingSavedComponent}
             onRenameComponent={handleRenameComponent}
             onChangeIcon={handleChangeIcon}
             onDeleteComponent={handleDeleteComponent}
+            canvasElements={components}
+            onDeleteCanvasComponent={(id) => {
+              setDeleteTargetId(id);  
+            }}
+            onSelectComponent={setSelectedComponentId}
+            selectedComponentId={selectedComponentId}
           />
 
           <Canvas
@@ -531,7 +600,7 @@ const ComponentEditor = () => {
       {showNameInput && (
         <div className="custom-component-modal">
           <div className="modal-header">
-            <h4>Name your component</h4>
+            <h4>{editingComponent ? "Rename Component" : "Name your component"}</h4>
             <X size={20} className="modal-cancel-btn" onClick={() => setShowNameInput(false)} />
           </div>
           <input
@@ -542,7 +611,7 @@ const ComponentEditor = () => {
           <button
             disabled={!customComponentName.trim()}
             onClick={handleNameSubmit}>
-            Next: Choose Icon
+            {editingComponent ? "Rename" : "Next: Choose Icon"}
           </button>
         </div>
       )}
@@ -554,7 +623,6 @@ const ComponentEditor = () => {
             <h4>Choose an icon for {customComponentName || "your component"}</h4>
             <X size={20} className="modal-cancel-btn" onClick={() => setShowIconPicker(false)} />
           </div>
-
 
           <div className="icon-picker-search">
             <Search size={16} className="search-icon" />
@@ -576,6 +644,38 @@ const ComponentEditor = () => {
           </div>
         </div>
       )}
+
+{deleteTargetId && (
+  <div className="delete-modal-overlay">
+    <div className="delete-modal">
+
+      <div className="delete-header">
+        <div className="delete-icon">
+          <AlertCircle size={22} />
+        </div>
+        <h3>Delete Component</h3>
+      </div>
+
+      <p className="delete-description">
+        Are you sure you want to delete this component?
+      </p>
+
+      <div className="delete-modal-actions">
+        <button className="cancel-btn" onClick={cancelDelete}>
+          Cancel
+        </button>
+
+        <button className="confirm-btn" onClick={confirmDelete}>
+          <Trash2 size={16} />
+          Delete
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+
+
     </DndContext>
   );
 };
