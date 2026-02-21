@@ -1,6 +1,6 @@
 import con from "../db/config.js";
 import { getProjectById, getUserById } from "../utils/finders.js";
-import { deleteAllCustomComponentsQuery, deleteCustomComponentQuery, deletePageQuery, deleteProjectQuery, getPageByPageIdQuery, getPublishedPageQuery, publishPageQuery, saveNewComponent, saveNewPage, saveNewProject, selectProjectByUserId, unPublishPageQuery, updatePageData } from "../utils/queries.js";
+import { checkPageUrlQuery, deleteAllCustomComponentsQuery, deleteCustomComponentQuery, deletePageQuery, deleteProjectQuery, getPageByPageIdQuery, getPublishedPageQuery, publishPageQuery, saveNewComponent, saveNewPageQuery, saveNewProject, selectProjectByUserId, unPublishPageQuery, updatePageData } from "../utils/queries.js";
 import { getUserComponentsQuery } from "../utils/queries.js";
 import { getUserPagesQuery } from "../utils/queries.js";
 
@@ -167,6 +167,7 @@ const getPageByPageId = async (req, res) => {
                name: page.pageName,
                description: page.description,
                data: page.data || [],
+               pageUrl: page.url,
                lastModified: page.lastModified,
                isPublished: page.isPublished,
                userId: page.userId
@@ -176,13 +177,13 @@ const getPageByPageId = async (req, res) => {
 
 
 const getPublishedPage = async (req, res) => {
-     const { pageId } = req.params;
+     const { pageUrl } = req.params;
 
-     if (!pageId) {
-          return res.status(400).json({ message: "Invalid Page Id!" });
+     if (!pageUrl) {
+          return res.status(400).json({ message: "Invalid Page URL!" });
      }
 
-     con.query(getPublishedPageQuery, [pageId], (err, result) => {
+     con.query(getPublishedPageQuery, [pageUrl], (err, result) => {
           if (err) {
                console.log(err);
                return res.status(500).json({ message: err?.sqlMessage, error: err });
@@ -198,6 +199,7 @@ const getPublishedPage = async (req, res) => {
                id: page.pageId,
                name: page.pageName,
                description: page.description,
+               pageUrl: page.url,
                data: page.data || [],
                lastModified: page.lastModified,
                isPublished: page.isPublished
@@ -205,11 +207,31 @@ const getPublishedPage = async (req, res) => {
      });
 }
 
+const checkPageUrl = async (req, res) => {
+     const { url } = req.params;
+
+     if (!url) {
+          return res.status(400).json({ message: "All fields are required!" });
+     }
+
+     con.query(checkPageUrlQuery, [url], (err, result) => {
+          if (err) {
+               console.log(err);
+               return res.status(500).json({ message: err?.sqlMessage, err });
+          }
+
+          if(result.length === 0){
+               return res.status(200).json({message : "No URL Found!", status : true});
+          }
+
+          return res.status(200).json({message : "URL Found!", status : false});
+     });
+}
 
 const savePage = async (req, res) => {
-     const { projectId, pageName, description, data } = req.body;
+     const { projectId, pageName, description, pageUrl, data } = req.body;
 
-     if (!projectId || !pageName || !description || !data) {
+     if (!projectId || !pageName || !description || !data || !pageUrl) {
           return res.status(400).json({ message: "All fields are required!" });
      }
 
@@ -228,8 +250,9 @@ const savePage = async (req, res) => {
                return res.status(404).json({ message: "Project Not Found!" });
           }
 
-          con.query(saveNewPage, [projectId, pageName, description, JSON.stringify(data), false], (err, result) => {
+          con.query(saveNewPageQuery, [projectId, pageName, description, JSON.stringify(data), false, pageUrl], (err, result) => {
                if (err) {
+                    console.log(err);
                     if (err.code === "ER_DUP_ENTRY") {
                          return res.status(401).json({ message: "Page Already Exists!" });
                     }
@@ -419,49 +442,49 @@ const updateCustomComponent = async (req, res) => {
      const { componentName, icon, data } = req.body;
 
      if (!componentId) {
-       return res.status(400).json({ message: "Component ID is required!" });
+          return res.status(400).json({ message: "Component ID is required!" });
      }
      if (!data) {
-       return res.status(400).json({ message: "Data is required!" });
+          return res.status(400).json({ message: "Data is required!" });
      }
-   
-     try {
-       const fields = ["data = ?"];
-       const values = [JSON.stringify(data)];
-   
-       if (componentName !== undefined) {
-         fields.push("componentName = ?");
-         values.push(componentName);
-       }
-   
-       if (icon !== undefined) {
-         fields.push("icon = ?");
-         values.push(icon);
-       }
-   
-       values.push(componentId);
-   
-       const sql = `UPDATE components SET ${fields.join(", ")}, lastModified = NOW() WHERE id = ?`;
-   
-       con.query(sql, values, (err, result) => {
-         if (err) {
-           console.log("SQL ERROR:", err);
-           return res.status(500).json({
-             message: err?.sqlMessage,
-             error: err
-           });
-         }
-   
-         return res.status(200).json({
-           message: "Component Updated Successfully!"
-         });
-       });
-   
-     } catch (error) {
-       console.log("CATCH ERROR:", error);
-       return res.status(500).json({ message: "Something went wrong!" });
-     }
-   };
-   
 
-export { getProjects, saveProject, deleteProject, getPages, getPageByPageId, getPublishedPage, savePage, updatePage, publishPage, unPublishPage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent ,updateCustomComponent};
+     try {
+          const fields = ["data = ?"];
+          const values = [JSON.stringify(data)];
+
+          if (componentName !== undefined) {
+               fields.push("componentName = ?");
+               values.push(componentName);
+          }
+
+          if (icon !== undefined) {
+               fields.push("icon = ?");
+               values.push(icon);
+          }
+
+          values.push(componentId);
+
+          const sql = `UPDATE components SET ${fields.join(", ")}, lastModified = NOW() WHERE id = ?`;
+
+          con.query(sql, values, (err, result) => {
+               if (err) {
+                    console.log("SQL ERROR:", err);
+                    return res.status(500).json({
+                         message: err?.sqlMessage,
+                         error: err
+                    });
+               }
+
+               return res.status(200).json({
+                    message: "Component Updated Successfully!"
+               });
+          });
+
+     } catch (error) {
+          console.log("CATCH ERROR:", error);
+          return res.status(500).json({ message: "Something went wrong!" });
+     }
+};
+
+
+export { getProjects, saveProject, deleteProject, getPages, getPageByPageId, getPublishedPage, checkPageUrl, savePage, updatePage, publishPage, unPublishPage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent, updateCustomComponent };

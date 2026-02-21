@@ -66,6 +66,7 @@ const Dashboard = () => {
           projectId: projectId,
           name: data.pageName,
           description: data.pageDescription,
+          pageUrl : data.url,
           modified: data.lastModified,
           data: data.pageData || [],
           isPublished: !!data.pagePublished
@@ -99,7 +100,7 @@ const Dashboard = () => {
     fetchPages();
   }, []);
 
-  const handleCreateNewPage = async (name, description) => {
+  const handleCreateNewPage = async (name, description, url) => {
     let userId = await getUserId();
 
     if (userId < 1) {
@@ -112,7 +113,7 @@ const Dashboard = () => {
       return;
     }
 
-    if (!name || !description) {
+    if (!name || !description || !url) {
       toast.error("All fields Required!");
       return;
     }
@@ -123,6 +124,7 @@ const Dashboard = () => {
         projectId: selectedApp.id,
         pageName: name,
         description,
+        pageUrl : url,
         data: []
       });
 
@@ -133,6 +135,7 @@ const Dashboard = () => {
         projectId,
         name: name,
         description,
+        pageUrl : url,
         status: "Draft",
         modified: new Date().toLocaleString(),
         data: [],
@@ -281,7 +284,7 @@ const Dashboard = () => {
         ...project,
         pages: project.pages.map(pg => pg.id === pageId ? { ...pg, isPublished: true } : pg)
       }));
-      setProjects(ele => ele.map(project => project.id === selectedApp.id ? { ...project, pages: project.pages.map(pg => pg.id === pageId ? { ...pg, isPublished: true, status: "Pub lished" } : pg) } : project));
+      setProjects(ele => ele.map(project => project.id === selectedApp.id ? { ...project, pages: project.pages.map(pg => pg.id === pageId ? { ...pg, isPublished: true, status: "Published" } : pg) } : project));
       toast.success(res.data.message);
     } catch (error) {
       console.log(error.response);
@@ -548,7 +551,7 @@ const Dashboard = () => {
               <div className="page-footer" style={{ justifyContent: page.isPublished ? "space-between" : "flex-end" }}>
                 {page.isPublished && (
                   <div className="page-link">
-                    <p onClick={() => window.open(`/publish/${page.id}`, "_blank")}>Link</p>
+                    <p onClick={() => window.open(`/publish/${page.pageUrl}`, "_blank")}>Link</p>
                     <Copy size={15} onClick={() => handleCopyLink(page.id)} />
                   </div>
                 )}

@@ -6,7 +6,7 @@ import RenderComponents from "../../components/RenderComponents";
 import api from "../../utils/axios.js";
 
 const Project = () => {
-  const { pageId } = useParams();
+  const { pageUrl } = useParams();
   const [components, setComponents] = useState([]);
   const [loading, setLoading] = useState(false);
   let navigate = useNavigate();
@@ -14,10 +14,12 @@ const Project = () => {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      try {
-        let res = await api.get(`/builder/publish/${pageId}`);
 
-        // console.log(res);
+      console.log(pageUrl);
+      try {
+        let res = await api.get(`/builder/publish/${pageUrl}`);
+
+        console.log(res.data);
 
         setComponents(res.data.data || []);
         setLoading(false);
@@ -28,11 +30,16 @@ const Project = () => {
           toast.error(error.response?.data.message);
           navigate("/dashboard");
         }
+
+        if (error.response.status === 400) {
+          toast.error(error.response?.data.message);
+          navigate("/dashboard");
+        }
       }
     }
 
     fetchData();
-  }, [pageId]);
+  }, [pageUrl]);
 
   if (loading) {
     return (
@@ -43,9 +50,9 @@ const Project = () => {
   }
 
   if (components.length === 0) {
-    return (
-      <div>There is No Published Components!</div>
-    );
+    toast.error("This web-page is not Developed!");
+    navigate("/");
+    // return;
   }
 
   return (

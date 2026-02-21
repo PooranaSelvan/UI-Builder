@@ -14,7 +14,7 @@ import Button from "../../components/Button.jsx";
 import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save, Undo2, AlertCircle, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/axios.js";
-import LinkModal from "./components/LinkModal.jsx";
+import LinkModal from "./components/LinkModal.jsx"
 
 
 const Workspace = ({ isAuthenticated }) => {

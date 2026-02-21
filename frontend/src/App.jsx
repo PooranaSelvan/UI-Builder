@@ -79,7 +79,7 @@ function App() {
           <Route path="/component-editor-preview" element={<ComponentEditorPreview />} />
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/profile' element={<Profile setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path='/publish/:pageId' element={<Publish />} />
+          <Route path='/publish/:pageUrl' element={<Publish />} />
         </Routes>
         <Toaster />
       </>

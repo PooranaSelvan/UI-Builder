@@ -505,6 +505,11 @@
 .primary-btn:hover {
   background: var(--primary-hover);
 }
+.primary-btn:disabled {
+  color: rgb(203, 203, 203);
+  background-color: #ebebeb;
+  cursor: not-allowed;
+}
 
 /* Media Query */
 

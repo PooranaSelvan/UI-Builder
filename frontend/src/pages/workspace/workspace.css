@@ -46,3 +46,68 @@
      height: 20px;
      background-color: #ccc;
 }
+
+
+@media (max-width: 1024px) {
+     .workspace-topbar {
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 10px 20px;
+          gap: 16px;
+     }
+
+     .workspace-topbar-btns,
+     .workspace-topbar-screens {
+          gap: 16px;
+     }
+
+     .workspace-topbar-screens {
+          display: none;
+     }
+
+     .divider-line {
+          display: none;
+     }
+}
+
+
+@media (max-width: 768px) {
+     .workspace-topbar {
+          position: fixed;
+          top: 10px;
+          left: 10px;
+          right: 10px;
+          transform: none;
+          width: auto;
+          flex-direction: column;
+          align-items: stretch;
+          padding: 12px;
+          gap: 12px;
+     }
+
+     .workspace-topbar-screens,
+     .workspace-topbar-btns {
+          justify-content: center;
+          width: 100%;
+     }
+
+     .workspace-topbar-btns {
+          flex-wrap: wrap;
+     }
+
+     .divider-line {
+          display: none;
+     }
+}
+
+
+@media (max-width: 480px) {
+     .workspace-topbar-btns button {
+          width: 100%;
+          justify-content: center;
+     }
+
+     .workspace-topbar-screens {
+          justify-content: space-between;
+     }
+}
