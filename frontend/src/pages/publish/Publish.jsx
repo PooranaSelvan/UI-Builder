@@ -8,38 +8,28 @@ import api from "../../utils/axios.js";
 const Project = () => {
   const { pageUrl } = useParams();
   const [components, setComponents] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   let navigate = useNavigate();
 
   useEffect(() => {
     async function fetchData() {
-      setLoading(true);
-
-      console.log(pageUrl);
       try {
         let res = await api.get(`/builder/publish/${pageUrl}`);
 
-        console.log(res.data);
-
         setComponents(res.data.data || []);
-        setLoading(false);
       } catch (error) {
-        setLoading(false);
         console.log(error.response);
-        if (error.response.status === 404) {
+        if (error.response?.status === 404 || error.response?.status) {
           toast.error(error.response?.data.message);
           navigate("/dashboard");
         }
-
-        if (error.response.status === 400) {
-          toast.error(error.response?.data.message);
-          navigate("/dashboard");
-        }
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchData();
-  }, [pageUrl]);
+  }, [pageUrl, navigate]);
 
   if (loading) {
     return (
@@ -50,9 +40,11 @@ const Project = () => {
   }
 
   if (components.length === 0) {
-    toast.error("This web-page is not Developed!");
-    navigate("/");
-    // return;
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <h2>This page is not developed!</h2>
+      </div>
+    );
   }
 
   return (
