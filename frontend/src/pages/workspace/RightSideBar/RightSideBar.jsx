@@ -433,6 +433,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 <label>Target component</label>
 
                                                 <input
+                                                    value={selectedComponent.defaultProps.events.visibility.targetId}
                                                     type="text"
                                                     placeholder='Enter the component Id'
                                                     onChange={(e) => {
@@ -521,11 +522,12 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                     <option value="update">Update </option>
                                                 </select>
 
-                                                <label>Target component</label>
+                                                <label>Target Element</label>
 
                                                 <input
+                                                    value={selectedComponent.defaultProps.events.onChange.targetId ?? ""}
                                                     type="text"
-                                                    placeholder='Enter the component Id'
+                                                    placeholder='Enter the element Id'
                                                     onChange={(e) => {
                                                         updateComponent(selectedComponent.id, (node) => {
                                                             node.defaultProps ??= {};
@@ -534,22 +536,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                             node.defaultProps.events.onChange.targetId = e.target.value
                                                         })
                                                     }}
-                                                />
-
-                                                <label>Target component</label>
-
-                                                <input
-                                                    type="text"
-                                                    placeholder='Enter the message'
-                                                    onChange={(e) => {
-                                                        updateComponent(selectedComponent.id, (node) => {
-                                                            node.defaultProps ??= {};
-                                                            node.defaultProps.events ??= {};
-                                                            node.defaultProps.events.onChange ??= {};
-                                                            node.defaultProps.events.onChange.message = e.target.value
-                                                        })
-                                                    }}
-                                                />
+                                                /> 
                                             </div>
                                         )}
 
