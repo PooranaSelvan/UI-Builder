@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { DndContext, PointerSensor, useSensor, useSensors, DragOverlay } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { v4 as uuidv4 } from "uuid";
 import toast from "react-hot-toast";
@@ -8,7 +8,7 @@ import LeftPanel from "../workspace/LeftSideBar/LeftPanel";
 import Canvas from "../workspace/Canvas/Canvas";
 import RightSideBar from "../workspace/RightSideBar/RightSideBar";
 import IconPicker from "./IconPicker";
-import { Search, X, Eye ,Trash2,AlertCircle} from "lucide-react";
+import { Search, X, Eye, Trash2, AlertCircle } from "lucide-react";
 import { BasicComponents } from "../workspace/utils/basicComponentsData";
 import Button from "../../components/Button.jsx";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
@@ -37,7 +37,7 @@ const ComponentEditor = () => {
       } catch (error) {
         console.log(error.response);
 
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401 || error.response?.status === 404) {
           navigate("/login", { replace: true });
         }
       }
@@ -112,12 +112,15 @@ const ComponentEditor = () => {
     return { newTree: cloned, removedChild };
   };
   const cloneComponentWithNewIds = (component) => {
-    const newId = `${component.id}-${uuidv4()}`;
+    const baseId = component.id || "custom";
+
     return {
       ...component,
-      id: newId,
+      id: `${baseId}-${uuidv4()}`,
       children: component.children
-        ? component.children.map(child => cloneComponentWithNewIds(child))
+        ? component.children.map(child =>
+          cloneComponentWithNewIds(child)
+        )
         : [],
     };
   };
@@ -186,6 +189,25 @@ const ComponentEditor = () => {
     }
 
 
+    if (!isFromSidebar && isChild && over.id === "canvas") {
+      const componentData = findComponentById(components, active.id);
+      if (!componentData) return;
+
+      if (componentData.rank === 4) {
+        toast.error("Basic elements must be inside a container", toastErrorStyle);
+        return;
+      }
+
+      setComponents(prev => {
+        const res = removeChild(prev, active.id);
+        setHasUnsavedChanges(true);
+        return [...res.newTree, res.removedChild];
+      });
+
+      return;
+    }
+
+
     /* Sidebar to Child */
     if (isFromSidebar && over.id !== "canvas") {
       const componentData = active.data.current.component;
@@ -217,6 +239,11 @@ const ComponentEditor = () => {
 
     /* Root → Root Reorder */
     if (!isFromSidebar && !isChild && !isOverChild && over.id !== "canvas") {
+      const activeComponent = findComponentById(components, active.id);
+      if (activeComponent?.rank === 4) {
+        toast.error("Basic elements must stay inside a container", toastErrorStyle);
+        return;
+      }
       setComponents(prev => {
         const oldIndex = prev.findIndex(i => i.id === active.id);
         const newIndex = prev.findIndex(i => i.id === over.id);
@@ -233,6 +260,18 @@ const ComponentEditor = () => {
     if (!isFromSidebar && over.id !== "canvas") {
       const componentData = findComponentById(components, active.id);
       if (!componentData) return;
+
+      if (
+        over.data.current?.rank &&
+        componentData.rank < over.data.current.rank
+      ) {
+        toast.error(
+          "You cannot place this component inside a smaller component",
+          toastErrorStyle
+        );
+        return;
+      }
+
 
       setComponents(prev => {
         let updatedTree;
@@ -270,30 +309,53 @@ const ComponentEditor = () => {
     if (!selectedComponentId) return;
     setDeleteTargetId(selectedComponentId);
   };
-  const confirmDelete = () => {
-    if (!deleteTargetId) return;
-    const cloned = cloneComponents(components);
-    const remove = (items) => {
-      const index = items.findIndex(i => i.id === deleteTargetId);
-
-      if (index !== -1) {
-        items.splice(index, 1);
-        return true;
-      }
-
-      return items.some(item =>
-        item.children && remove(item.children)
-      );
-    };
-
-    remove(cloned);
-
-    setComponents(cloned);
-    setSelectedComponentId(null);
+  const cancelDelete = () => {
     setDeleteTargetId(null);
   };
 
-  const cancelDelete = () => {
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+
+    try {
+      const isCustomComponent = customComponents.some(
+        comp => comp._id === deleteTargetId
+      );
+
+      if (isCustomComponent) {
+        await deleteCustomComponent(deleteTargetId);
+
+        if (editingSavedComponentId === deleteTargetId) {
+          setComponents([]);
+          setEditingSavedComponentId(null);
+        }
+
+        toast.success("Component deleted!");
+      } else {
+        const cloned = cloneComponents(components);
+
+        const remove = (items) => {
+          const index = items.findIndex(i => i.id === deleteTargetId);
+
+          if (index !== -1) {
+            items.splice(index, 1);
+            return true;
+          }
+
+          return items.some(item =>
+            item.children && remove(item.children)
+          );
+        };
+
+        remove(cloned);
+
+        setComponents(cloned);
+        setSelectedComponentId(null);
+      }
+
+    } catch (err) {
+      toast.error("Delete failed");
+    }
+
     setDeleteTargetId(null);
   };
 
@@ -511,22 +573,8 @@ const ComponentEditor = () => {
     setShowIconPicker(true);
   };
 
-
-  const handleDeleteComponent = async (component) => {
-    if (!window.confirm("Delete this component?")) return;
-
-    try {
-      await deleteCustomComponent(component.originalId);
-
-      if (editingSavedComponentId === component.originalId) {
-        setComponents([]);
-        setEditingSavedComponentId(null);
-      }
-
-      toast.success("Component deleted!");
-    } catch (err) {
-      toast.error("Delete failed");
-    }
+  const handleDeleteComponent = (component) => {
+    setDeleteTargetId(component.originalId);
   };
 
   //Layer Logic
@@ -540,7 +588,7 @@ const ComponentEditor = () => {
   /* ---------------- Render ---------------- */
 
   return (
-    <DndContext onDragEnd={handleDragEnd} sensors={sensors} collisionDetection={closestCenter}>
+    <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
       <div className="component-editor-wrapper">
         <div className="editor-top-bar">
           <Button
@@ -596,7 +644,7 @@ const ComponentEditor = () => {
             onDeleteComponent={handleDeleteComponent}
             canvasElements={components}
             onDeleteCanvasComponent={(id) => {
-              setDeleteTargetId(id);  
+              setDeleteTargetId(id);
             }}
             onSelectComponent={setSelectedComponentId}
             selectedComponentId={selectedComponentId}
@@ -666,37 +714,37 @@ const ComponentEditor = () => {
         </div>
       )}
 
-{deleteTargetId && (
-  <div className="delete-modal-overlay">
-    <div className="delete-modal">
+      {deleteTargetId && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal">
 
-      <div className="delete-header">
-        <div className="delete-icon">
-          <AlertCircle size={22} />
+            <div className="delete-header">
+              <div className="delete-icon">
+                <AlertCircle size={22} />
+              </div>
+              <h3>Delete Component</h3>
+            </div>
+
+            <p className="delete-description">
+              Are you sure you want to delete this component?
+            </p>
+
+            <div className="delete-modal-actions">
+              <button className="cancel-btn" onClick={cancelDelete}>
+                Cancel
+              </button>
+
+              <button className="confirm-btn" onClick={confirmDelete}>
+                <Trash2 size={16} />
+                Delete
+              </button>
+            </div>
+
+          </div>
         </div>
-        <h3>Delete Component</h3>
-      </div>
+      )}
 
-      <p className="delete-description">
-        Are you sure you want to delete this component?
-      </p>
-
-      <div className="delete-modal-actions">
-        <button className="cancel-btn" onClick={cancelDelete}>
-          Cancel
-        </button>
-
-        <button className="confirm-btn" onClick={confirmDelete}>
-          <Trash2 size={16} />
-          Delete
-        </button>
-      </div>
-
-    </div>
-  </div>
-)}
-
-
+      <DragOverlay dropAnimation={{ duration: 120 }} />
     </DndContext>
   );
 };

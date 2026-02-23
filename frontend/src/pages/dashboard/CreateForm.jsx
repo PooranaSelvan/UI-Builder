@@ -3,7 +3,7 @@ import "./Dashboard.css";
 import Button from "../../components/Button";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import api from "../../utils/axios";
+import api from "../../utils/axios.js";
 
 export default function CreateForm({ isOpen, onClose, title, nameLabel, descriptionLabel, buttonText, createNewProject, createNewPage }) {
   const [name, setName] = useState("");

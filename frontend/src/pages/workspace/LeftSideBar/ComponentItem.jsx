@@ -2,6 +2,12 @@ import { useDraggable } from "@dnd-kit/core";
 import * as LucideIcons from "lucide-react";
 import { useState, useEffect } from "react";
 import { CSS } from '@dnd-kit/utilities';
+import {
+  Pencil,
+  Star,
+  Edit3,
+  Trash2
+} from "lucide-react";
 
 export default function ComponentItem({ item, onEditSavedComponent, onRenameComponent, onChangeIcon, onDeleteComponent }) {
   const { id, iconName, icon, label } = item;
@@ -14,7 +20,6 @@ export default function ComponentItem({ item, onEditSavedComponent, onRenameComp
       id: item.id,
       data: { component: item },
     });
-
 
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -54,17 +59,63 @@ export default function ComponentItem({ item, onEditSavedComponent, onRenameComp
       </div>
 
       {menuPos && item.isRootCustom && (
-        <div
-          className="context-menu"
-          style={{ position: "fixed", top: menuPos.y, left: menuPos.x, zIndex: 2000 }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div onClick={() => { onEditSavedComponent(item); setMenuPos(null); }}>Edit Component</div>
-          <div onClick={() => { onRenameComponent(item); setMenuPos(null); }}>Rename</div>
-          <div onClick={() => { onChangeIcon(item); setMenuPos(null); }}>Change Icon</div>
-          <div onClick={() => { onDeleteComponent(item); setMenuPos(null); }}>Delete</div>
-        </div>
-      )}
+  <div
+    className="context-menu"
+    style={{
+      position: "fixed",
+      top: menuPos.y,
+      left: menuPos.x,
+      zIndex: 2000
+    }}
+    onClick={(e) => e.stopPropagation()}
+  >
+    <div
+      className="menu-items"
+      onClick={() => {
+        onEditSavedComponent(item);
+        setMenuPos(null);
+      }}
+    >
+      <Pencil size={16} />
+      <span>Edit Component</span>
+    </div>
+
+    <div
+      className="menu-items"
+      onClick={() => {
+        onRenameComponent(item);
+        setMenuPos(null);
+      }}
+    >
+      <Edit3 size={16} />
+      <span>Rename</span>
+    </div>
+
+    <div
+      className="menu-items"
+      onClick={() => {
+        onChangeIcon(item);
+        setMenuPos(null);
+      }}
+    >
+      <Star size={16} />
+      <span>Change Icon</span>
+    </div>
+
+    <div className="menu-divider" />
+
+    <div
+      className="menu-items delete"
+      onClick={() => {
+        onDeleteComponent(item);
+        setMenuPos(null);
+      }}
+    >
+      <Trash2 size={16} />
+      <span>Delete</span>
+    </div>
+  </div>
+)}
     </>
   );
 }

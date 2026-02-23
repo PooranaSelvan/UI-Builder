@@ -30,7 +30,7 @@ const googleStyle = {
 
 
 
-const LoginPage = ({ setIsAuthenticated }) => {
+const LoginPage = ({ isAuthenticated, setIsAuthenticated }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -62,6 +62,10 @@ const LoginPage = ({ setIsAuthenticated }) => {
             setIsAuthenticated(false);
             toast.error(err.response?.data.message);
         }
+    }
+
+    if (isAuthenticated) {
+        navigate("/");
     }
 
     return (

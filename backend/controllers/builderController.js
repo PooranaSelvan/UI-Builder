@@ -1,6 +1,6 @@
 import con from "../db/config.js";
 import { getProjectById, getUserById } from "../utils/finders.js";
-import { checkPageUrlQuery, deleteAllCustomComponentsQuery, deleteCustomComponentQuery, deletePageQuery, deleteProjectQuery, getPageByPageIdQuery, getPublishedPageQuery, publishPageQuery, saveNewComponent, saveNewPageQuery, saveNewProject, selectProjectByUserId, unPublishPageQuery, updatePageData } from "../utils/queries.js";
+import { checkPageUrlQuery, deleteAllCustomComponentsQuery, deleteCustomComponentQuery, deletePageQuery, deleteProjectQuery, getPageByPageIdQuery, getPublishedPageQuery, publishPageQuery, renamePageQuery, saveNewComponent, saveNewPageQuery, saveNewProject, selectProjectByUserId, unPublishPageQuery, updatePageData } from "../utils/queries.js";
 import { getUserComponentsQuery } from "../utils/queries.js";
 import { getUserPagesQuery } from "../utils/queries.js";
 
@@ -220,11 +220,11 @@ const checkPageUrl = async (req, res) => {
                return res.status(500).json({ message: err?.sqlMessage, err });
           }
 
-          if(result.length === 0){
-               return res.status(200).json({message : "No URL Found!", status : true});
+          if (result.length === 0) {
+               return res.status(200).json({ message: "No URL Found!", status: true });
           }
 
-          return res.status(200).json({message : "URL Found!", status : false});
+          return res.status(200).json({ message: "URL Found!", status: false });
      });
 }
 
@@ -285,6 +285,26 @@ const updatePage = async (req, res) => {
           return res.status(200).json({
                message: "Page updated successfully"
           });
+     });
+}
+
+const renamePage = async (req, res) => {
+     const { pageId, name, description, url } = req.body;
+
+     if (!pageId || !name || !description || !url) {
+          return res.status(400).json({ message: "All Fields are Required!" });
+     }
+
+     con.query(renamePageQuery, [name, description, url, pageId], (err, result) => {
+          if (err) {
+               return res.status(500).json({ message: err?.sqlMessage, error: err });
+          }
+
+          if (result.affectedRows === 0) {
+               return res.status(404).json({ message: "Page not found or no changes were made." });
+          }
+
+          return res.status(200).json({ message: "Page Renamed Successfully" });
      });
 }
 
@@ -487,4 +507,4 @@ const updateCustomComponent = async (req, res) => {
 };
 
 
-export { getProjects, saveProject, deleteProject, getPages, getPageByPageId, getPublishedPage, checkPageUrl, savePage, updatePage, publishPage, unPublishPage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent, updateCustomComponent };
+export { getProjects, saveProject, deleteProject, getPages, getPageByPageId, getPublishedPage, checkPageUrl, savePage, renamePage, updatePage, publishPage, unPublishPage, deletePage, getCustomComponents, saveCustomComponent, deleteCustomComponent, deleteAllCustomComponent, updateCustomComponent };

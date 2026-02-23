@@ -50,13 +50,14 @@ const Profile = ({ setIsAuthenticated }) => {
         });
 
         toast.success(res.data.message);
-        setLoading(false);
         setIsAuthenticated(false);
         navigate("/login");
       } catch (error) {
-        setLoading(false);
         console.log(error);
+        console.log(error.response);
         toast.error("Something Went Wrong! Please Try again Later!");
+      } finally {
+        setLoading(false);
       }
     }
   }
