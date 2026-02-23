@@ -10,6 +10,7 @@ import builderRoutes from "./routes/builderRoutes.js";
 import { getUserByEmail, getUserById } from "./utils/finders.js";
 import { signUpUserQuery, loginUserQuery } from "./utils/queries.js";
 import con from "./db/config.js";
+import templateRoutes from "./routes/templateRoutes.js";
 
 
 const PORT = process.env.PORT || 5000;
@@ -37,6 +38,7 @@ app.get("/", (req, res) => {
 app.use("/users/", userRoutes);
 app.use("/components/", componentRoutes);
 app.use("/builder/", builderRoutes);
+app.use("/template/", templateRoutes);
 
 
 

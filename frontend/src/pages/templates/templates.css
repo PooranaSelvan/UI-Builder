@@ -1,36 +1,35 @@
-.template-container {
+.template-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
     width: 100%;
-    height: auto;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    padding: 24px 14%;
     background-color: #FEF2F2;
+    padding: 40px 0px;
+}
+.template-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
     gap: 24px;
     box-sizing: border-box;
-    align-items: start;
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #fff;
-    padding: 10px 16px;
-    border-radius: 12px;
-    border: 1px solid #f1dcdc;
-    width: 320px;
+    padding-bottom: 50px;
+    width: 100%;
 }
 
 .search-bar{
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    padding: 2% 14%;
-    background-color: #FEF2F2;
+    padding: 50px 80px;
+    width: 100%;
 }
 
-.heading{
-    color: #DC2626;
+.search-bar h1 {
+    color: var(--primary);
 }
 
 @media (max-width: 1100px) {

@@ -54,7 +54,7 @@ function App() {
       localStorage.setItem("sirpam-token", token);
       window.history.replaceState({}, document.title, "/");
     }
-  }, []);
+  }, [isAuthenticated]);
 
 
 
@@ -69,8 +69,8 @@ function App() {
         <Routes>
           <Route path='/' element={<HomePage isAuthenticated={isAuthenticated} />} />
           <Route path='*' element={<ErrorPage />} />
-          <Route path="/signup" element={<SignUp setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path='/login' element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path="/signup" element={<SignUp isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path='/login' element={<LoginPage isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />} />
           <Route path='/features' element={<Features />} />
           <Route path='/templates' element={<Templates />} />
           <Route path="/workspace/:pageId" element={<Workspace isAuthenticated={isAuthenticated} />} />

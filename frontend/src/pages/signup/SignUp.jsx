@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import api from "../../utils/axios.js";
 
 
-const SignUp = ({ setIsAuthenticated }) => {
+const SignUp = ({ isAuthenticated, setIsAuthenticated }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirm] = useState(false);
   const [name, setName] = useState("");
@@ -54,6 +54,11 @@ const SignUp = ({ setIsAuthenticated }) => {
       console.log(err);
       toast.error(err.response?.data.message);
     }
+  }
+
+
+  if (isAuthenticated) {
+    navigate("/");
   }
 
   return (

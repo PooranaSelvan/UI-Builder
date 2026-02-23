@@ -14,7 +14,8 @@ const FolderCard = ({
   activeMenu,
   setActiveMenu,
   setSelectedApp,
-  handleDeleteProject
+  setDeleteInfo,
+  setShowDelete
 }) => {
   const menuRef = useRef(null);
 
@@ -52,14 +53,14 @@ const FolderCard = ({
 
           {activeMenu === index && (
             <div className="dropdown-menu" ref={menuRef}>
-              <div style={{ width: "100%", backgroundColor: "transparent" }} onClick={(e) => { e.stopPropagation(); handleDeleteProject(app.id) }}>
+              <div style={{ width: "100%", backgroundColor: "transparent" }} onClick={(e) => { e.stopPropagation(); }}>
                 <Button className="menu-item" style={{ width: "100%", backgroundColor: "transparent" }}>
                   <Pencil size={16} />
                   Rename
                 </Button>
               </div>
               <div className="menu-divider" />
-              <Button className="menu-item delete" style={{ width: "100%", backgroundColor: "transparent" }} onClick={(e) => { e.stopPropagation(); handleDeleteProject(app.id) }}>
+              <Button className="menu-item delete" style={{ width: "100%", backgroundColor: "transparent" }} onClick={(e) => { e.stopPropagation(); setDeleteInfo({ type: "project", id: app.id }); setShowDelete(true); }}>
                 <Trash2 size={16} />
                 Delete
               </Button>

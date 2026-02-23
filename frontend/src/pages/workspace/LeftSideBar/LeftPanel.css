@@ -12,10 +12,8 @@
 .left-panel-scroll{
   flex: 1;
   min-height: 0;         
-  /* overflow-y: auto; */
   padding: 16px;        
   padding-right: 20px; 
-  /* overflow-x: hidden;    */
 }
 
 

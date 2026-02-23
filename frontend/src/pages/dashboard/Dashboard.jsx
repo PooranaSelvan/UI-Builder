@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
 import api from "../../utils/axios.js";
 import Button from "../../components/Button.jsx";
+import DeleteModal from "./components/DeleteModal.jsx";
+import UpdateForm from "./components/UpdateForm.jsx";
 
 const Dashboard = () => {
   let navigate = useNavigate();
@@ -16,6 +18,11 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteInfo, setDeleteInfo] = useState(null);
+  const [isUpdateFormOpen, setIsUpdateFormOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(null);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -30,19 +37,18 @@ const Dashboard = () => {
   }, []);
 
 
-  const getUserId = async () => {
-    try {
-      let res = await api.get("/checkme/");
-      return res.data.user.userId;
-    } catch (error) {
-      if (error.response?.status === 401) {
+  useEffect(() => {
+    const getUserId = async () => {
+      try {
+        let res = await api.get("/checkme/");
+        setUserId(res.data.user.userId);
+      } catch (error) {
         navigate("/login", { replace: true });
-      } else {
-        toast.error("Something went wrong!");
       }
-      return null;
-    }
-  };
+    };
+
+    getUserId();
+  }, []);
 
 
   function buildJSON(rows) {
@@ -66,7 +72,7 @@ const Dashboard = () => {
           projectId: projectId,
           name: data.pageName,
           description: data.pageDescription,
-          pageUrl : data.url,
+          pageUrl: data.url,
           modified: data.lastModified,
           data: data.pageData || [],
           isPublished: !!data.pagePublished
@@ -78,7 +84,6 @@ const Dashboard = () => {
 
   async function fetchPages() {
     setLoading(true);
-    let userId = await getUserId();
 
     if (!userId) {
       setLoading(false);
@@ -93,16 +98,17 @@ const Dashboard = () => {
       setLoading(false);
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
   }
 
   useEffect(() => {
+    if (!userId) return;
+
     fetchPages();
-  }, []);
+  }, [userId]);
 
   const handleCreateNewPage = async (name, description, url) => {
-    let userId = await getUserId();
-
     if (userId < 1) {
       toast.error("Invalid User!");
       return;
@@ -124,7 +130,7 @@ const Dashboard = () => {
         projectId: selectedApp.id,
         pageName: name,
         description,
-        pageUrl : url,
+        pageUrl: url,
         data: []
       });
 
@@ -135,7 +141,7 @@ const Dashboard = () => {
         projectId,
         name: name,
         description,
-        pageUrl : url,
+        pageUrl: url,
         status: "Draft",
         modified: new Date().toLocaleString(),
         data: [],
@@ -163,8 +169,6 @@ const Dashboard = () => {
   }
 
   const handleCreateNewProject = async (name, description) => {
-    let userId = await getUserId();
-
     if (userId < 1) {
       toast.error("Invalid User! Refresh & Try Again!");
       return;
@@ -204,66 +208,70 @@ const Dashboard = () => {
 
   }
 
-  const deleteProject = async (projectId) => {
-    let userId = await getUserId();
-
-    if (userId < 1) {
-      toast.error("Invalid User! Refresh & Try Again!");
+  const deleteProject = async () => {
+    if (!deleteInfo.id) {
       return;
     }
 
-    if (!window.confirm("Are You sure Want to Delete this Project & its Page?")) {
+    if (userId < 1) {
+      toast.error("Invalid User! Refresh & Try Again!");
       return;
     }
 
     try {
       let res = await api.delete("/builder/projects/", {
         data: {
-          projectId
+          projectId: deleteInfo.id
         }
       });
 
-      setProjects(projects => projects.filter(ele => ele.id !== projectId));
-      if (selectedApp?.id === projectId) {
+      setProjects(projects => projects.filter(ele => ele.id !== deleteInfo.id));
+      if (selectedApp?.id === deleteInfo.id) {
         setSelectedApp(null);
       }
-      setActiveMenu(null);
-      toast.success("Project is Deleted Successfully!");
+      toast.success("Project Deleted Successfully!");
     } catch (error) {
       console.log(error);
-      toast.error(err.response?.data.message);
+      toast.error(error.response?.data?.message || "Delete error");
+    } finally {
+      setActiveMenu(null);
+      setLoading(false);
+      setShowDelete(false);
+      setDeleteInfo(null);
     }
   }
 
-  const deletePage = async (pageId) => {
-    let userId = await getUserId();
+  const deletePage = async () => {
+    if (!deleteInfo.id) {
+      return;
+    }
 
     if (userId < 1) {
       toast.error("Invalid User! Refresh & Try Again!");
       return;
     }
 
-    if (!window.confirm("Are You sure Want to Delete this Page?")) {
-      return;
-    }
-
     try {
       let res = await api.delete("/builder/pages/", {
         data: {
-          pageId
+          pageId: deleteInfo.id
         }
       });
 
-      setActiveMenu(null);
       setSelectedApp(project => ({
         ...project,
-        pages: project.pages.filter(page => page.id !== pageId)
+        pages: project.pages.filter(page => page.id !== deleteInfo.id)
       }));
-      setProjects(ele => ele.map(project => project.id === selectedApp.id ? { ...project, pages: project.pages.filter(page => page.id !== pageId) } : project));
+      setProjects(ele => ele.map(project => project.id === selectedApp.id ? { ...project, pages: project.pages.filter(page => page.id !== deleteInfo.id) } : project));
       toast.success("Page Deleted Successfully!");
     } catch (err) {
       console.log(err);
       toast.error(err.response?.data.message);
+    } finally {
+      setActiveMenu(null);
+      setLoading(false);
+      setShowDelete(false);
+      setDeleteInfo(null);
     }
   }
 
@@ -317,9 +325,9 @@ const Dashboard = () => {
     }
   }
 
-  const handleCopyLink = async (pageId) => {
+  const handleCopyLink = async (pageUrl) => {
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/publish/${pageId}`);
+      await navigator.clipboard.writeText(`${window.location.origin}/publish/${page.pageUrl}`);
       toast.success("Link Copied Successfully!");
     } catch (error) {
       console.log(error);
@@ -331,13 +339,43 @@ const Dashboard = () => {
 
   }
 
-  const renamePage = async (pageName, pageDescription) => {
-    if (!pageName || !pageDescription) {
+  const renamePage = async (pageId, pageName, pageDescription, url) => {
+    if (!pageId || !pageName || !pageDescription || !url) {
       toast.error("All fields are Required!");
       return;
     }
-    
-    
+
+    try {
+      let res = await api.post("/builder/page/rename", {
+        pageId,
+        name: pageName,
+        description: pageDescription,
+        url
+      });
+
+      setSelectedApp((projects) => ({
+        ...projects,
+        pages: projects.pages.map((page) => page.id === pageId ? { ...page, pageName, pageDescription, pageUrl : url } : page)
+      }));
+
+      setProjects((projects) =>
+        projects.map((project) =>
+          project.id === selectedApp.id ? {
+            ...project,
+            pages: project.pages.map((page) =>
+              page.id === pageId ? { ...page, pageName, pageDescription, pageUrl : url } : page
+            )
+          } : project
+        )
+      );
+
+      setIsUpdateFormOpen(false);
+      toast.success("Page Renamed Successfully!");
+    } catch (error) {
+      console.log(error);
+      console.log(error.response);
+      toast.error(error.response?.data.response);
+    }
   }
 
   const handlePreviewpage = async (pageId) => {
@@ -404,15 +442,7 @@ const Dashboard = () => {
             </div>
 
             {projects.map((app, index) => (
-              <FolderCard
-                key={app.id}
-                app={app}
-                index={index}
-                activeMenu={activeMenu}
-                setActiveMenu={setActiveMenu}
-                setSelectedApp={setSelectedApp}
-                handleDeleteProject={deleteProject}
-              />
+              <FolderCard key={app.id} app={app} index={index} activeMenu={activeMenu} setActiveMenu={setActiveMenu} setSelectedApp={setSelectedApp} setDeleteInfo={setDeleteInfo} setShowDelete={setShowDelete} />
             ))}
           </div>
 
@@ -426,7 +456,9 @@ const Dashboard = () => {
           buttonText="Create Project"
           createNewProject={handleCreateNewProject}
         />
-
+        {showDelete && deleteInfo?.type === "project" && (
+          <DeleteModal title="Project" onDelete={deleteProject} onCancel={() => { setShowDelete(false); setDeleteInfo(null) }} />
+        )}
       </div>
 
     );
@@ -469,7 +501,7 @@ const Dashboard = () => {
           </div>
 
           {selectedApp?.pages?.map((page, index) => (
-            <div key={index} className="page-card">
+            <div key={page.id} className="page-card">
               <div className="page-top">
                 {/* HEADER */}
                 <div className="page-header">
@@ -492,7 +524,7 @@ const Dashboard = () => {
                       {activeMenu === index && (
                         <div className="dropdown-menu" onClick={(e) => e.stopPropagation()} ref={menuRef}>
                           <div className="menu-item">
-                            <Button onClick={() => renamePage(page.name, page.description)} style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                            <Button onClick={(e) => { e.stopPropagation(); setCurrentPage(page); setIsUpdateFormOpen(true); }} style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
                               <Edit3 size={16} />
                               Rename
                             </Button>
@@ -526,7 +558,7 @@ const Dashboard = () => {
                           </div>
                           <div className="menu-divider" />
                           <div className="menu-item delete">
-                            <Button onClick={(e) => { e.stopPropagation(); deletePage(page.id) }} style={{ width: "100%", borderRadius: "5px", color: "var(--primary)", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                            <Button onClick={(e) => { e.stopPropagation(); setActiveMenu(null); setDeleteInfo({ type: "page", id: page.id }); setShowDelete(true) }} style={{ width: "100%", borderRadius: "5px", color: "var(--primary)", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
                               <Trash2 size={16} />
                               Delete
                             </Button>
@@ -552,7 +584,7 @@ const Dashboard = () => {
                 {page.isPublished && (
                   <div className="page-link">
                     <p onClick={() => window.open(`/publish/${page.pageUrl}`, "_blank")}>Link</p>
-                    <Copy size={15} onClick={() => handleCopyLink(page.id)} />
+                    <Copy size={15} onClick={() => handleCopyLink(page.pageUrl)} />
                   </div>
                 )}
                 <div className="open-page" onClick={() => navigate(`/workspace/${page.id}`)}>
@@ -565,6 +597,12 @@ const Dashboard = () => {
         </div>
         <CreateForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Create New Page" nameLabel="Page Name" descriptionLabel="Page Description" buttonText="Create Page" createNewPage={handleCreateNewPage} />
       </div >
+      {showDelete && deleteInfo?.type === "page" && (
+        <DeleteModal title="Page" onDelete={deletePage} onCancel={() => { setShowDelete(false); setDeleteInfo(null) }} />
+      )}
+      {isUpdateFormOpen && currentPage && (
+        <UpdateForm isOpen={isUpdateFormOpen} onClose={() => setIsUpdateFormOpen(false)} pageData={{ name: currentPage.name, description: currentPage.description, url: currentPage.pageUrl }} onRename={(name, description, url) => renamePage(currentPage.id, name, description, url)} />
+      )}
     </div >
   );
 };

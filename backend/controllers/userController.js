@@ -1,6 +1,6 @@
 import con from "../db/config.js";
 import validator from "validator";
-import { deleteUserQuery, loginUserQuery, signUpUserQuery } from "../utils/queries.js";
+import { deleteAllProjectsQuery, deleteUserQuery, loginUserQuery, signUpUserQuery } from "../utils/queries.js";
 import { generateToken } from "../utils/generateToken.js";
 import bcrypt from "bcrypt";
 import { getUserById } from "../utils/finders.js";
@@ -96,13 +96,18 @@ const deleteUser = async (req, res) => {
           return res.status(400).json({ message: "Invalid User!" });
      }
 
-
-     con.query(deleteUserQuery, [userId], (err, result) => {
+     con.query(deleteAllProjectsQuery, [userId], (err, result) => {
           if (err) {
                return res.status(500).json({ message: err?.sqlMessage, err });
           }
 
-          return res.status(200).json({ message: "Account Deleted Successfully!" });
+          con.query(deleteUserQuery, [userId], (err, result) => {
+               if (err) {
+                    return res.status(500).json({ message: err?.sqlMessage, err });
+               }
+
+               return res.status(200).json({ message: "Account Deleted Successfully!" });
+          });
      });
 }
 

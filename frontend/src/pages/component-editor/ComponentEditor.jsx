@@ -37,7 +37,7 @@ const ComponentEditor = () => {
       } catch (error) {
         console.log(error.response);
 
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401 || error.response?.status === 404) {
           navigate("/login", { replace: true });
         }
       }
