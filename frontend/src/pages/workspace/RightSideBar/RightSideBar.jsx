@@ -362,19 +362,15 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                     value={eventType} onChange={(e) => {
                                                         const newEvent = e.target.value;
                                                         updateComponent(selectedComponent.id, (node) => {
-                                                            const updatedEvents = { ...(node.defaultProps?.events || {}) };
-
-                                                            if (eventType && eventType !== newEvent) {
-                                                                delete updatedEvents[eventType];
+                                                            node.defaultProps ??= {};
+                                                            if (!newEvent) {
+                                                                delete node.defaultProps.events;
+                                                                return;
                                                             }
-
-                                                            updatedEvents[newEvent] = {};
-
-                                                            node.defaultProps = {
-                                                                ...node.defaultProps,
-                                                                events: updatedEvents
+                                                            node.defaultProps.events = {
+                                                                [newEvent]: {}
                                                             };
-                                                        })
+                                                        });
                                                         setEventType(newEvent)
                                                     }}>
                                                     <option value="">Select Event</option>
@@ -456,7 +452,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 <label>Trigger</label>
 
                                                 <select
-                                                    value={selectedComponent.defaultProps.events.visibility.trigger ?? ""}
+                                                    value={selectedComponent?.defaultProps?.events?.visibility?.trigger ?? ""}
                                                     onChange={(e) => {
                                                         updateComponent(selectedComponent.id, (node) => {
                                                             node.defaultProps ??= {};
@@ -473,7 +469,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 <label>Action</label>
 
                                                 <select
-                                                    value={selectedComponent.defaultProps.events.visibility.action ?? ""}
+                                                    value={selectedComponent?.defaultProps?.events?.visibility?.action ?? ""}
                                                     onChange={(e) =>
                                                         updateComponent(selectedComponent.id, (node) => {
                                                             node.defaultProps ??= {};
@@ -491,7 +487,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 <label>Target component</label>
 
                                                 <input
-                                                    value={selectedComponent.defaultProps.events.visibility.targetId ?? ""}
+                                                    value={selectedComponent?.defaultProps?.events?.visibility?.targetId ?? ""}
                                                     type="text"
                                                     placeholder='Enter the component Id'
                                                     onChange={(e) => {
@@ -512,7 +508,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
                                                 <ColorPalette
                                                     value={
-                                                        selectedComponent.defaultProps?.events?.style?.hoverColor || "#000000"
+                                                        selectedComponent?.defaultProps?.events?.style?.hoverColor || "#000000"
                                                     }
                                                     onChange={(color) =>
                                                         updateComponent(selectedComponent.id, (node) => {
@@ -528,7 +524,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
                                                 <ColorPalette
                                                     value={
-                                                        selectedComponent.defaultProps?.events?.style?.borderColor || "#000000"
+                                                        selectedComponent?.defaultProps?.events?.style?.borderColor || "#000000"
                                                     }
                                                     onChange={(color) =>
                                                         updateComponent(selectedComponent.id, (node) => {
@@ -544,7 +540,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
                                                 <ColorPalette
                                                     value={
-                                                        selectedComponent.defaultProps?.events?.style?.color || "#000000"
+                                                        selectedComponent?.defaultProps?.events?.style?.color || "#000000"
                                                     }
                                                     onChange={(color) =>
                                                         updateComponent(selectedComponent.id, (node) => {
@@ -565,7 +561,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                         <label>Key</label>
                                                         <select
                                                             value={
-                                                                selectedComponent.defaultProps?.events?.[eventType]?.key ?? ""
+                                                                selectedComponent?.defaultProps?.events?.[eventType]?.key ?? ""
                                                             }
                                                             onChange={(e) => {
                                                                 updateComponent(selectedComponent.id, (node) => {
