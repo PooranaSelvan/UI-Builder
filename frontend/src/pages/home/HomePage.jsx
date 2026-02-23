@@ -49,7 +49,7 @@ const HomePage = ({ isAuthenticated }) => {
             <h1>Build Custom UI <span className="gradient-text">10x Faster</span></h1>
             <p>
               Drag and drop components and deploy custom apps for you in minutes not weeks.
-              <span className='gradient-text'>Secure, scalable, and fully customizable.</span>
+              <span className='gradient-text'> Secure, scalable, and fully customizable.</span>
             </p>
             <div className='home-hero-btns'>
               <Button className='primary-button get-started-btn' style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 32px", fontSize: "16px", fontWeight: "600" }} onClick={handleGetStarted}>
@@ -237,7 +237,7 @@ const HomePage = ({ isAuthenticated }) => {
             Ready to build your
             <span className='starter-gradient'>Next Tool?</span>
           </h1>
-          <p>Join thousands of developers who are building faster with Sirpam.</p>
+          <p>Join thousands who are building faster with Sirpam.</p>
           <Button style={{ display: "flex", alignItems: "center", gap: "10px", padding: "15px 30px", fontSize: "18px", color: "var(--primary)", backgroundColor: "white", borderRadius: "12px", fontWeight: "600" }} onClick={handleGetStarted}>
             Get Started <ArrowUpRight size={25} />
           </Button>

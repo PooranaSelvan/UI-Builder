@@ -3,138 +3,185 @@ import { VOID_TAGS } from "../pages/workspace/utils/voidTags";
 
 const RenderComponents = ({ children }) => {
      const [hiddenIds, setHiddenIds] = useState({});
+     const [dynamicText, setDynamicText] = useState({});
+     const [hoveredIds, setHoveredIds] = useState({});
 
-     const changeVisibility = (id, action) => {
+     const toggleVisibility = (id, action = "toggle") => {
           if (!id) return;
 
           setHiddenIds((prev) => {
                const updated = { ...prev };
 
-               if (action === "hide") {
-                    updated[id] = true;
-               } else if (action === "show") {
+               if (action === "show") {
                     delete updated[id];
-               } else if (action === "toggle") {
-                    updated[id] ? delete updated[id] : (updated[id] = true);
+               } else if (action === "hide") {
+                    updated[id] = true;
+               } else {
+                    if (updated[id]) {
+                         delete updated[id];
+                    } else {
+                         updated[id] = true;
+                    }
                }
 
                return updated;
           });
      };
 
-     const removeClass = (className = "", remove = []) => {
-          return className.split(" ").filter(ele => ele && !remove.includes(ele)).join(" ");
+     const removeClass = (className = "") => {
+          return className.split(" ").filter((c) => c && c !== "test-component").join(" ");
      };
 
+     const handleAction = (event, eventName, id) => {
+          if (!event?.action) return undefined;
 
-     const createEventHandlers = (events = {}, baseStyle = {}, id) => {
-          const handlers = {};
-          let style = { ...baseStyle };
+          return (e) => {
+               if (eventName === "onKeyDown" && event.key) {
+                    let keyPressed = e.key === " " ? "Space" : e.key;
+                    if (keyPressed !== event.key) return;
+               }
 
-          // Click Navigation
-          if (events?.navigation?.type === "navigate") {
-               handlers.onClick = () => {
-                    window.open(events.navigation.target, "_blank");
+               let value = e?.target?.value !== undefined ? e.target.value : "";
+
+               const { action, message, targetId } = event;
+               let target = targetId || id;
+
+               switch (action) {
+                    case "log":
+                         console.log(message || value);
+                         break;
+                    case "alert":
+                         alert(message || value);
+                         break;
+                    case "visibility":
+                         toggleVisibility(target);
+                         break;
+                    case "update":
+                         setDynamicText((prev) => ({
+                              ...prev,
+                              [target]: message || value,
+                         }));
+                         break;
+                    default:
+                         break;
+               }
+          };
+     };
+
+     const createHandlers = (events = {}, baseStyle = {}, id) => {
+          const res = {};
+
+          // Navigation
+          if (events.navigation?.targetPage) {
+               res.onClick = (e) => {
+                    e.preventDefault();
+                    const { targetPage, target = "_self" } = events.navigation;
+
+                    if (target === "_blank") {
+                         window.open(targetPage, "_blank", "noopener,noreferrer");
+                    } else {
+                         window.location.href = targetPage;
+                    }
                };
+          } else if (events.visibility?.trigger === "click") {
+               res.onClick = () => {
+                    toggleVisibility(events.visibility.targetId || id, events.visibility.action);
+               };
+          } else if (events.onClick) {
+               res.onClick = handleAction(events.onClick, "onClick", id);
           }
 
-          // Visibility Events
-          if (events?.visibility) {
-               const { trigger = "click", action, targetId } = events.visibility;
+
+          if (events.visibility?.trigger === "hover") {
+               const { action, targetId } = events.visibility;
                const target = targetId || id;
 
-               if (trigger === "click") {
-                    handlers.onClick = () => changeVisibility(target, action);
-               }
-
-               if (trigger === "hover") {
-                    handlers.onMouseEnter = () => changeVisibility(target, action);
-
-                    handlers.onMouseLeave = () => {
-                         const reverse =
-                              action === "show"
-                                   ? "hide"
-                                   : action === "hide"
-                                        ? "show"
-                                        : "toggle";
-
-                         changeVisibility(target, reverse);
-                    };
-               }
-          }
-
-          // Hover Style Effects
-          if (events?.style) {
-               const { hoverColor, borderColor, color } = events.style;
-
-               handlers.onMouseEnter = (e) => {
-                    if (hoverColor) e.currentTarget.style.backgroundColor = hoverColor;
-                    if (borderColor) e.currentTarget.style.borderColor = borderColor;
-                    if (color) e.currentTarget.style.color = color;
+               res.onMouseEnter = () => {
+                    toggleVisibility(target, action);
                };
 
-               handlers.onMouseLeave = (e) => {
-                    e.currentTarget.style.backgroundColor =
-                         baseStyle.backgroundColor || "";
-                    e.currentTarget.style.borderColor =
-                         baseStyle.borderColor || "";
-                    e.currentTarget.style.color = baseStyle.color || "";
+               res.onMouseLeave = () => {
+                    let reverse = action === "show" ? "hide" : action === "hide" ? "show" : "toggle";
+                    toggleVisibility(target, reverse);
+               };
+          } else if (events.style) {
+               res.onMouseEnter = () => {
+                    setHoveredIds((prev) => ({ ...prev, [id]: true }));
+               };
+
+               res.onMouseLeave = () => {
+                    setHoveredIds((prev) => {
+                         const updated = { ...prev };
+                         delete updated[id];
+                         return updated;
+                    });
                };
           }
 
-          // Input onChange
-          if (events?.onChange) {
-               handlers.onChange = (e) => {
-                    const value = e.target.value;
-
-                    if (events.onChange.action === "log") {
-                         console.log(value);
-                    }
-
-                    if (events.onChange.action === "alert") {
-                         alert(value);
-                    }
-
-                    if (events.onChange.action === "visibility") {
-                         changeVisibility(events.onChange.targetId, "toggle");
-                    }
-
-                    if (events.onChange.action === "update") {
-                         const el = document.getElementById(events.onChange.targetId);
-                         if (el) el.textContent = value;
-                    }
-               };
+          // Direct mapped events
+          if (events.onChange) {
+               res.onChange = handleAction(events.onChange, "onChange", id);
           }
 
-          return { handlers, style };
+          if (events.onFocus) {
+               res.onFocus = handleAction(events.onFocus, "onFocus", id);
+          }
+
+          if (events.onBlur) {
+               res.onBlur = handleAction(events.onBlur, "onBlur", id);
+          }
+
+          if (events.onClick) {
+               res.onClick = handleAction(events.onClick, "onClick", id);
+          }
+
+          if (events.onKeyDown) {
+               res.onKeyDown = handleAction(events.onKeyDown, "onKeyDown", id);
+          }
+
+          return { res };
      };
-
 
      const renderElements = (elements) => {
-          return elements.map((element) => {
+
+          let ele = elements.map((element, index) => {
                const { id, tag, content, defaultProps = {}, children = [] } = element;
+               const { events, style: rawStyle = {}, fileId, ...rest } = defaultProps;
+               const { res } = createHandlers(events, rawStyle, id);
+               let elementStyle = { ...rawStyle };
 
-               const { handlers, style } = createEventHandlers(defaultProps.events, defaultProps.style, id);
-
-               // If element is hidden, add display none
-               const finalStyle = hiddenIds[id] ? { ...style, display: "none" } : style;
-
-               const props = { ...defaultProps, ...handlers, style: finalStyle, id };
-               delete props.events;
-
-               if (typeof tag === "string" && VOID_TAGS.has(tag)) {
-                    return React.createElement(tag, { key: id, ...{...props, className: removeClass(defaultProps?.className, ["test-component"])} });
+               if (hoveredIds[id] && events?.style) {
+                    if (events.style.hoverColor) {
+                         elementStyle.backgroundColor = events.style.hoverColor;
+                    }
+                    if (events.style.borderColor) {
+                         elementStyle.borderColor = events.style.borderColor;
+                    }
+                    if (events.style.color) {
+                         elementStyle.color = events.style.color;
+                    }
                }
 
-               return React.createElement(tag, { key: id, ...{...props, className: removeClass(defaultProps?.className, ["test-component"])} }, children.length > 0 ? renderElements(children) : content);
+               if (hiddenIds[id]) {
+                    elementStyle.display = "none";
+               }
+
+               const props = { ...rest, ...res, id, style: elementStyle, className: removeClass(rest.className) || "" };
+               const key = id || `${tag}-${index}`;
+
+               if (typeof tag === "string" && VOID_TAGS.has(tag)) {
+                    return React.createElement(tag, { key, ...props });
+               }
+
+               const textContent = id in dynamicText ? dynamicText[id] : content;
+
+               return React.createElement(tag, { key, ...props }, children.length > 0 ? renderElements(children) : textContent);
           });
+
+          return ele;
      };
 
-
-     
-     return (
-          renderElements(children)
-     )
+     return <>{renderElements(children)}</>;
 };
 
 export default RenderComponents;
