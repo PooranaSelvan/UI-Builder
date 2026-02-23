@@ -149,6 +149,21 @@ app.get("/auth/logout", async (req, res) => {
 });
 
 
+// const data = 
+
+
+// const sql = `INSERT INTO templates (templateName, description, data) VALUES (?, ?, ?)`;
+// const values = ['Portfolio Website', 'A powerful & personal portfolio website.', JSON.stringify(data)];
+
+// con.query(sql, values, (err, results) => {
+//   if (err) {
+//     console.error('Error inserting JSON:', err);
+//   } else {
+//     console.log('Inserted template ID:', results.insertId);
+//   }
+// });
+
+
 
 app.listen(PORT, () => {
      console.log("Server is Running on PORT :", PORT);

@@ -19,7 +19,7 @@ const getAllTemplates = async (req, res) => {
 
 
 const getSpecificTemplate = async (req, res) => {
-     const { templateId } = req.body;
+     const { templateId } = req.params;
 
      if (!templateId) {
           return res.status(400).json({ message: "All fields are Required!" });

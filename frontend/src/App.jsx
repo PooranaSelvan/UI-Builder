@@ -18,6 +18,7 @@ import Templates from "./pages/templates/Templates.jsx";
 import Profile from "./pages/profile/Profile.jsx";
 import Publish from "./pages/publish/Publish.jsx";
 import api from "./utils/axios.js";
+import TemplatePreview from './pages/templates/TemplatePreview.jsx';
 
 
 function App() {
@@ -58,7 +59,7 @@ function App() {
 
 
 
-  const hideNavbar = location.pathname.startsWith("/preview") || location.pathname.startsWith("/component-editor-preview") || location.pathname.startsWith("/publish");
+  const hideNavbar = location.pathname.startsWith("/preview") || location.pathname.startsWith("/component-editor-preview") || location.pathname.startsWith("/publish") || location.pathname.startsWith("/template-preview");
 
   return (
     <CustomComponentsProvider user={user}>
@@ -80,6 +81,7 @@ function App() {
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/profile' element={<Profile setIsAuthenticated={setIsAuthenticated} />} />
           <Route path='/publish/:pageUrl' element={<Publish />} />
+          <Route path='/template-preview/:templateId' element={<TemplatePreview />} />
         </Routes>
         <Toaster />
       </>
