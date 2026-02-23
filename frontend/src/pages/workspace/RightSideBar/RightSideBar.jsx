@@ -1099,7 +1099,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             node.defaultProps.style.opacity = v / 100;
                                         });
                                     }} />
-                                    {!selectedComponent.tag === "img" && (
+                                    {selectedComponent.tag !== "img" && (
                                         <>
                                             <ImageUpload selectedComponent={selectedComponent} updateComponent={updateComponent} />
                                             <div className="three-input">
@@ -1234,8 +1234,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
                                 </div>
                             </Heading>
-
-                            {!selectedComponent.tag === "img" && (
+                            {selectedComponent.tag !== "img" && (
                                 <>
                                     <Heading icon={<Type size={18} />} title={'Typography'} >
                                         <div className="typo">
