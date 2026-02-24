@@ -14,7 +14,7 @@ import Button from "../../components/Button.jsx";
 import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save, Undo2, AlertCircle, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/axios.js";
-import LinkModal from "./components/LinkModal.jsx"
+import Loading from "../../components/Loading.jsx";
 
 
 const Workspace = ({ isAuthenticated }) => {
@@ -25,6 +25,7 @@ const Workspace = ({ isAuthenticated }) => {
   const [user, setUser] = useState(null);
   const { customComponents } = useContext(CustomComponentsContext);
   const [page, setPage] = useState(null);
+  const [loading, setLoading] = useState(true);
   let navigate = useNavigate();
   const [deleteTargetId, setDeleteTargetId] = useState(null);
 
@@ -41,6 +42,8 @@ const Workspace = ({ isAuthenticated }) => {
         if (error.response?.status === 401) {
           navigate("/login", { replace: true });
         }
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -71,6 +74,8 @@ const Workspace = ({ isAuthenticated }) => {
           toast.error(error.response.data.message);
           navigate("/dashboard");
         }
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -506,21 +511,21 @@ const Workspace = ({ isAuthenticated }) => {
     })
   );
 
+
+  if (loading) {
+    return (
+      <div style={{ display: "flex", flexWrap : "wrap", alignItems : "center", justifyContent : "center", height: "93vh", overflow: "hidden", position: "relative" }}>
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <>
       <DndContext onDragEnd={(e) => { handleDragEnd(e) }} sensors={sensors}>
         <div style={{ display: "flex", height: "93vh", overflow: "hidden", position: "relative" }}>
-          <div className="workspace-topbar">
+          <div className="workspace-topbar" id="topbar-tour">
             <div className="workspace-topbar-screens">
-              <Button style={{ background: "transparent" }} className="workspace-topbar-screen-btn">
-                <Smartphone />
-              </Button>
-              <Button style={{ background: "transparent" }} className="workspace-topbar-screen-btn">
-                <Tablet />
-              </Button>
-              <Button style={{ background: "transparent" }} className="workspace-topbar-screen-btn">
-                <MonitorCheck />
-              </Button>
               <Button style={{ background: "transparent" }} className="workspace-topbar-screen-btn">
                 <Fullscreen />
               </Button>

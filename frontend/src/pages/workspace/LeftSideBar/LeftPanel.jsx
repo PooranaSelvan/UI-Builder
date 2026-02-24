@@ -221,7 +221,7 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
           onPointerUp={handlePointerUp}
         />
 
-        <div className="left-panel-scroll">
+        <div className="left-panel-scroll" id="left-panel-tour">
           {/* TABS */}
           <div className="panel-tabs">
             <button className={`tab ${activeTab === 'components' ? 'active' : ''}`} onClick={() => setActiveTab('components')}>Components</button>
@@ -323,6 +323,7 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
           {isComponentEditor && activeTab === 'components' && (
             <button
               className="add-json-component-btn"
+              id="custom-json-tour"
               onClick={() => setShowJsonModal(true)}
             >
               <Plus size={18} /> Add JSON Component

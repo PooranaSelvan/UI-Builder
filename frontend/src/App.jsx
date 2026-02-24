@@ -19,6 +19,8 @@ import Profile from "./pages/profile/Profile.jsx";
 import Publish from "./pages/publish/Publish.jsx";
 import api from "./utils/axios.js";
 import TemplatePreview from './pages/templates/TemplatePreview.jsx';
+import ScrollToTop from "./components/ScrollToTop.jsx";
+import { dashBoardTour, editorTour, homeTour, workspaceTour } from './driverjs/tour.js';
 
 
 function App() {
@@ -55,7 +57,31 @@ function App() {
       localStorage.setItem("sirpam-token", token);
       window.history.replaceState({}, document.title, "/");
     }
-  }, [isAuthenticated]);
+
+
+    // Tour
+    let isToured = JSON.parse(localStorage.getItem("sirpam-tour")) || {};
+
+    // console.log(isToured);
+
+    if (isAuthenticated) {
+      if (location.pathname === "/" && !isToured.home) {
+        homeTour();
+      }
+
+      if (location.pathname === "/dashboard" && !isToured.dashboard) {
+        dashBoardTour();
+      }
+
+      if (location.pathname.includes("workspace") && !isToured.workspace) {
+        workspaceTour();
+      }
+
+      if (location.pathname === "/component-editor" && !isToured.editor) {
+        editorTour();
+      }
+    }
+  }, [isAuthenticated, location.pathname]);
 
 
 
@@ -67,6 +93,7 @@ function App() {
         {!hideNavbar && (
           <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} />
         )}
+        <ScrollToTop />
         <Routes>
           <Route path='/' element={<HomePage isAuthenticated={isAuthenticated} />} />
           <Route path='*' element={<ErrorPage />} />

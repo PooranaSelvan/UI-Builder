@@ -9,7 +9,7 @@ const Dock = ({ zoom, onZoomOut, onZoomIn, onReset }) => {
 
 
      return (
-          <div className='dock-wrapper'>
+          <div className='dock-wrapper' id='dock-tour'>
                <ZoomOut onClick={onZoomOut} disabled={!canZoomOut} />
                <input type="text" value={`${zoomPercentage}%`} readOnly />
                <ZoomIn onClick={onZoomIn} disabled={!canZoomIn} />

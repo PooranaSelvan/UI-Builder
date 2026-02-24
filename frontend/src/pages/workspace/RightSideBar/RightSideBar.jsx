@@ -237,7 +237,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     /*Render the right panel only if a component is selected */
     if (!selectedComponent) {
         return (
-            <aside className="right-side-main-bar empty">
+            <aside className="right-side-main-bar empty" id='right-sidebar-tour'>
                 <p className='error-text'>Select an element to edit</p>
             </aside>
         );
@@ -245,7 +245,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
     return (
         <aside className='right-panel' onMouseOver={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
-            <div className="right-side-main-bar">
+            <div className="right-side-main-bar" id='right-sidebar-tour'>
                 <div className="button-flex">
                     {["properties", "style", "resources"].map((tab) => (
                         <button

@@ -52,10 +52,10 @@ const HomePage = ({ isAuthenticated }) => {
               <span className='gradient-text'> Secure, scalable, and fully customizable.</span>
             </p>
             <div className='home-hero-btns'>
-              <Button className='primary-button get-started-btn' style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 32px", fontSize: "16px", fontWeight: "600" }} onClick={handleGetStarted}>
+              <Button className='primary-button get-started-btn' id="start-build" style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 32px", fontSize: "16px", fontWeight: "600" }} onClick={handleGetStarted}>
                 Start Building <ArrowUpRight size={20} />
               </Button>
-              <Button className='video-btn'>
+              <Button className='video-btn' id="demo-btn">
                 Watch Demo <Play size={20} />
               </Button>
             </div>

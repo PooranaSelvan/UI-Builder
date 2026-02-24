@@ -1,24 +1,47 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
+import axios from "axios";
+import "./file-loader.css";
 
 const ImageUpload = ({ selectedComponent, updateComponent }) => {
   const fileRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleFile = (file) => {
+  const handleFile = async (file) => {
     if (!file) return;
 
-    const imageURL = URL.createObjectURL(file);
+    let cloudinaryData = await uploadImageToCloud(file);
+    const imageURL = cloudinaryData?.secure_url;
+
 
     updateComponent(selectedComponent.id, (node) => {
       node.defaultProps ??= {};
       node.defaultProps.style ??= {};
 
-      if (node.tag === "img") {
-        node.defaultProps.src = imageURL;
-      } else {
-        node.defaultProps.style.backgroundImage = `url(${imageURL})`;
-      }
+      node.defaultProps.style.backgroundImage = `url(${imageURL})`;
     });
   };
+
+
+  const uploadImageToCloud = async (file) => {
+    let formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "sirpam ui builder");
+
+    try {
+      setLoading(true);
+      let res = await axios.post(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD}/image/upload`,
+        formData
+      );
+      return res.data;
+    } catch (error) {
+      console.log(error);
+      console.log(error.response);
+    } finally {
+      setLoading(false);
+    }
+
+    return null;
+  }
 
   return (
     <div className="background-image">
@@ -35,9 +58,13 @@ const ImageUpload = ({ selectedComponent, updateComponent }) => {
           readOnly
         />
 
-        <button onClick={() => fileRef.current.click()}>
-          Browse
-        </button>
+        {!loading ? (
+          <button onClick={() => fileRef.current.click()}>
+            Browse
+          </button>
+        ) : (
+          <div className="file-loader"></div>
+        )}
       </div>
 
       <input

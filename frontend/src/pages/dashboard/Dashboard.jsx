@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FolderCard from "./FolderCard";
 import CreateForm from "./CreateForm";
-import { Plus, MoreVertical, FileText, Search, ArrowRight, Copy, Edit3, Eye, Trash2, Rocket, Undo2, Download } from "lucide-react";
+import { Plus, MoreVertical, FileText, Search, ChevronRight, Copy, Edit3, Eye, Trash2, Rocket, Undo2, Download } from "lucide-react";
 import "./Dashboard.css";
 import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
@@ -425,7 +425,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="card-grid">
+          <div className="card-grid" id="cards-grid">
             <div
               className="create-card"
               onClick={() => setIsModalOpen(true)}
@@ -497,7 +497,7 @@ const Dashboard = () => {
           </div>
 
           {selectedApp?.pages?.map((page, index) => (
-            <div key={page.id} className="page-card">
+            <div key={page.id} className="page-card" onClick={() => navigate(`/workspace/${page.id}`)}>
               <div className="page-top">
                 {/* HEADER */}
                 <div className="page-header">
@@ -584,7 +584,7 @@ const Dashboard = () => {
                   </div>
                 )}
                 <div className="open-page" onClick={() => navigate(`/workspace/${page.id}`)}>
-                  <ArrowRight size={24} />
+                  <ChevronRight size={24} />
                 </div>
               </div>
             </div>
