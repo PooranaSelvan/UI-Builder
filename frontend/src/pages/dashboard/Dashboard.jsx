@@ -19,7 +19,7 @@ const Dashboard = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
   const [showDelete, setShowDelete] = useState(false);
   const [deleteInfo, setDeleteInfo] = useState(null);
@@ -88,10 +88,7 @@ const Dashboard = () => {
   }
 
   async function fetchPages() {
-    setLoading(true);
-
     if (!userId) {
-      setLoading(false);
       return;
     }
 
@@ -100,9 +97,9 @@ const Dashboard = () => {
 
       let formattedJSON = buildJSON(res.data.pages);
       setProjects(formattedJSON);
-      setLoading(false);
     } catch (err) {
       console.log(err);
+    } finally {
       setLoading(false);
     }
   }
@@ -185,7 +182,6 @@ const Dashboard = () => {
     }
 
     try {
-      setLoading(true);
       let res = await api.post("/builder/projects/", {
         userId,
         projectName: name,
@@ -204,11 +200,11 @@ const Dashboard = () => {
 
       setIsModalOpen(false);
       toast.success("Project Created Successfully!");
-      setLoading(false);
     } catch (err) {
-      setLoading(false);
       console.log(err);
       toast.error(err.response?.data.message);
+    } finally {
+      setLoading(false);
     }
 
   }

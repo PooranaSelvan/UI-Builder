@@ -80,7 +80,7 @@ const LoginPage = ({ isAuthenticated, setIsAuthenticated }) => {
                         <form action="">
                             <div className="usermail-container">
                                 <label htmlFor="">Email address</label>
-                                <input type="email" placeholder='youremail@gmail.com' value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <input type="email" placeholder='your email' value={email} onChange={(e) => setEmail(e.target.value)} />
                             </div>
                             <div className="password-container">
                                 <div className="label-flex">
@@ -113,7 +113,7 @@ const LoginPage = ({ isAuthenticated, setIsAuthenticated }) => {
                                 Continue With Zoho
                             </Button>
                         </form>
-                        <p style={{ marginTop: "30px", fontSize: "14px" }}>Dont have account? <NavLink to='/signup'>Create an account</NavLink></p>
+                        <p style={{ marginTop: "30px", fontSize: "14px" }}>Don't have an account? <NavLink to='/signup'>Create.</NavLink></p>
                     </div>
                 </div>
             </div>
