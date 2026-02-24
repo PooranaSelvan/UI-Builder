@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import FolderCard from "./FolderCard";
 import CreateForm from "./CreateForm";
-import { Plus, MoreVertical, FileText, Search, ArrowRight, Copy, Edit3, Eye, Trash2, Rocket, Undo2, Download, FileUp,CodeXml,Braces, Component } from "lucide-react";
+import { Plus, MoreVertical, FileText, Search, ArrowRight, Copy, Edit3, Eye, Trash2, Rocket, Undo2, Download, FileUp, CodeXml, Braces, Component } from "lucide-react";
 import "./Dashboard.css";
 import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
@@ -28,7 +28,13 @@ const Dashboard = () => {
   const menuRef = useRef(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [exportPageId, setExportPageId] = useState(null);
-
+  const location = useLocation();
+  const template = location.state?.template || null;
+  const [selectedTemplateProject, setSelectedTemplateProject] = useState(null);
+  const [showPageForm, setShowPageForm] = useState(false);
+  const [templateMode, setTemplateMode] = useState(false);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [isPageModalOpen, setIsPageModalOpen] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -336,10 +342,6 @@ const Dashboard = () => {
     }
   }
 
-  const renameProject = async () => {
-
-  }
-
   const renamePage = async (pageId, pageName, pageDescription, url) => {
     if (!pageId || !pageName || !pageDescription || !url) {
       toast.error("All fields are Required!");
@@ -403,7 +405,7 @@ const Dashboard = () => {
   }
 
 
-//Export feature
+  //Export feature
   const downloadJsonFile = (jsonData, fileName = "page.json") => {
     const blob = new Blob(
       [JSON.stringify(jsonData, null, 2)],
@@ -419,7 +421,7 @@ const Dashboard = () => {
     URL.revokeObjectURL(url);
   };
 
- function formatHTML(htmlString) {
+  function formatHTML(htmlString) {
     return beautifyHtml(htmlString, {
       indent_size: 2,
       wrap_line_length: 100,
@@ -447,27 +449,72 @@ const Dashboard = () => {
     try {
       const res = await api.get(`/builder/page/${exportPageId}`);
       const pageData = res.data.data;
-  
+
       if (!pageData) {
         toast.error("No Data Found!");
         return;
       }
-  
+
       if (type === "json") {
         downloadJsonFile(pageData, "page-export.json");
       }
-  
+
       if (type === "html") {
         const rawHTML = generateHTML(pageData);
         const formattedHTML = formatHTML(rawHTML);
         downloadHtmlFile(formattedHTML, "page-export.html");
       }
-  
+
       setIsExportModalOpen(false);
       toast.success("Exported Successfully!");
     } catch (error) {
       console.log(error);
       toast.error("Export Failed!");
+    }
+  };
+
+  //Templates
+  const handleCreateNewPageTemplate = async (name, description, url, project, template) => {
+    if (!project || !template) {
+      toast.error("Invalid project or template!");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await api.post("/builder/pages/", {
+        projectId: project.id,
+        pageName: name,
+        description,
+        pageUrl: url,
+        data: template.data || []
+      });
+
+      const newPage = {
+        id: res.data.pageId,
+        projectId: project.id,
+        name,
+        description,
+        pageUrl: url,
+        data: template.data || [],
+        isPublished: false,
+        modified: new Date().toLocaleString()
+      };
+
+      setProjects((projects) =>
+        projects.map((p) =>
+          p.id === project.id ? { ...p, pages: [...p.pages, newPage] } : p
+        )
+      );
+
+      toast.success("Page created from template!");
+      setShowPageForm(false);
+      navigate(`/workspace/${res.data.pageId}`, { replace: true });
+    } catch (err) {
+      console.log(err);
+      toast.error(err.response?.data?.message || "Page creation failed!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -503,7 +550,7 @@ const Dashboard = () => {
           <div className="card-grid">
             <div
               className="create-card"
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsProjectModalOpen(true)}
             >
               <div className="create-icon">
                 <Plus size={28} />
@@ -513,14 +560,74 @@ const Dashboard = () => {
             </div>
 
             {projects.map((app, index) => (
-              <FolderCard key={app.id} app={app} index={index} activeMenu={activeMenu} setActiveMenu={setActiveMenu} setSelectedApp={setSelectedApp} setDeleteInfo={setDeleteInfo} setShowDelete={setShowDelete} />
+              <FolderCard
+                app={{ ...app, isTemplateMode: !!template }}
+                index={index}
+                activeMenu={activeMenu}
+                setActiveMenu={setActiveMenu}
+                setSelectedApp={setSelectedApp}
+                setDeleteInfo={setDeleteInfo}
+                setShowDelete={setShowDelete}
+                onTemplateClick={(project) => {
+                  setSelectedTemplateProject(project);
+                  setSelectedApp(project);
+                  setShowPageForm(true);
+                  setTemplateMode(true);
+                }}
+              />
             ))}
+
+            {selectedApp && !templateMode && (
+              <CreateForm
+                isOpen={showPageForm || isPageModalOpen}
+                onClose={() => {
+                  setShowPageForm(false);
+                  setIsPageModalOpen(false);
+                  setTemplateMode(false);
+                  setSelectedTemplateProject(null);
+                }}
+                title={`Create Page }`}
+                nameLabel="Page Name"
+                descriptionLabel="Page Description"
+                buttonText="Create Page"
+                createNewPage={
+                  templateMode
+                    ? (name, description, url) =>
+                      handleCreateNewPageTemplate(name, description, url, selectedTemplateProject, template)
+                    : handleCreateNewPage
+                }
+              />
+            )}
+
+            {showPageForm && templateMode && selectedTemplateProject && (
+              <CreateForm
+                isOpen={isPageModalOpen}
+                onClose={() => {
+                  setShowPageForm(false);
+                  setTemplateMode(false);
+                  setSelectedTemplateProject(null);
+                }}
+                title={`Create Page in ${selectedTemplateProject?.name}`}
+                nameLabel="Page Name"
+                descriptionLabel="Page Description"
+                buttonText="Create Page"
+                createNewPage={(name, description, url) =>
+                  handleCreateNewPageTemplate(
+                    name,
+                    description,
+                    url,
+                    selectedTemplateProject,
+                    template
+                  )
+                }
+              />
+            )}
           </div>
 
         </div>
         <CreateForm
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isProjectModalOpen}
+          onClose={() => setIsProjectModalOpen(false)}
           title="Create New Project"
           nameLabel="Project Name"
           descriptionLabel="Project Description"
@@ -531,9 +638,10 @@ const Dashboard = () => {
           <DeleteModal title="Project" onDelete={deleteProject} onCancel={() => { setShowDelete(false); setDeleteInfo(null) }} />
         )}
       </div>
-
     );
   }
+
+
   // ================= PAGES VIEW =================
   return (
     <div className="dashboard-container">
@@ -563,7 +671,7 @@ const Dashboard = () => {
         <div className="card-grid">
           <div
             className="create-card"
-            onClick={() => setIsModalOpen(true)} >
+            onClick={() => setShowPageForm(true)} >
             <div className="create-icon">
               <Plus size={28} />
             </div>
@@ -571,7 +679,7 @@ const Dashboard = () => {
             <p>Add a new page to this project</p>
           </div>
 
-          {selectedApp?.pages?.map((page, index) => (
+          {!templateMode && selectedApp?.pages?.map((page, index) => (
             <div key={page.id} className="page-card">
               <div className="page-top">
                 {/* HEADER */}
@@ -628,7 +736,7 @@ const Dashboard = () => {
                                 setExportPageId(page.id);
                                 setIsExportModalOpen(true);
                               }}
-                              style={{width: "100%",borderRadius: "5px", display: "flex",alignItems: "center",gap: "10px",backgroundColor: "transparent"}}>
+                              style={{ width: "100%", borderRadius: "5px", display: "flex", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
                               <Download size={16} />
                               Export
                             </button>
@@ -672,7 +780,21 @@ const Dashboard = () => {
           ))
           }
         </div>
-        <CreateForm isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Create New Page" nameLabel="Page Name" descriptionLabel="Page Description" buttonText="Create Page" createNewPage={handleCreateNewPage} />
+        <CreateForm
+          isOpen={showPageForm}
+          onClose={() => {
+            setShowPageForm(false);
+            setTemplateMode(false);
+            setSelectedTemplateProject(null);
+          }}
+          title={`Create Page `}
+          nameLabel="Page Name"
+          descriptionLabel="Page Description"
+          buttonText="Create Page"
+          createNewPage={(name, description, url) =>
+            handleCreateNewPageTemplate(name, description, url, selectedTemplateProject, template)
+          }
+        />
       </div >
       {showDelete && deleteInfo?.type === "page" && (
         <DeleteModal title="Page" onDelete={deletePage} onCancel={() => { setShowDelete(false); setDeleteInfo(null) }} />
@@ -681,44 +803,44 @@ const Dashboard = () => {
         <UpdateForm isOpen={isUpdateFormOpen} onClose={() => setIsUpdateFormOpen(false)} pageData={{ name: currentPage.name, description: currentPage.description, url: currentPage.pageUrl }} onRename={(name, description, url) => renamePage(currentPage.id, name, description, url)} />
       )}
 
-{isExportModalOpen && (
-  <div className="export-modal-overlay">
-    <div className="export-modal">
-      <div className="export-header">
-        <div className="export-icon">
-          <FileUp size={22} />
+      {isExportModalOpen && (
+        <div className="export-modal-overlay">
+          <div className="export-modal">
+            <div className="export-header">
+              <div className="export-icon">
+                <FileUp size={22} />
+              </div>
+              <h3>Export Page</h3>
+            </div>
+
+            <p className="export-description">
+              Choose your preferred format to export this page.
+            </p>
+
+            <div className="export-modal-actions">
+              <button className="export-btn" onClick={() => handleExport("json")}>
+                <div className="export-icon">
+                  <Braces size={20} />
+                </div>
+                Export as JSON
+              </button>
+
+              <button className="export-btn" onClick={() => handleExport("html")}>
+                <div className="export-icon">
+                  <CodeXml size={20} />
+                </div>
+                Export as HTML
+              </button>
+
+              <button className="cancel-btn" onClick={() => setIsExportModalOpen(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
-        <h3>Export Page</h3>
-      </div>
-
-      <p className="export-description">
-        Choose your preferred format to export this page.
-      </p>
-
-      <div className="export-modal-actions">
-        <button className="export-btn" onClick={() => handleExport("json")}>
-          <div className="export-icon">
-          <Braces size={20} />
-        </div>
-          Export as JSON
-        </button>
-
-        <button className="export-btn" onClick={() => handleExport("html")}>
-          <div className="export-icon">
-          <CodeXml size={20} />
-        </div>
-          Export as HTML
-        </button>
-
-        <button className="cancel-btn" onClick={() => setIsExportModalOpen(false)}>
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </div >
-    
+
   );
 };
 export default Dashboard;
