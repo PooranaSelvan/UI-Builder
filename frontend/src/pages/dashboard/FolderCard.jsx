@@ -15,7 +15,8 @@ const FolderCard = ({
   setActiveMenu,
   setSelectedApp,
   setDeleteInfo,
-  setShowDelete
+  setShowDelete,
+  onTemplateClick 
 }) => {
   const menuRef = useRef(null);
 
@@ -30,7 +31,16 @@ const FolderCard = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   return (
-    <div className="folder-card" onClick={() => setSelectedApp(app)}>
+    <div
+      className="folder-card"
+      onClick={() => {
+        if (app.isTemplateMode && onTemplateClick) {
+          onTemplateClick(app);
+        } else {
+          setSelectedApp(app);
+        }
+      }}
+    >
       <div className="card-top">
         <div className="folder-icon folder-color">
           <Folder size={26} />

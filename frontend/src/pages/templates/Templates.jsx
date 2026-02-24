@@ -16,7 +16,6 @@ const Templates = () => {
     async function fetchDatas() {
       try {
         let res = await api.get("/template");
-
         setTemplates(res.data.data);
       } catch (error) {
         console.log(error);
@@ -47,7 +46,7 @@ const Templates = () => {
         <div className="template-container">
           {
             templates.map(ele => (
-              <TemplateCard key={ele.templateId} name={ele.templateName} description={ele.description} pageId={ele.templateId} />
+              <TemplateCard key={ele.templateId} name={ele.templateName} description={ele.description} pageId={ele.templateId} onSelect={() => navigate("/dashboard", { state: { template: ele } })}/>
             ))
           }
         </div>
