@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FolderCard from "./FolderCard";
 import CreateForm from "./CreateForm";
-import { Plus, MoreVertical, FileText, Search, ArrowRight, Copy, Edit3, Eye, Trash2, Rocket, Undo2, Download } from "lucide-react";
+import { Plus, MoreVertical, FileText, Search, ArrowRight, Copy, Edit3, Eye, Trash2, Rocket, Undo2, Download, FileUp,CodeXml,Braces, Component } from "lucide-react";
 import "./Dashboard.css";
 import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
@@ -10,6 +10,8 @@ import api from "../../utils/axios.js";
 import Button from "../../components/Button.jsx";
 import DeleteModal from "./components/DeleteModal.jsx";
 import UpdateForm from "./components/UpdateForm.jsx";
+import { generateHTML } from "../workspace/utils/exportHTML.js";
+import { html as beautifyHtml } from "js-beautify";
 
 const Dashboard = () => {
   let navigate = useNavigate();
@@ -24,6 +26,9 @@ const Dashboard = () => {
   const [isUpdateFormOpen, setIsUpdateFormOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(null);
   const menuRef = useRef(null);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportPageId, setExportPageId] = useState(null);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -355,7 +360,7 @@ const Dashboard = () => {
 
       setSelectedApp((projects) => ({
         ...projects,
-        pages: projects.pages.map((page) => page.id === pageId ? { ...page, pageName, pageDescription, pageUrl : url } : page)
+        pages: projects.pages.map((page) => page.id === pageId ? { ...page, pageName, pageDescription, pageUrl: url } : page)
       }));
 
       setProjects((projects) =>
@@ -363,7 +368,7 @@ const Dashboard = () => {
           project.id === selectedApp.id ? {
             ...project,
             pages: project.pages.map((page) =>
-              page.id === pageId ? { ...page, pageName, pageDescription, pageUrl : url } : page
+              page.id === pageId ? { ...page, pageName, pageDescription, pageUrl: url } : page
             )
           } : project
         )
@@ -400,6 +405,76 @@ const Dashboard = () => {
       setLoading(false);
     }
   }
+
+
+//Export feature
+  const downloadJsonFile = (jsonData, fileName = "page.json") => {
+    const blob = new Blob(
+      [JSON.stringify(jsonData, null, 2)],
+      { type: "application/json" }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+ function formatHTML(htmlString) {
+    return beautifyHtml(htmlString, {
+      indent_size: 2,
+      wrap_line_length: 100,
+      preserve_newlines: true,
+    });
+  }
+
+  const downloadHtmlFile = (htmlContent, fileName = "file.html") => {
+    const blob = new Blob([htmlContent], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExport = async (type) => {
+    if (!exportPageId) {
+      toast.error("Invalid Page!");
+      return;
+    }
+    try {
+      const res = await api.get(`/builder/page/${exportPageId}`);
+      const pageData = res.data.data;
+  
+      if (!pageData) {
+        toast.error("No Data Found!");
+        return;
+      }
+  
+      if (type === "json") {
+        downloadJsonFile(pageData, "page-export.json");
+      }
+  
+      if (type === "html") {
+        const rawHTML = generateHTML(pageData);
+        const formattedHTML = formatHTML(rawHTML);
+        downloadHtmlFile(formattedHTML, "page-export.html");
+      }
+  
+      setIsExportModalOpen(false);
+      toast.success("Exported Successfully!");
+    } catch (error) {
+      console.log(error);
+      toast.error("Export Failed!");
+    }
+  };
+
 
   if (loading) {
     return (
@@ -551,7 +626,13 @@ const Dashboard = () => {
                             </div>
                           )}
                           <div className="menu-item">
-                            <button onClick={(e) => { e.stopPropagation(); handlePreviewpage(page.id) }} style={{ width: "100%", borderRadius: "5px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px", backgroundColor: "transparent" }}>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExportPageId(page.id);
+                                setIsExportModalOpen(true);
+                              }}
+                              style={{width: "100%",borderRadius: "5px", display: "flex",alignItems: "center",gap: "10px",backgroundColor: "transparent"}}>
                               <Download size={16} />
                               Export
                             </button>
@@ -603,7 +684,45 @@ const Dashboard = () => {
       {isUpdateFormOpen && currentPage && (
         <UpdateForm isOpen={isUpdateFormOpen} onClose={() => setIsUpdateFormOpen(false)} pageData={{ name: currentPage.name, description: currentPage.description, url: currentPage.pageUrl }} onRename={(name, description, url) => renamePage(currentPage.id, name, description, url)} />
       )}
+
+{isExportModalOpen && (
+  <div className="export-modal-overlay">
+    <div className="export-modal">
+      <div className="export-header">
+        <div className="export-icon">
+          <FileUp size={22} />
+        </div>
+        <h3>Export Page</h3>
+      </div>
+
+      <p className="export-description">
+        Choose your preferred format to export this page.
+      </p>
+
+      <div className="export-modal-actions">
+        <button className="export-btn" onClick={() => handleExport("json")}>
+          <div className="export-icon">
+          <Braces size={20} />
+        </div>
+          Export as JSON
+        </button>
+
+        <button className="export-btn" onClick={() => handleExport("html")}>
+          <div className="export-icon">
+          <CodeXml size={20} />
+        </div>
+          Export as HTML
+        </button>
+
+        <button className="cancel-btn" onClick={() => setIsExportModalOpen(false)}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div >
+    
   );
 };
 export default Dashboard;
