@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import "./RightSideBar.css";
 import "../../../index.css"
-import { Icon, ListPlus, Settings } from 'lucide-react';
+import { ListPlus, MonitorSmartphone, Settings } from 'lucide-react';
 import { v4 as uuidv4 } from "uuid";
 import { ChevronDown } from 'lucide-react';
 import { ChevronUp } from 'lucide-react';
@@ -14,16 +14,17 @@ import { Grid2x2 } from 'lucide-react';
 import { Type } from 'lucide-react';
 import { TableRowsSplit } from 'lucide-react';
 import { FileUp } from 'lucide-react';
-import { Database } from 'lucide-react';
 import { Webhook } from 'lucide-react';
-import { Pencil } from 'lucide-react';
 import { Cloud, Trash2 } from 'lucide-react';
 import { MoveLeft, MoveRight, MoveDown, MoveUp } from 'lucide-react';
 import { Workflow } from 'lucide-react';
 import ImportedFiles from './components/ImportedFiles';
 import ImageUpload from './components/ImageUpload';
 import WebFont from 'webfontloader';
-import { all } from 'axios';
+import CodeMirror from "@uiw/react-codemirror";
+import { css } from "@codemirror/lang-css";
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import toast from 'react-hot-toast';
 
 /*Used in the rendering of the select tag in the units for height, width */
 const UNITS = ["px", "%", "rem", "em", "auto"];
@@ -93,8 +94,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     const [apiUrl, setApiUrl] = useState("");
     const [loadingApi, setLoadingApi] = useState(false);
     const [eventType, setEventType] = useState("");
-    const [error, setError] = useState("");
-    const display = selectedComponent?.defaultProps?.style?.display || "block";
+    const display = selectedComponent?.defaultProps?.style?.display ?? "block";
     const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
     const selectedAction = selectedComponent?.defaultProps?.events?.[eventType]?.action ?? "";
     const inputType = selectedComponent?.defaultProps?.type ?? "";
@@ -188,7 +188,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
         const firstEvent = Object.keys(events)[0];
         setEventType(firstEvent || "");
-    }, [selectedComponent?.id]);
+    }, [selectedComponent?.id,selectedComponent?.defaultProps?.events]);
 
     const handleFiles = async (fileList) => {
         const file = fileList[0];
@@ -231,6 +231,40 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
             }
         })
     }
+
+    const getResponsive = () => {
+        return `/*Tablet view*/
+@media (min-width: 768px){
+
+}
+
+
+/*Mobile view*/
+@media (min-width: 425px){
+
+}
+        `;
+    }
+
+    useEffect(() => {
+        const existing = selectedComponent?.defaultProps?.mediaquery?.style;
+
+        const baseClass = selectedComponent?.baseClassName ?? "";
+        const userClassName = selectedComponent?.defaultProps?.className ?? "";
+
+        const className = userClassName.split(" ").filter(c => c !== baseClass).join(" ");
+
+        if (!existing && className) {
+            updateComponent(selectedComponent.id, (node) => {
+                node.defaultProps ??= {};
+                node.defaultProps.mediaquery ??= {};
+                node.defaultProps.mediaquery.style =
+                    getResponsive();
+            });
+
+        }
+    }, [selectedComponent?.id])
+
 
     const filteredFiles = files.filter(f => f.id === selectedComponent?.defaultProps?.fileId);
 
@@ -596,7 +630,9 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 >
                                                     <option value="">None</option>
                                                     <option value="log">Console Log</option>
-                                                    <option value="alert">Show Alert</option>
+                                                    {eventType !== "onChange" && (
+                                                        <option value="alert">Show Alert</option>
+                                                    )}
                                                     <option value="visibility">Toggle Visibility</option>
                                                     <option value="update">Update </option>
                                                 </select>
@@ -667,8 +703,9 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                     if (value === 'none') {
                                                         if (!className.includes('hidden')) {
                                                             node.defaultProps.className = className + " hidden";
-                                                            node.defaultProps.style.opacity = 0.2
                                                         }
+                                                        node.defaultProps.style.opacity = 0.2;
+                                                        // node.defaultProps.style.display = value;
                                                     } else {
                                                         node.defaultProps.className = className.replace('hidden', "").trim();
                                                         node.defaultProps.style.opacity = 1;
@@ -677,10 +714,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 })
                                             }}
                                         >
-                                            <option value="block">Block</option>
-                                            <option value="flex">Flex</option>
-                                            <option value="grid">Grid</option>
-                                            <option value="none">None</option>
+                                            <option value="block">◼ Block</option>
+                                            <option value="flex">☰ Flex</option>
+                                            <option value="grid">▦ Grid</option>
+                                            <option value="none">✖ none</option>
                                         </select>
                                     </div>
                                     {display !== "flex" && (
@@ -1011,7 +1048,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <input
                                                 type="number"
                                                 min={0}
-                                                value={parseFloat(selectedComponent.defaultProps?.style?.borderWidth)}
+                                                value={parseFloat(selectedComponent.defaultProps?.style?.borderWidth) || 0}
                                                 onChange={(e) => {
                                                     updateComponent(selectedComponent.id, (node) => {
                                                         node.defaultProps ??= {};
@@ -1293,10 +1330,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                             node.defaultProps.style.textAlign = e.target.value;
                                                         })
                                                     }}>
-                                                        <option value="left">left</option>
-                                                        <option value="center">center</option>
-                                                        <option value="right">right</option>
-                                                        <option value="justify">justify</option>
+                                                        <option value="left">⬅ Align Left</option>
+                                                        <option value="center">⬌ Align Center</option>
+                                                        <option value="right">➡ Align Right</option>
+                                                        <option value="justify">☰ Justify</option>
                                                     </select>
                                                 </div>
                                                 <div className='input-child'>
@@ -1422,6 +1459,38 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     </div>
                                 </div>
 
+                            </Heading>
+                            <Heading icon={<MonitorSmartphone size={18} />} title={"Custom CSS"} >
+                                <>
+                                    <div className="custom-css">
+                                        <div>
+                                            <label>media query</label>
+                                            <CodeMirror
+                                                height="300px"
+                                                theme={vscodeDark}
+                                                extensions={[css()]}
+                                                value={selectedComponent?.defaultProps?.mediaquery?.style}
+                                                onChange={(value) => {
+                                                    const userClass =
+                                                        selectedComponent?.defaultProps?.className
+                                                            ?.replace(selectedComponent?.baseClassName || "", "")
+                                                            .trim() || "";
+
+                                                    if (!userClass) {
+                                                        toast.error("ClassName is Required!");
+                                                        return;
+                                                    }
+
+                                                    updateComponent(selectedComponent.id, (node) => {
+                                                        node.defaultProps ??= {};
+                                                        node.defaultProps.mediaquery ??= {};
+                                                        node.defaultProps.mediaquery.style = value;
+                                                    });
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </>
                             </Heading>
                         </div>
                     )}
