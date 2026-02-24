@@ -10,7 +10,7 @@ export const homeTour = () => {
           steps: [
                { popover: { title: '👋 Welcome to Sirpam UI Builder', description: 'Sirpam gives you the power of development with the simplicity of drag & drop.', side: "left", align: 'start' } },
                { element: '#demo-btn', popover: { title: 'Watch the Magic in Action', description: 'Curious how it works?\n\nTake a quick demo tour', side: "left", align: 'start' } },
-               { element: '#start-build', popover: { title: 'Start Building Now', description: 'Click here and transform you ideas into real, functional interfaces.', side: "left", align: 'start' } }
+               { element: '#start-build', popover: { title: 'Start Building Now', description: 'Click here and transform your ideas into real and functional interfaces.', side: "left", align: 'start' } }
           ]
      });
 
@@ -46,11 +46,11 @@ export const workspaceTour = () => {
           showButtons: ["close", "next", "previous"],
           popoverClass: 'driverjs-theme',
           steps: [
-               { element: '#left-panel-tour', popover: { title: 'Components Library', description: 'All your building blocks live here.\n\nDrag, drop, and design on the canvas.', side: "left", align: 'start' } },
+               { element: '#left-panel-tour', popover: { title: 'Components Library', description: 'All your building blocks live here.\n\nDrag, drop and design.', side: "left", align: 'start' } },
                { element: '#canvas-tour', popover: { title: 'Design Canvas', description: 'This is where your creativity meets execution.', side: "left", align: 'start' } },
                { element: '#right-sidebar-tour', popover: { title: 'Style & Customize', description: 'Want it pixel-perfect?\n\nAdjust styles, tweak properties, and fully customize your components here.', side: "left", align: 'start' } },
-               { element: '#topbar-tour', popover: { title: 'Control Center', description: 'Save your progress\n Preview in real-time\n Publish when you\'re ready to go live\n\nBuild it. Preview it. Ship it.', side: "left", align: 'start' } },
-               { element: '#dock-tour', popover: { title: 'Precision Zoom', description: 'Design with pixel-perfect accuracy.', side: "left", align: 'start' } }
+               { element: '#topbar-tour', popover: { title: 'Control Center', description: 'Save your progress\n preview in real-time\n publish when you\'re ready to go live\n\nbuild preview and ship.', side: "left", align: 'start' } },
+               { element: '#dock-tour', popover: { title: 'Precision Zoom', description: 'Design with accuracy.', side: "left", align: 'start' } }
           ]
      });
 

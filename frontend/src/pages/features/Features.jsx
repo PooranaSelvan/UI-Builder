@@ -41,12 +41,12 @@ const Features = () => {
                 </svg>
                 <p>Visual Builder</p>
               </span>
-              <h2>Pixel-perfect design,<span>effortlessly.</span></h2>
-              <p>Create amazing interfaces with our drag-and-drop canvas.</p>
+              <h2><span>Effortlessly</span> design <br /> pixel-perfect Sites.</h2>
+              <p>Create amazing interfaces with our,</p>
               <ul>
                 <li>
                   <span className='check'><Check size={14} /></span>
-                  Drag-and-drop components
+                  Drag and drop components
                 </li>
                 <li>
                   <span className='check'><Check size={14} /></span>

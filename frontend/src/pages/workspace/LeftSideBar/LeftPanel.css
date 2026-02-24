@@ -5,15 +5,15 @@
   border-right: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
-  padding: 0;           
+  padding: 0;
   flex-shrink: 0;
 }
 
-.left-panel-scroll{
+.left-panel-scroll {
   flex: 1;
-  min-height: 0;         
-  padding: 16px;        
-  padding-right: 20px; 
+  min-height: 0;
+  padding: 16px;
+  padding-right: 20px;
 }
 
 
@@ -124,6 +124,7 @@
   border-radius: 8px;
   background: #f3f4f6;
 }
+
 .resize-handle {
   position: absolute;
   top: 0;
@@ -139,7 +140,7 @@
 
 .resize-handle:hover {
   background: #ef4444;
-  border-right: 5px solid  #ef4444;
+  border-right: 5px solid #ef4444;
 }
 
 
@@ -148,8 +149,8 @@
   margin: 14px 0;
   padding: 10px 12px;
   background: #fff;
-  color: #e53935;
-  border: 1.5px dashed #e53935;
+  color: var(--primary);
+  border: 2px dashed var(--primary);
   border-radius: 10px;
   font-size: 13px;
   font-weight: 500;
@@ -167,6 +168,27 @@
   color: #d32f2f;
 }
 
+/* Create JSON with AI */
+.json-ai {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 15px;
+  width: 100%;
+  border-radius: 12px;
+  background-color: var(--primary);
+  color: white;
+  margin: 14px 0;
+  border: 2px solid transparent;
+  transition: all 0.3s ease-in-out;
+}
+.json-ai:hover{
+  background-color: white;
+  color: var(--primary);
+  border: 2px dashed var(--primary);
+}
 /* ---------- Overlay ---------- */
 .json-component-modal {
   position: fixed;
@@ -202,7 +224,7 @@
   margin: 0;
   font-size: 15px;
   font-weight: 600;
-  color: #e53935; 
+  color: #e53935;
 }
 
 .modal-cancel-btn {
@@ -303,7 +325,7 @@
 }
 
 .layer-drag {
-  cursor:grab;
+  cursor: grab;
   font-size: 14px;
   opacity: 0.5;
 }

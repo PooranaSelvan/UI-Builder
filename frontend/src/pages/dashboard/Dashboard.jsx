@@ -415,7 +415,7 @@ const Dashboard = () => {
             <div>
               <h1>My Workspace</h1>
               <p className="sub-text">
-                Organize your ideas into Projects
+                Convert your ideas into Projects
               </p>
             </div>
 
@@ -434,7 +434,6 @@ const Dashboard = () => {
                 <Plus size={28} />
               </div>
               <h3>Create New Project</h3>
-              <p>Organize your projects</p>
             </div>
 
             {projects.map((app, index) => (

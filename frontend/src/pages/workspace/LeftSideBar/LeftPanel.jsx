@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
-import { X, ChevronRight, ChevronDown } from "lucide-react";
+import { X, ChevronRight, ChevronDown, BotMessageSquare } from "lucide-react";
 import { useCustomComponents } from "../../../context/CustomComponentsContext";
 import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 
@@ -317,6 +317,14 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
 
           {searchTerm && finalSections.length === 0 && (
             <p className="no-results">No components found</p>
+          )}
+
+          {/* AI Integrated */}
+          {isComponentEditor && activeTab === "components" && (
+            <button className="json-ai">
+              <BotMessageSquare />
+              Create with AI
+            </button>
           )}
 
           {/* ADD JSON BUTTON */}
