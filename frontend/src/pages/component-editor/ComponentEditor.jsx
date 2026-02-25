@@ -782,12 +782,12 @@ const ComponentEditor = () => {
 
             <div className="delete-modal-actions">
               <button className="cancel-btn" onClick={cancelDelete}>
-                Cancel
+                No
               </button>
 
               <button className="confirm-btn" onClick={confirmDelete}>
                 <Trash2 size={16} />
-                Delete
+                Yes
               </button>
             </div>
 

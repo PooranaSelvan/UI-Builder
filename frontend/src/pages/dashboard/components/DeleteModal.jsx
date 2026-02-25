@@ -20,12 +20,12 @@ const DeleteModal = ({title, onCancel, onDelete }) => {
 
                     <div className="delete-modal-actions">
                          <button className="cancel-btn" onClick={onCancel}>
-                              Cancel
+                              No
                          </button>
 
                          <button className="confirm-btn" onClick={onDelete}>
                               <Trash2 size={16} />
-                              Delete
+                              Yes
                          </button>
                     </div>
 
