@@ -786,12 +786,21 @@ const Dashboard = () => {
             setTemplateMode(false);
             setSelectedTemplateProject(null);
           }}
-          title={`Create Page `}
+          title={`Create Page in ${selectedApp?.name}`}
           nameLabel="Page Name"
           descriptionLabel="Page Description"
           buttonText="Create Page"
-          createNewPage={(name, description, url) =>
-            handleCreateNewPageTemplate(name, description, url, selectedTemplateProject, template)
+          createNewPage={
+            templateMode
+              ? (name, description, url) =>
+                handleCreateNewPageTemplate(
+                  name,
+                  description,
+                  url,
+                  selectedTemplateProject,
+                  template
+                )
+              : handleCreateNewPage
           }
         />
       </div >

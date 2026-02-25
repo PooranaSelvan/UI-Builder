@@ -345,12 +345,14 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
             <div className="json-modal-box">
               <div className="modal-header">
                 <h4>Add Component via JSON</h4>
-                <X size={18} onClick={() => setShowJsonModal(false)} />
+                <X size={18} 
+                onClick={() => setShowJsonModal(false) } />
               </div>
 
               <textarea
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
+                
                 className="json-textarea"
                 placeholder={`Sample JSON:
 {
