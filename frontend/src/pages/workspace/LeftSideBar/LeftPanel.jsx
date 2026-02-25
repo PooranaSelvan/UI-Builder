@@ -346,7 +346,10 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
               <div className="modal-header">
                 <h4>Add Component via JSON</h4>
                 <X size={18} 
-                onClick={() => setShowJsonModal(false) } />
+                onClick={() => {
+                  setJsonInput("");
+                  setShowJsonModal(false);
+                  }} />
               </div>
 
               <textarea

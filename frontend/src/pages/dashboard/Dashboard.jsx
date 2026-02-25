@@ -204,7 +204,7 @@ const Dashboard = () => {
         }
       ]);
 
-      setIsModalOpen(false);
+      setIsProjectModalOpen(false);
       toast.success("Project Created Successfully!");
     } catch (err) {
       console.log(err);
