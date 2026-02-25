@@ -10,7 +10,7 @@ import { useCustomComponents } from "../../../context/CustomComponentsContext";
 import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 
 
-export default function LeftPanel({ components, onEditSavedComponent, onRenameComponent, onChangeIcon, onDeleteComponent, canvasElements, onDeleteCanvasComponent, onSelectComponent,selectedComponentId }) {
+export default function LeftPanel({ components, onEditSavedComponent, onRenameComponent, onChangeIcon, onDeleteComponent, canvasElements, onDeleteCanvasComponent, onSelectComponent,selectedComponentId, setShowAiModel }) {
   const [showJsonModal, setShowJsonModal] = useState(false);
   const [jsonInput, setJsonInput] = useState("");
   const location = useLocation();
@@ -321,7 +321,7 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
 
           {/* AI Integrated */}
           {isComponentEditor && activeTab === "components" && (
-            <button className="json-ai">
+            <button className="json-ai" onClick={() => setShowAiModel(true)}>
               <BotMessageSquare />
               Create with AI
             </button>

@@ -334,7 +334,7 @@ const Dashboard = () => {
 
   const handleCopyLink = async (pageUrl) => {
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/publish/${page.pageUrl}`);
+      await navigator.clipboard.writeText(`${window.location.origin}/publish/${pageUrl}`);
       toast.success("Link Copied Successfully!");
     } catch (error) {
       console.log(error);

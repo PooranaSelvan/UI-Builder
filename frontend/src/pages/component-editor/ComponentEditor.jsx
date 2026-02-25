@@ -14,6 +14,8 @@ import Button from "../../components/Button.jsx";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
 import api from "../../utils/axios.js";
 import { useNavigate } from "react-router-dom";
+import PromptModal from "./components/PromptModal.jsx";
+import axios from "axios";
 
 
 const ComponentEditor = () => {
@@ -27,6 +29,10 @@ const ComponentEditor = () => {
   const [showNameInput, setShowNameInput] = useState(false);
   const [iconSearch, setIconSearch] = useState("");
   const [editingSavedComponentId, setEditingSavedComponentId] = useState(null);
+  const [showAiModel, setShowAiModel] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [generated, setGenerated] = useState(false);
+  const [generatedComponent, setGeneratedComponent] = useState(null);
   let navigate = useNavigate();
 
 
@@ -585,11 +591,49 @@ const ComponentEditor = () => {
       },
     })
   );
-  /* ---------------- Render ---------------- */
 
+
+  const generateComponent = async (prompt) => {
+    if (!prompt) {
+      toast.error("Invalid Prompt!");
+      return;
+    }
+
+    let aiUrl = import.meta.env.VITE_GENERATE_URL;
+    let aiApi = import.meta.env.VITE_AI_API_KEY;
+
+    if (!aiUrl || !aiApi) {
+      toast.error("URL Not Found! Refresh & Try Again!");
+      return;
+    }
+
+    try {
+      setGenerating(true);
+      let res = await axios.post(aiUrl, {
+        prompt,
+        "x-api-key": aiApi
+      },
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      console.log(res);
+      setGeneratedComponent(JSON.parse(res.data.response));
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setGenerating(false);
+      setGenerated(true);
+    }
+  }
+
+
+  /* ---------------- Render ---------------- */
   return (
     <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
-      <div className="component-editor-wrapper">
+      <div className="component-editor-wrapper" style={{ position: "relative" }}>
         <div className="editor-top-bar">
           <Button
             className="secondary-button"
@@ -648,6 +692,7 @@ const ComponentEditor = () => {
             }}
             onSelectComponent={setSelectedComponentId}
             selectedComponentId={selectedComponentId}
+            setShowAiModel={setShowAiModel}
           />
 
           <Canvas
@@ -663,6 +708,12 @@ const ComponentEditor = () => {
             deleteComponent={deleteComponent} />
         </div>
       </div>
+
+
+      {/* Ai Modal */}
+      {showAiModel && (
+        <PromptModal setShowAiModel={setShowAiModel} isGenerated={generated} data={generatedComponent} onSubmit={generateComponent} isGenerating={generating} />
+      )}
 
 
       {/* Component Name Modal */}

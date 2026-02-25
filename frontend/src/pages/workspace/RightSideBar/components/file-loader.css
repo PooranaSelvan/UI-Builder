@@ -1,6 +1,6 @@
 .file-loader {
     width: 32px;
-    height: 32px; /* Ensure perfect circle */
+    height: 32px;
     border-radius: 50%;
     background:
         radial-gradient(farthest-side, var(--primary) 94%, #0000) top/8px 8px no-repeat,

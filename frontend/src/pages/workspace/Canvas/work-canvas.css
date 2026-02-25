@@ -20,6 +20,9 @@
 
 
 /* Component Style */
+.test-component {
+     transition: all 0.1s ease;
+}
 .test-component:hover {
      outline: 2px solid var(--red-300);
      outline-offset: 2px;
