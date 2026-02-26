@@ -8,6 +8,7 @@
     background-color: #FEF2F2;
     padding: 40px 0px;
 }
+
 .template-container {
     display: flex;
     flex-wrap: wrap;
@@ -19,17 +20,21 @@
     width: 100%;
 }
 
-.search-bar{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    padding: 50px 80px;
-    width: 100%;
+.template-header {
+    margin: 50px 0;
+    margin-bottom: 150px;
 }
 
-.search-bar h1 {
+.template-header h1 {
+    font-size: 40px;
+}
+
+.template-header span {
     color: var(--primary);
+    padding: 10px 20px;
+    background-color: var(--red-100);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
 }
 
 @media (max-width: 1100px) {
@@ -45,11 +50,11 @@
         padding: 16px 5%;
     }
 
-    .search-bar{
+    .search-bar {
         flex-direction: column;
     }
 
-    .heading{
+    .heading {
         margin-bottom: 2%;
     }
 }

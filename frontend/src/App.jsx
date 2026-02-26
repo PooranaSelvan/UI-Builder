@@ -99,7 +99,7 @@ function App() {
           <Route path='*' element={<ErrorPage />} />
           <Route path="/signup" element={<SignUp isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />} />
           <Route path='/login' element={<LoginPage isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path='/features' element={<Features />} />
+          <Route path='/features' element={<Features isAuthenticated={isAuthenticated} />} />
           <Route path='/templates' element={<Templates />} />
           <Route path="/workspace/:pageId" element={<Workspace isAuthenticated={isAuthenticated} />} />
           <Route path="/preview" element={<PreviewCanvas />} />

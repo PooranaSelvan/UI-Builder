@@ -2,16 +2,23 @@ import React from 'react';
 import "./features.css";
 import Footer from '../../components/Footer.jsx';
 import Button from '../../components/Button.jsx';
-import { MoveRight, Play, Check } from 'lucide-react';
+import { MoveRight, Play, Check, ArrowUpRight } from 'lucide-react';
 import float from './assets/float.png';
 import publish from './assets/publish.png';
-import connectivity from './assets/connectivity.png';
+import { useNavigate } from 'react-router-dom';
 
-const bottomStyle = {
-  gap: '15px'
-}
 
-const Features = () => {
+const Features = ({ isAuthenticated }) => {
+  let navigate = useNavigate();
+
+  const handleNavigate = () => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    } else {
+      navigate("/login");
+    }
+  }
+
   return (
     <>
       <div className="feature-container">
@@ -23,7 +30,7 @@ const Features = () => {
             <p>Design and launch websites at the speed of thought. A minimalist canvas for maximum productivity.</p>
           </div>
           <div className="heading-btn">
-            <Button className='build-btn'>Start Building <MoveRight size={20} /></Button>
+            <Button onClick={handleNavigate} className='build-btn'>Start Building <MoveRight size={20} /></Button>
             <Button className='demo-btn'><Play size={20} color='red' /> View Demo</Button>
           </div>
         </div>
@@ -65,7 +72,7 @@ const Features = () => {
                 <span id='publish-dot'></span>
                 <p>Visual Builder</p>
               </span>
-              <h2>Publish instantly,<span>no deploys.</span></h2>
+              <h2>Publish instantly</h2>
               <p>Turn your work into live with a single click. No waiting - your updates are live as you publish.</p>
             </div>
             <div className="feature-image publish-image">
@@ -75,20 +82,19 @@ const Features = () => {
             </div>
           </div>
         </div>
-        <div className="feature-bottom">
-          <div className="bottom-text">
-            <h1>Ready to build your Next Tool?</h1>
-          </div>
-          <div className="heading-btn">
-            <Button className='build-btn' style={bottomStyle}>
-              Get Started
-              <MoveRight size={20} />
-            </Button>
-            <Button className='demo-btn'>
-              <Play size={20} color='red' />
-              View Demo
+        {/* Get Started */}
+        <div className="get-started">
+          <div className="starter-card">
+            <h1>
+              Ready to build your
+              <span className='starter-gradient'>Next Tool?</span>
+            </h1>
+            <p>Join thousands who are building faster with Sirpam.</p>
+            <Button style={{ display: "flex", alignItems: "center", gap: "10px", padding: "15px 30px", fontSize: "18px", color: "var(--primary)", backgroundColor: "white", borderRadius: "12px", fontWeight: "600" }} onClick={handleNavigate}>
+              Get Started <ArrowUpRight size={25} />
             </Button>
           </div>
+          <div className="starter-pattern"></div>
         </div>
       </div>
       <Footer></Footer>

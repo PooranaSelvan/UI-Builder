@@ -550,11 +550,6 @@ const Dashboard = () => {
                 Convert your ideas into Projects
               </p>
             </div>
-
-            <div className="search-box">
-              <Search size={16} />
-              <input placeholder="Search..." />
-            </div>
           </div>
 
           <div className="card-grid" id="cards-grid">
@@ -572,6 +567,7 @@ const Dashboard = () => {
               <FolderCard
                 app={{ ...app, isTemplateMode: !!template }}
                 index={index}
+                key={app.id}
                 activeMenu={activeMenu}
                 setActiveMenu={setActiveMenu}
                 setSelectedApp={setSelectedApp}
@@ -669,11 +665,6 @@ const Dashboard = () => {
             <span className="breadcrumb-current">
               {selectedApp.name}
             </span>
-          </div>
-
-          <div className="search-box">
-            <Search size={16} />
-            <input placeholder="Search..." />
           </div>
         </div>
 
