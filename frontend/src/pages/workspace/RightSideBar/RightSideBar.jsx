@@ -115,7 +115,17 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
             setLoadingApi(true);
 
             const res = await fetch(apiUrl);
-            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error("API request failed");
+            }
+
+            let data;
+            try {
+                data = await res.json();
+            } catch {
+                throw new Error("Invalid JSON response");
+            }
             const formattedText = JSON.stringify(data, null, 2);
 
             const newApi = {
@@ -211,9 +221,14 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     }, [selectedComponent?.id, selectedComponent?.defaultProps?.events]);
 
     const handleFiles = async (fileList) => {
+        if (!fileList || fileList.length === 0) return;
+
         const file = fileList[0];
 
-        if (!file) return;
+        if (!file.text) {
+            toast.error("Unsupported file type");
+            return;
+        }
 
         const text = await file.text();
 
@@ -268,6 +283,9 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
     useEffect(() => {
         const existing = selectedComponent?.defaultProps?.mediaquery?.style;
+        if (existing) {
+            return;
+        }
 
         const baseClass = selectedComponent?.baseClassName ?? "";
         const userClassName = selectedComponent?.defaultProps?.className ?? "";
@@ -1185,7 +1203,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                         onChange={(e) => {
                                                             updateComponent(selectedComponent.id, (node) => {
                                                                 node.defaultProps ??= {};
-                                                                node.defaultProps.style ?? - {};
+                                                                node.defaultProps.style ??= {};
                                                                 node.defaultProps.style.backgroundPosition = e.target.value;
                                                             })
                                                         }}
@@ -1257,7 +1275,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                         onChange={(e) => {
                                                             updateComponent(selectedComponent.id, (node) => {
                                                                 node.defaultProps ??= {};
-                                                                node.defaultProps.style ?? - {};
+                                                                node.defaultProps.style ??= {};
                                                                 node.defaultProps.style.backgroundClip = e.target.value;
                                                             })
                                                         }}
@@ -1490,7 +1508,6 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="custom-css">
                                         <div>
                                             <label>media query</label>
-                                            {console.log("userClass:", userClass)}
                                             <CodeMirror
                                                 key={userClass ? "editable" : "readonly"}
                                                 editable={!!userClass}
@@ -1501,7 +1518,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                     readonlyClickHandler,
                                                     EditorState.readOnly.of(!userClass)
                                                 ]}
-                                                value={selectedComponent?.defaultProps?.mediaquery.style || ""}
+                                                value={selectedComponent?.defaultProps?.mediaquery.style ?? ""}
                                                 onChange={(value) => {
 
                                                     if (!userClass) {
@@ -1961,12 +1978,20 @@ const SelectOption = ({ selectedComponent, updateComponent }) => {
 
     const updateOption = (index, value) => {
         updateComponent(selectedComponent.id, (node) => {
+            node.children ??= [];
+
+            if (!node.children[index]) return;
+
             node.children[index].content = value;
         })
     }
 
     const deleteOption = (index) => {
         updateComponent(selectedComponent.id, (node) => {
+            node.children ??= [];
+
+            if (!node.children[index]) return;
+
             node.children.splice(index, 1);
         });
     }
