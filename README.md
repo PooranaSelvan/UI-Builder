@@ -1,7 +1,9 @@
-# 🎨 Sirpam UI Builder
+# Sirpam UI Builder
 
 **Sirpam UI Builder** is a powerful **low-code visual development platform** that allows users to create, customize, and manage user interfaces using an intuitive **drag-and-drop builder**.  
 It helps teams move faster from idea to implementation by reducing manual UI coding while maintaining full control over layout, styles, and data.
+
+<img width="1917" height="1092" alt="image" src="https://github.com/user-attachments/assets/bbf4f24d-a1d0-48e0-a536-8005a21a4b9f" />
 
 ---
 
@@ -41,18 +43,22 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
 
 ### Steps
 1. User clicks **Create New Project**
-2. System opens the **Project Creation Dialog**
+2. Application opens the **Project Creation Dialog**
 3. User enters:
    - Project Name  
    - Project Description
 4. User is redirected to the **Page Creation Screen**
 5. User creates a page using the page dialog
-6. System initializes a **blank canvas** with default settings
+6. Application initializes a **blank canvas** with default settings
 7. User sees:
    - Empty canvas in the center  
    - **Left Sidebar** with:
      - Components Tab  
-     - **Layers Tab** for hierarchy management  
+     - **Layers Tab** for hierarchy management
+
+<img width="1920" height="1090" alt="image" src="https://github.com/user-attachments/assets/ba08c968-6077-4fcf-a7d8-c45b3be68bea" />
+<img width="1920" height="1090" alt="image" src="https://github.com/user-attachments/assets/e609df59-56b5-40cf-bd10-6f6611608187" />
+
 
 ---
 
@@ -68,9 +74,9 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
    - Footer  
    - Inputs, Containers, etc.
 3. User drags a component from the sidebar to the canvas
-4. System shows a **placement preview**
+4. Application shows a **placement preview**
 5. User drops the component
-6. System renders the component on the canvas
+6. Application renders the component on the canvas
 
 ---
 
@@ -80,12 +86,15 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
 
 ### Steps
 1. User opens the **Layers tab** in the left sidebar
-2. System displays a tree view of all components on the canvas
+2. Application displays a tree view of all components on the canvas
 3. User can:
    - Select components precisely  
    - Navigate deeply nested layouts
 4. Selecting a layer highlights the component on the canvas
 5. This ensures **clean structure and accurate selection**
+
+<img width="1920" height="1090" alt="image" src="https://github.com/user-attachments/assets/7156bfca-afad-4ee5-954b-81f74646c1c4" />
+
 
 ---
 
@@ -95,7 +104,7 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
 
 ### Steps
 1. User selects a component on the canvas
-2. System opens the **Properties Panel** on the right sidebar
+2. Application opens the **Properties Panel** on the right sidebar
 3. User views available properties :
    - Text  
    - Color  
@@ -107,6 +116,8 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
    - Color pickers  
    - Dropdowns
 5. Component updates **in real-time**
+
+<img width="371" height="1014" alt="image" src="https://github.com/user-attachments/assets/6928634a-0a4e-4dba-8000-e53d6b014291" />
 
 ---
 
@@ -124,7 +135,7 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
    - Alignment  
    - Direction
 3. User places child components inside the container
-4. System auto-arranges children based on layout rules
+4. Application auto-arranges children based on layout rules
 5. User reorders children via drag and drop
 6. User adjusts:
    - Padding  
@@ -144,7 +155,9 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
    - API  
    - Local Data
 4. User maps fields to component properties
-5. System shows a **preview** with sample data
+5. Application shows a **preview** with sample data
+
+<img width="371" height="1014" alt="image" src="https://github.com/user-attachments/assets/5b145629-cd96-4469-92a9-5c62bb4b2866" />
 
 ---
 
@@ -159,7 +172,7 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
    - Avatars  
    - Inputs
 3. User designs the component on the canvas
-4. System saves it as a **Custom Component**
+4. Application saves it as a **Custom Component**
 5. The component appears under **Custom Components** in the left sidebar
 
 ### Steps (AI-powered)
@@ -171,6 +184,8 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
 5. User can further edit, style, and reuse the generated component
 6. Component is saved under **Custom Components**
 
+<img width="307" height="1014" alt="image" src="https://github.com/user-attachments/assets/f8194405-cc08-4893-bb9f-778fed648cbb" />
+
 ---
 
 ## 🌐 Flow 8: Publishing a Page
@@ -179,12 +194,14 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
 
 ### Steps
 1. User clicks the **Publish** button
-2. System generates a public URL
+2. Application generates a public URL
 3. Page becomes accessible online
 4. User can:
    - Share the link with others  
    - Preview the live version  
    - Use it for demos or production access
+
+<img width="1521" height="1014" alt="image" src="https://github.com/user-attachments/assets/7cc20f80-2b35-4ced-b140-60229be771a5" />
 
 ---
 
@@ -194,13 +211,15 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
 
 ### Steps
 1. User clicks the **Export** button
-2. System opens the export options dialog
+2. Application opens the export options dialog
 3. User selects an export format:
    - HTML  
    - JSON
-4. System generates the output files
+4. Application generates the output files
 5. Download dialog appears
 6. User downloads the generated files
+
+<img width="1521" height="1014" alt="image" src="https://github.com/user-attachments/assets/ea085e04-dd28-44a3-bea4-ec77d24532d7" />
 
 ---
 
@@ -210,7 +229,7 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
 - Accelerates design-to-code workflow  
 - Ideal for developers, designers, and product teams
 - Enables clean structure via layers and hierarchy  
-- Scales from simple layouts to complex UI systems  
+- Scales from simple layouts to complex UI Applications  
 
 ---
 

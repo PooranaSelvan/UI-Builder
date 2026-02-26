@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragOverlay } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import LeftPanel from "./LeftSideBar/LeftPanel";
@@ -28,7 +28,7 @@ const Workspace = ({ isAuthenticated }) => {
   const [loading, setLoading] = useState(true);
   let navigate = useNavigate();
   const [deleteTargetId, setDeleteTargetId] = useState(null);
-
+  const fullScreenElement = useRef(null);
 
 
   useEffect(() => {
@@ -512,21 +512,38 @@ const Workspace = ({ isAuthenticated }) => {
   );
 
 
+  const handleFullScreen = async () => {
+    if (!document.fullscreenElement) {
+      const el = fullScreenElement.current;
+
+      console.log(el);
+
+      if (el.requestFullscreen) {
+        el.requestFullscreen();
+      } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+      }
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+
   if (loading) {
     return (
-      <div style={{ display: "flex", flexWrap : "wrap", alignItems : "center", justifyContent : "center", height: "93vh", overflow: "hidden", position: "relative" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", height: "93vh", overflow: "hidden", position: "relative" }}>
         <Loading />
       </div>
     );
   }
 
   return (
-    <>
+    <div ref={fullScreenElement}>
       <DndContext onDragEnd={(e) => { handleDragEnd(e) }} sensors={sensors}>
         <div style={{ display: "flex", height: "93vh", overflow: "hidden", position: "relative" }}>
           <div className="workspace-topbar" id="topbar-tour">
             <div className="workspace-topbar-screens">
-              <Button style={{ background: "transparent" }} className="workspace-topbar-screen-btn">
+              <Button style={{ background: "transparent" }} className="workspace-topbar-screen-btn" onClick={handleFullScreen}>
                 <Fullscreen />
               </Button>
             </div>
@@ -590,7 +607,7 @@ const Workspace = ({ isAuthenticated }) => {
         <DragOverlay dropAnimation={{ duration: 120 }} />
         {/* <LinkModal /> */}
       </DndContext >
-    </>
+    </div>
   );
 };
 

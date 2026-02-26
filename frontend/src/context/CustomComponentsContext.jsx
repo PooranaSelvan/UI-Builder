@@ -61,7 +61,7 @@ export const CustomComponentsProvider = ({ children, user }) => {
       setCustomComponents(prev => prev.filter(c => c._id !== componentId));
     } catch (err) {
       console.error(err);
-      toast.error("Failed to delete component");
+      toast.error("Failed to delete component", {id : "delete-custom"});
     }
   };
 
@@ -92,7 +92,7 @@ export const CustomComponentsProvider = ({ children, user }) => {
 
     } catch (error) {
       console.error("Update failed:", error.response?.data || error.message);
-      toast.error("Failed to update component");
+      toast.error("Failed to update component", {id : "update-custom"});
       return false;
     }
   };

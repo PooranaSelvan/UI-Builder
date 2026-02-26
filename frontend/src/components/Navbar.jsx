@@ -34,7 +34,7 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, user }) => {
       if (localStorage.getItem("previewComponents")) {
         localStorage.removeItem("previewComponents");
       }
-      toast.success(res.data.message);
+      toast.success(res.data.message, { id: res.data.message });
       setIsAuthenticated(false);
       navigate("/");
     } catch (err) {

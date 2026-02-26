@@ -5,11 +5,11 @@ import { Eye, ExternalLink } from 'lucide-react'
 import Button from '../../components/Button.jsx'
 import { Link } from 'react-router-dom'
 
-const TemplateCard = ({ name, description, pageId, onSelect }) => {
+const TemplateCard = ({ name, description, thumbnail, pageId, onSelect }) => {
     return (
         <div className="template-card">
             <div className="image-part">
-                <img src={sales} alt="template" className='template-img' />
+                <img src={thumbnail} alt="template" className='template-img' />
             </div>
             <div className="template-content">
                 <div className="content-part">

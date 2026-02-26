@@ -25,7 +25,7 @@ const SignUp = ({ isAuthenticated, setIsAuthenticated }) => {
 
   const handleNormalSignUp = async () => {
     if (!name || !email || !password || !cPassword) {
-      toast.error("All Fields are Required!");
+      toast.error("All Fields are Required!", {id : "all-need"});
       return;
     }
     if (password !== cPassword) {

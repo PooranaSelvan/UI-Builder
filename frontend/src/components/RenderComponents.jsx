@@ -145,10 +145,12 @@ const RenderComponents = ({ children }) => {
      const renderElements = (elements) => {
 
           let ele = elements.map((element, index) => {
-               const { id, tag, content, defaultProps = {}, children = [] } = element;
-               const { events, style: rawStyle = {}, fileId, ...rest } = defaultProps;
+               console.log(element);
+               const { id, tag, content, defaultProps = {}, children = [], baseClassName } = element;
+               const { events, style: rawStyle = {}, mediaquery, ...rest } = defaultProps;
                const { res } = createHandlers(events, rawStyle, id);
                let elementStyle = { ...rawStyle };
+               let mediaQuery = mediaquery?.style || "";
 
                if (hoveredIds[id] && events?.style) {
                     if (events.style.hoverColor) {
@@ -166,16 +168,30 @@ const RenderComponents = ({ children }) => {
                     elementStyle.display = "none";
                }
 
-               const props = { ...rest, ...res, id, style: elementStyle, className: removeClass(rest.className) || "" };
+               let orginalClassName = removeClass(rest.className) || "";
+
+               const props = { ...rest, ...res, id, style: elementStyle, className: orginalClassName };
                const key = id || `${tag}-${index}`;
 
-               if (typeof tag === "string" && VOID_TAGS.has(tag)) {
-                    return React.createElement(tag, { key, ...props });
+               // let sample = removeClass(Array.from(new Set([...orginalClassName.split(" "), baseClassName && baseClassName.split(" ")].flat(Infinity))).join(" ")) || "";
+
+               if (VOID_TAGS.has(tag)) {
+                    return (
+                         <>
+                              {mediaQuery && <style>{mediaQuery}</style>}
+                              {React.createElement(tag, { key, ...props })}
+                         </>
+                    );
                }
 
                const textContent = id in dynamicText ? dynamicText[id] : content;
 
-               return React.createElement(tag, { key, ...props }, children.length > 0 ? renderElements(children) : textContent);
+               return (
+                    <>
+                         {mediaQuery && <style>{mediaQuery}</style>}
+                         {React.createElement(tag, {key, ...props }, children.length > 0 ? renderElements(children) : textContent)}
+                    </>
+               );
           });
 
           return ele;

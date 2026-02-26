@@ -43,7 +43,7 @@ const LoginPage = ({ isAuthenticated, setIsAuthenticated }) => {
 
     const handleNormalLogin = async () => {
         if (!email || !password) {
-            toast.error("Name & Email are Required!");
+            toast.error("Name & Email are Required!", {id : "all-need"});
             return;
         }
 

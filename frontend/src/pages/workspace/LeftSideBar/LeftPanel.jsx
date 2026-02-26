@@ -73,12 +73,12 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
       const raw = JSON.parse(jsonInput);
 
       if (!raw.label || !raw.tag || raw.rank === undefined) {
-        toast.error("Required fields: label, tag, rank");
+        toast.error("Required fields: label, tag, rank", {id : "all-need"});
         return;
       }
 
       if (typeof raw.rank !== "number") {
-        toast.error("rank must be a number");
+        toast.error("rank must be a number", {id : "all-need"});
         return;
       }
 
@@ -100,7 +100,7 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
       setShowJsonModal(false);
 
     } catch (err) {
-      toast.error("Invalid JSON format!");
+      toast.error("Invalid JSON format!", {id : "all-need"});
     }
   };
 

@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../utils/axios';
 import toast from 'react-hot-toast';
 import Loading from "../../components/Loading";
+import Button from '../../components/Button';
+import { ArrowUpRight } from 'lucide-react';
 
 const Templates = () => {
   let navigate = useNavigate();
@@ -31,7 +33,7 @@ const Templates = () => {
 
   if (loading) {
     return (
-      <div style={{height : "90vh", display : "flex", flexWrap : "wrap", alignItems : "center", justifyContent : "center"}}>
+      <div style={{ height: "90vh", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center" }}>
         <Loading />
       </div>
     );
@@ -40,13 +42,13 @@ const Templates = () => {
   return (
     <>
       <div className='template-wrapper'>
-        <div className="search-bar">
-          <h1>Templates</h1>
+        <div className="template-header">
+          <h1>Choose a template to <span>Start Building</span></h1>
         </div>
         <div className="template-container">
           {
             templates.map(ele => (
-              <TemplateCard key={ele.templateId} name={ele.templateName} description={ele.description} pageId={ele.templateId} onSelect={() => navigate("/dashboard", { state: { template: ele } })}/>
+              <TemplateCard key={ele.templateId} name={ele.templateName} thumbnail={ele.thumbnail} description={ele.description} pageId={ele.templateId} onSelect={() => navigate("/dashboard", { state: { template: ele } })} />
             ))
           }
         </div>
