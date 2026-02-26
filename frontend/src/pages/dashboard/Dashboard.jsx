@@ -12,6 +12,7 @@ import DeleteModal from "./components/DeleteModal.jsx";
 import UpdateForm from "./components/UpdateForm.jsx";
 import { generateHTML } from "../workspace/utils/exportHTML.js";
 import { html as beautifyHtml } from "js-beautify";
+import { v4 as uuidv4 } from "uuid";
 
 const Dashboard = () => {
   let navigate = useNavigate();
@@ -35,6 +36,14 @@ const Dashboard = () => {
   const [templateMode, setTemplateMode] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isPageModalOpen, setIsPageModalOpen] = useState(false);
+
+  const regenerateIds = (items) => {
+    return items.map(item => ({
+      ...item,
+      id: `${item.id}-${uuidv4()}`,
+      children: item.children ? regenerateIds(item.children) : []
+    }));
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -482,12 +491,13 @@ const Dashboard = () => {
 
     try {
       setLoading(true);
+      const templateData = regenerateIds(template.data || []);
       const res = await api.post("/builder/pages/", {
         projectId: project.id,
         pageName: name,
         description,
         pageUrl: url,
-        data: template.data || []
+        data: templateData
       });
 
       const newPage = {
@@ -496,7 +506,7 @@ const Dashboard = () => {
         name,
         description,
         pageUrl: url,
-        data: template.data || [],
+        data: templateData,
         isPublished: false,
         modified: new Date().toLocaleString()
       };
