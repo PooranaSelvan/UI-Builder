@@ -198,12 +198,12 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     const readonlyClickHandler = EditorView.domEventHandlers({
         focus: () => {
             if (!userClass) {
-                toast.error("Enter ClassName first!", {id : "all-need"});
+                toast.error("Enter ClassName first!", { id: "all-need" });
             }
         },
         mousedown: () => {
             if (!userClass) {
-                toast.error("Enter ClassName first!", {id : "all-need"});
+                toast.error("Enter ClassName first!", { id: "all-need" });
             }
         }
     });
@@ -315,6 +315,8 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
         );
     }
 
+    console.log(selectedComponent);
+
     return (
         <aside className='right-panel' onMouseOver={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
             <div className="right-side-main-bar" id='right-sidebar-tour'>
@@ -344,20 +346,24 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             }} disabled />
 
                                             <label>ClassName</label>
+                                            <label>ClassName</label>
                                             <input
                                                 type="text"
-                                                placeholder='Enter the class name'
-                                                value={selectedComponent?.defaultProps?.className?.replace(selectedComponent?.baseClassName || "", "").trim() || ""}
+                                                placeholder="Enter the class name"
+                                                value={
+                                                    selectedComponent?.defaultProps?.className
+                                                        ?.split(" ")
+                                                        .filter(cls => cls !== "test-component")
+                                                        .join(" ") || ""
+                                                }
                                                 onChange={(e) => {
                                                     const userClass = e.target.value;
 
                                                     updateComponent(selectedComponent.id, (node) => {
                                                         node.defaultProps ??= {};
 
-                                                        const base = node.baseClassName || "";
-
                                                         node.defaultProps.className =
-                                                            `${base} ${userClass}`.trim();
+                                                            `${userClass} test-component`.trim();
                                                     });
                                                 }}
                                             />
@@ -1522,7 +1528,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 onChange={(value) => {
 
                                                     if (!userClass) {
-                                                        toast.error("ClassName is Required!", {id : "all-need"});
+                                                        toast.error("ClassName is Required!", { id: "all-need" });
                                                         return;
                                                     }
 
