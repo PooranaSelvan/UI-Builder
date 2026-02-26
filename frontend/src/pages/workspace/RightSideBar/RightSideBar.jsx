@@ -198,12 +198,12 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     const readonlyClickHandler = EditorView.domEventHandlers({
         focus: () => {
             if (!userClass) {
-                toast.error("Enter ClassName first!");
+                toast.error("Enter ClassName first!", {id : "all-need"});
             }
         },
         mousedown: () => {
             if (!userClass) {
-                toast.error("Enter ClassName first!");
+                toast.error("Enter ClassName first!", {id : "all-need"});
             }
         }
     });
@@ -1522,7 +1522,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 onChange={(value) => {
 
                                                     if (!userClass) {
-                                                        toast.error("ClassName is Required!");
+                                                        toast.error("ClassName is Required!", {id : "all-need"});
                                                         return;
                                                     }
 

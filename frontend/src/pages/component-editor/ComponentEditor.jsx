@@ -167,7 +167,7 @@ const ComponentEditor = () => {
       const componentData = active.data.current.component;
 
       if (componentData.rank === 4) {
-        toast.error("Basic elements must be inside a layout", toastErrorStyle);
+        toast.error("Basic elements must be inside a layout", { ...toastErrorStyle, id: "inside-layout" });
         return;
       }
 
@@ -200,7 +200,7 @@ const ComponentEditor = () => {
       if (!componentData) return;
 
       if (componentData.rank === 4) {
-        toast.error("Basic elements must be inside a container", toastErrorStyle);
+        toast.error("Basic elements must be inside a container", { ...toastErrorStyle, id: "inside-layout" });
         return;
       }
 
@@ -222,10 +222,7 @@ const ComponentEditor = () => {
         over.data.current?.rank &&
         componentData.rank < over.data.current.rank
       ) {
-        toast.error(
-          "You cannot place this component inside a smaller component",
-          toastErrorStyle
-        );
+        toast.error("You cannot place this component inside a smaller component", { ...toastErrorStyle, id: "inside-layout" });
         return;
       }
 
@@ -247,7 +244,7 @@ const ComponentEditor = () => {
     if (!isFromSidebar && !isChild && !isOverChild && over.id !== "canvas") {
       const activeComponent = findComponentById(components, active.id);
       if (activeComponent?.rank === 4) {
-        toast.error("Basic elements must stay inside a container", toastErrorStyle);
+        toast.error("Basic elements must stay inside a container", { ...toastErrorStyle, id: "inside-layout" });
         return;
       }
       setComponents(prev => {
@@ -271,10 +268,7 @@ const ComponentEditor = () => {
         over.data.current?.rank &&
         componentData.rank < over.data.current.rank
       ) {
-        toast.error(
-          "You cannot place this component inside a smaller component",
-          toastErrorStyle
-        );
+        toast.error("You cannot place this component inside a smaller component", { ...toastErrorStyle, id: "inside-layout" });
         return;
       }
 
@@ -335,7 +329,7 @@ const ComponentEditor = () => {
           setEditingSavedComponentId(null);
         }
 
-        toast.success("Component deleted!");
+        toast.success("Component deleted!", { id: "confirm-delete" });
       } else {
         const cloned = cloneComponents(components);
 
@@ -359,7 +353,7 @@ const ComponentEditor = () => {
       }
 
     } catch (err) {
-      toast.error("Delete failed");
+      toast.error("Delete failed", { id: "confirm-delete-err" });
     }
 
     setDeleteTargetId(null);
@@ -417,7 +411,7 @@ const ComponentEditor = () => {
   //save component as in the canvas
   const saveCanvasAsComponent = async () => {
     if (!components.length) {
-      toast.error("Canvas is empty");
+      toast.error("Canvas is empty", { id: "empty-canvas" });
       return;
     }
 
@@ -429,7 +423,7 @@ const ComponentEditor = () => {
       if (editingSavedComponentId) {
         await updateCustomComponent(editingSavedComponentId, structureOnlyPayload);
 
-        toast.success("Component Updated Successfully!");
+        toast.success("Component Updated Successfully!", { id: "update-custom" });
         setHasUnsavedChanges(false);
         setEditingSavedComponentId(null);
         setComponents([]);
@@ -441,7 +435,7 @@ const ComponentEditor = () => {
       setShowNameInput(true);
 
     } catch (error) {
-      toast.error("Failed to save component");
+      toast.error("Failed to save component", { id: "failed-save" });
     }
   };
 
@@ -505,7 +499,7 @@ const ComponentEditor = () => {
         );
         setEditingComponent(null);
       } catch (err) {
-        toast.error("Rename failed");
+        toast.error("Rename failed", { id: "rename-failed" });
       }
     } else {
       setShowIconPicker(true);
@@ -537,7 +531,7 @@ const ComponentEditor = () => {
         setEditingComponent(null);
         setShowIconPicker(false);
       } catch (err) {
-        toast.error("Icon update failed");
+        toast.error("Icon update failed", { id: "icon-fail" });
       }
     } else {
       const componentPayload = {
@@ -551,14 +545,14 @@ const ComponentEditor = () => {
         setShowIconPicker(false);
         if (!success) return;
 
-        toast.success("Custom Component Saved!");
+        toast.success("Custom Component Saved!", { id: "custom-save" });
         setComponents([]);
         setSelectedComponentId(null);
         setCustomComponentName("");
         setCustomIconName("Square");
       } catch (error) {
         setShowIconPicker(false);
-        toast.error("Failed to save component");
+        toast.error("Failed to save component", { id: "failed-save" });
       }
     }
   };
@@ -595,7 +589,7 @@ const ComponentEditor = () => {
 
   const generateComponent = async (prompt) => {
     if (!prompt) {
-      toast.error("Invalid Prompt!");
+      toast.error("Invalid Prompt!", { id: "prompt" });
       return;
     }
 
@@ -603,7 +597,7 @@ const ComponentEditor = () => {
     let aiApi = import.meta.env.VITE_AI_API_KEY;
 
     if (!aiUrl || !aiApi) {
-      toast.error("URL Not Found! Refresh & Try Again!");
+      toast.error("URL Not Found! Refresh & Try Again!", { id: "error-prompt" });
       return;
     }
 
@@ -613,11 +607,11 @@ const ComponentEditor = () => {
         prompt,
         "x-api-key": aiApi
       },
-      {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
 
       console.log(res);
       setGeneratedComponent(JSON.parse(res.data.response));
@@ -646,7 +640,7 @@ const ComponentEditor = () => {
             }}
             onClick={() => {
               if (components.length === 0) {
-                toast.error("There is no component to preview!", toastErrorStyle);
+                toast.error("There is no component to preview!", { ...toastErrorStyle, id: "no-preview" });
                 return;
               }
 
@@ -676,9 +670,9 @@ const ComponentEditor = () => {
             onAddJsonComponent={async (newComp) => {
               try {
                 await addCustomComponent(newComp);
-                toast.success("JSON component added!");
+                toast.success("JSON component added!", { id: "json-added" });
               } catch (err) {
-                toast.error("Failed to add JSON component");
+                toast.error("Failed to add JSON component", { id: "json-added" });
               }
             }}
 

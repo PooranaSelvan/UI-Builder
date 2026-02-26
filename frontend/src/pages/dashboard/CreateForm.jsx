@@ -21,7 +21,7 @@ export default function CreateForm({ isOpen, onClose, title, nameLabel, descript
 
     if (!urlRegex.test(url)) {
       setIsUrlValid(false);
-      toast.error(`"${url}" : is not a valid URL!`);
+      toast.error(`"${url}" : is not a valid URL!`, {id : "url-valid"});
       return;
     }
 
@@ -46,7 +46,7 @@ export default function CreateForm({ isOpen, onClose, title, nameLabel, descript
 
 
     if (!name || !description) {
-      toast.error("All Fields are Required!");
+      toast.error("All Fields are Required!", {id : "all-need"});
       return;
     }
 

@@ -145,6 +145,7 @@ const RenderComponents = ({ children }) => {
      const renderElements = (elements) => {
 
           let ele = elements.map((element, index) => {
+               console.log(element);
                const { id, tag, content, defaultProps = {}, children = [], baseClassName } = element;
                const { events, style: rawStyle = {}, mediaquery, ...rest } = defaultProps;
                const { res } = createHandlers(events, rawStyle, id);

@@ -13,14 +13,12 @@ const PromptModal = ({ setShowAiModel, onSubmit, isGenerating, isGenerated, data
                return;
           }
 
-          console.log(data);
-
           try {
                await navigator.clipboard.writeText(JSON.stringify(data));
-               toast.success("Data Copied Successfully!");
+               toast.success("Data Copied Successfully!", {id : "generate"});
           } catch (error) {
                console.log(error);
-               toast.error("Error Copying Link!");
+               toast.error("Error Copying Link!", {id : "generate"});
           }
      }
 
