@@ -1518,7 +1518,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                     readonlyClickHandler,
                                                     EditorState.readOnly.of(!userClass)
                                                 ]}
-                                                value={selectedComponent?.defaultProps?.mediaquery.style ?? ""}
+                                                value={selectedComponent?.defaultProps?.mediaquery?.style ?? ""}
                                                 onChange={(value) => {
 
                                                     if (!userClass) {
