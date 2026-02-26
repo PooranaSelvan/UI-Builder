@@ -34,6 +34,8 @@ export const components = [
         },
         children: []
       },
+
+      // Navbar
       {
         id: "navbar",
         label: "Navbar",
@@ -152,7 +154,7 @@ export const components = [
                 borderTopRightRadius: "6px",
                 borderBottomLeftRadius: "6px",
                 borderBottomRightRadius: "6px",
-                border: "none",
+                borderWidth: "0px",
                 cursor: "pointer",
                 backgroundColor: "white",
                 color: "red",
@@ -182,7 +184,7 @@ export const components = [
             paddingBottom: "80px",
             paddingLeft: "20px",
             paddingRight: "20px",
-            background: "#ff6b6b",
+            backgroundColor: "#ff6b6b",
             color: "white",
             gap: "20px"
           }
@@ -244,8 +246,11 @@ export const components = [
                     paddingLeft: "30px",
                     paddingRight: "30px",
                     fontSize: "16",
-                    borderRadius: "6px",
-                    border: "none",
+                    borderTopLeftRadius: "6px",
+                    borderTopRightRadius: "6px",
+                    borderBottomLeftRadius: "6px",
+                    borderBottomRightRadius: "6px",
+                    borderWidth: "none",
                     cursor: "pointer",
                     backgroundColor: "#fff",
                     color: "red",
@@ -267,8 +272,13 @@ export const components = [
                     paddingLeft: "30px",
                     paddingRight: "30px",
                     fontSize: "16",
-                    borderRadius: "6px",
-                    border: "2px solid #fff",
+                    borderTopLeftRadius: "6px",
+                    borderTopRightRadius: "6px",
+                    borderBottomLeftRadius: "6px",
+                    borderBottomRightRadius: "6px",
+                    borderWidth: "2px",
+                    borderStyle: "solid",
+                    borderColor: "#fff",
                     cursor: "pointer",
                     backgroundColor: "transparent",
                     color: "#fff",
@@ -299,7 +309,7 @@ export const components = [
             paddingBottom: "100px",
             paddingLeft: "30px",
             paddingRight: "30px",
-            background: "#ff6b6b",
+            backgroundColor: "#ff6b6b",
             color: "#ffffff",
             gap: "30px"
           }
@@ -382,8 +392,11 @@ export const components = [
                 paddingLeft: "36px",
                 paddingRight: "36px",
                 fontSize: "16",
-                borderRadius: "8px",
-                border: "none",
+                borderTopLeftRadius: "8px",
+                borderTopRightRadius: "8px",
+                borderBottomLeftRadius: "8px",
+                borderBottomRightRadius: "8px",
+                borderWidth: "0px",
                 cursor: "pointer",
                 backgroundColor: "#ffffff",
                 color: "#ff6b6b",
@@ -408,7 +421,7 @@ export const components = [
             paddingBottom: "100px",
             paddingLeft: "40px",
             paddingRight: "40px",
-            background: "#ff6b6b",
+            backgroundColor: "#ff6b6b",
             display: "flex",
             justifyContent: "center"
           }
@@ -424,8 +437,7 @@ export const components = [
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
                 gap: "30px",
-                maxWidth: "1100px",
-                width: "100%"
+                width: "1100px"
               }
             },
             children: [
@@ -437,8 +449,14 @@ export const components = [
                   className: "card test-component",
                   style: {
                     background: "#ffffff",
-                    padding: "32px",
-                    borderRadius: "14px",
+                    paddingTop: "32px",
+                    paddingBottom: "32px",
+                    paddingLeft: "32px",
+                    paddingRight: "32px",
+                    borderTopLeftRadius: "14px",
+                    borderTopRightRadius: "14px",
+                    borderBottomLeftRadius: "14px",
+                    borderBottomRightRadius: "14px",
                     display: "flex",
                     flexDirection: "column",
                     gap: "14px",
@@ -486,8 +504,14 @@ export const components = [
                   className: "card test-component",
                   style: {
                     background: "#ffffff",
-                    padding: "32px",
-                    borderRadius: "14px",
+                    paddingTop: "32px",
+                    paddingBottom: "32px",
+                    paddingLeft: "32px",
+                    paddingRight: "32px",
+                    borderTopLeftRadius: "14px",
+                    borderTopRightRadius: "14px",
+                    borderBottomLeftRadius: "14px",
+                    borderBottomRightRadius: "14px",
                     display: "flex",
                     flexDirection: "column",
                     gap: "14px",
@@ -535,8 +559,14 @@ export const components = [
                   className: "card test-component",
                   style: {
                     background: "#ffffff",
-                    padding: "32px",
-                    borderRadius: "14px",
+                    paddingTop: "32px",
+                    paddingBottom: "32px",
+                    paddingLeft: "32px",
+                    paddingRight: "32px",
+                    borderTopLeftRadius: "14px",
+                    borderTopRightRadius: "14px",
+                    borderBottomLeftRadius: "14px",
+                    borderBottomRightRadius: "14px",
                     display: "flex",
                     flexDirection: "column",
                     gap: "14px",
@@ -641,8 +671,6 @@ export const components = [
                   className: "footer-links test-component",
                   style: {
                     listStyle: "none",
-                    padding: 0,
-                    margin: 0,
                     display: "flex",
                     gap: "25px",
                     flexWrap: "wrap"

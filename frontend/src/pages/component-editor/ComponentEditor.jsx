@@ -693,6 +693,7 @@ const ComponentEditor = () => {
             onSelectComponent={setSelectedComponentId}
             selectedComponentId={selectedComponentId}
             setShowAiModel={setShowAiModel}
+            setGenerated={setGenerated}
           />
 
           <Canvas
