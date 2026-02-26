@@ -24,6 +24,9 @@ import WebFont from 'webfontloader';
 import CodeMirror from "@uiw/react-codemirror";
 import { css } from "@codemirror/lang-css";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import { EditorView } from '@uiw/react-codemirror';
+import { EditorState } from '@uiw/react-codemirror';
+import tinycolor from 'tinycolor2'
 import toast from 'react-hot-toast';
 
 /*Used in the rendering of the select tag in the units for height, width */
@@ -94,6 +97,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     const [apiUrl, setApiUrl] = useState("");
     const [loadingApi, setLoadingApi] = useState(false);
     const [eventType, setEventType] = useState("");
+    const userClass =
+        selectedComponent?.defaultProps?.className
+            ?.replace(selectedComponent?.baseClassName || "", "")
+            .trim() || "";
     const display = selectedComponent?.defaultProps?.style?.display ?? "block";
     const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
     const selectedAction = selectedComponent?.defaultProps?.events?.[eventType]?.action ?? "";
@@ -178,6 +185,19 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
     }, [selectedComponent?.id]);
 
+    const readonlyClickHandler = EditorView.domEventHandlers({
+        focus: () => {
+            if (!userClass) {
+                toast.error("Enter ClassName first!");
+            }
+        },
+        mousedown: () => {
+            if (!userClass) {
+                toast.error("Enter ClassName first!");
+            }
+        }
+    });
+
     useEffect(() => {
         const events = selectedComponent?.defaultProps?.events;
 
@@ -188,7 +208,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
         const firstEvent = Object.keys(events)[0];
         setEventType(firstEvent || "");
-    }, [selectedComponent?.id,selectedComponent?.defaultProps?.events]);
+    }, [selectedComponent?.id, selectedComponent?.defaultProps?.events]);
 
     const handleFiles = async (fileList) => {
         const file = fileList[0];
@@ -542,7 +562,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
                                                 <ColorPalette
                                                     value={
-                                                        selectedComponent?.defaultProps?.events?.style?.hoverColor || "#000000"
+                                                        selectedComponent?.defaultProps?.events?.style?.hoverColor ?? "#000000"
                                                     }
                                                     onChange={(color) =>
                                                         updateComponent(selectedComponent.id, (node) => {
@@ -558,7 +578,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
                                                 <ColorPalette
                                                     value={
-                                                        selectedComponent?.defaultProps?.events?.style?.borderColor || "#000000"
+                                                        selectedComponent?.defaultProps?.events?.style?.borderColor ?? "#000000"
                                                     }
                                                     onChange={(color) =>
                                                         updateComponent(selectedComponent.id, (node) => {
@@ -574,7 +594,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
                                                 <ColorPalette
                                                     value={
-                                                        selectedComponent?.defaultProps?.events?.style?.color || "#000000"
+                                                        selectedComponent?.defaultProps?.events?.style?.color ?? "#000000"
                                                     }
                                                     onChange={(color) =>
                                                         updateComponent(selectedComponent.id, (node) => {
@@ -1310,7 +1330,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <div className="color">
                                                 <label htmlFor="" id='text-color'>Text color</label>
                                                 <ColorPalette
-                                                    value={selectedComponent.defaultProps?.style?.color || "#000000"}
+                                                    value={selectedComponent.defaultProps?.style?.color ?? "#000000"}
                                                     onChange={(v) =>
                                                         updateComponent(selectedComponent.id, (node) => {
                                                             node.defaultProps ??= {};
@@ -1423,16 +1443,21 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="color">
                                         <label htmlFor="" id='text-color'>Shadow color</label>
                                         <ColorPalette
-                                            value={selectedComponent.defaultProps?.style?.boxShadowColor || "#000000"}
+                                            value={selectedComponent.defaultProps?.style?.boxShadowColor ?? "#000000"}
                                             onChange={(v) =>
                                                 updateComponent(selectedComponent.id, (node) => {
                                                     node.defaultProps ??= {};
                                                     node.defaultProps.style ??= {};
-                                                    const shadow = node.defaultProps.style.boxShadow || "0px 4px 10px #000";
-                                                    const parts = shadow.split(" ");
-                                                    parts[parts.length - 1] = v;
 
-                                                    node.defaultProps.style.boxShadow = parts.join(" ");
+                                                    const x = node.defaultProps.style.boxShadowX ?? 0;
+                                                    const y = node.defaultProps.style.boxShadowY ?? 0;
+                                                    const blur = node.defaultProps.style.boxShadowBlur ?? 0;
+                                                    const spread = node.defaultProps.style.boxShadowSpread ?? 0;
+
+                                                    node.defaultProps.style.boxShadowColor = v;
+
+                                                    node.defaultProps.style.boxShadow =
+                                                        `${x}px ${y}px ${blur}px ${spread}px ${v}`;
                                                 })
                                             }
                                         />
@@ -1465,16 +1490,19 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     <div className="custom-css">
                                         <div>
                                             <label>media query</label>
+                                            {console.log("userClass:", userClass)}
                                             <CodeMirror
+                                                key={userClass ? "editable" : "readonly"}
+                                                editable={!!userClass}
                                                 height="300px"
                                                 theme={vscodeDark}
-                                                extensions={[css()]}
-                                                value={selectedComponent?.defaultProps?.mediaquery?.style}
+                                                extensions={[
+                                                    css(),
+                                                    readonlyClickHandler,
+                                                    EditorState.readOnly.of(!userClass)
+                                                ]}
+                                                value={selectedComponent?.defaultProps?.mediaquery.style || ""}
                                                 onChange={(value) => {
-                                                    const userClass =
-                                                        selectedComponent?.defaultProps?.className
-                                                            ?.replace(selectedComponent?.baseClassName || "", "")
-                                                            .trim() || "";
 
                                                     if (!userClass) {
                                                         toast.error("ClassName is Required!");
@@ -1631,20 +1659,24 @@ const FourSideInput = ({ label, values = [0, 0, 0, 0], names, onChange }) => {
     );
 };
 
-const ColorPalette = ({ value, onChange }) => {
+const ColorPalette = ({ value = "", onChange }) => {
+    const hexValue = tinycolor(value).isValid()
+        ? tinycolor(value).toHexString()
+        : "#000000";
     return (
         <div className="color-pallette">
             <input
                 type="color"
-                value={value}
+                value={hexValue}
                 onChange={(e) => onChange(e.target.value)}
             />
+
             <div className="color-box">
                 <input
                     className="color-input"
                     type="text"
-                    value={value}
-                    min={0}
+                    value={value ?? ""}
+                    placeholder="#fff, rgb(255,0,0), rgba(...)"
                     onChange={(e) => onChange(e.target.value)}
                 />
             </div>
