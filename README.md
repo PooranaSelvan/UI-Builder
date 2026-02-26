@@ -1,7 +1,9 @@
-# 🎨 Sirpam UI Builder
+# Sirpam UI Builder
 
 **Sirpam UI Builder** is a powerful **low-code visual development platform** that allows users to create, customize, and manage user interfaces using an intuitive **drag-and-drop builder**.  
 It helps teams move faster from idea to implementation by reducing manual UI coding while maintaining full control over layout, styles, and data.
+
+<img width="1917" height="1092" alt="image" src="https://github.com/user-attachments/assets/bbf4f24d-a1d0-48e0-a536-8005a21a4b9f" />
 
 ---
 
@@ -52,7 +54,11 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
    - Empty canvas in the center  
    - **Left Sidebar** with:
      - Components Tab  
-     - **Layers Tab** for hierarchy management  
+     - **Layers Tab** for hierarchy management
+
+<img width="1920" height="1090" alt="image" src="https://github.com/user-attachments/assets/fc6235c5-fc05-4af8-bb11-0d2bbcaeb65b" />
+<img width="1920" height="1090" alt="image" src="https://github.com/user-attachments/assets/e609df59-56b5-40cf-bd10-6f6611608187" />
+
 
 ---
 
@@ -87,6 +93,9 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
 4. Selecting a layer highlights the component on the canvas
 5. This ensures **clean structure and accurate selection**
 
+<img width="1920" height="1090" alt="image" src="https://github.com/user-attachments/assets/9fc252ee-636c-485f-898c-6d862f9a526f" />
+
+
 ---
 
 ## 🎛 Flow 4: Configuring Component Properties
@@ -107,6 +116,8 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
    - Color pickers  
    - Dropdowns
 5. Component updates **in real-time**
+
+<img width="371" height="1014" alt="image" src="https://github.com/user-attachments/assets/6928634a-0a4e-4dba-8000-e53d6b014291" />
 
 ---
 
@@ -146,6 +157,8 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
 4. User maps fields to component properties
 5. System shows a **preview** with sample data
 
+<img width="371" height="1014" alt="image" src="https://github.com/user-attachments/assets/5b145629-cd96-4469-92a9-5c62bb4b2866" />
+
 ---
 
 ## 🛠 Flow 7: Creating Custom Components
@@ -171,6 +184,8 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
 5. User can further edit, style, and reuse the generated component
 6. Component is saved under **Custom Components**
 
+<img width="307" height="1014" alt="image" src="https://github.com/user-attachments/assets/f8194405-cc08-4893-bb9f-778fed648cbb" />
+
 ---
 
 ## 🌐 Flow 8: Publishing a Page
@@ -185,6 +200,8 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
    - Share the link with others  
    - Preview the live version  
    - Use it for demos or production access
+
+<img width="1521" height="1014" alt="image" src="https://github.com/user-attachments/assets/5d42ea35-6289-4fb5-bdc9-ab616acad11c" />
 
 ---
 
@@ -201,6 +218,8 @@ This README describes the **core user workflows** of Sirpam UI Builder, includin
 4. System generates the output files
 5. Download dialog appears
 6. User downloads the generated files
+
+<img width="1521" height="1014" alt="image" src="https://github.com/user-attachments/assets/1631f958-7b9d-4cbf-bc15-0edeb89607ec" />
 
 ---
 
