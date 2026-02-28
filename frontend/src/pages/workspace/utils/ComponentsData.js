@@ -1199,6 +1199,15 @@ export const components = [
         tag: "hr",
         rank: 4,
         defaultProps: { className: "basic-divider test-component" }
+      },
+      {
+        id: "video",
+        label: "Video",
+        icon: Video,
+        tag: "div",
+        rank: 4,
+        content: "Video placeholder",
+        defaultProps: { className: "basic-video test-component" }
       }
     ]
   },
