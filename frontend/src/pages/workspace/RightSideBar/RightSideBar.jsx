@@ -249,9 +249,6 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
         setFiles(prev => [...prev, newFile]);
     };
 
-    { console.log("classname: ", userClass, "baseclass : ", selectedComponent?.baseClassName) }
-
-
     const deleteFile = (fileId) => {
         setFiles(e => e.filter(file => file.id !== fileId));
 
@@ -346,10 +343,17 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                 type="text"
                                                 placeholder="Enter the class name"
                                                 value={
-                                                    selectedComponent?.defaultProps?.className
-                                                        ?.split(" ")
-                                                        .filter(cls => cls !== "test-component")
-                                                        .join(" ") || ""
+                                                    (() => {
+                                                        const baseClasses =
+                                                            selectedComponent?.baseClassName?.split(" ") || [];
+
+                                                        const allClasses =
+                                                            selectedComponent?.defaultProps?.className?.split(" ") || [];
+
+                                                        return allClasses
+                                                            .filter(cls => !baseClasses.includes(cls))
+                                                            .join(" ");
+                                                    })()
                                                 }
                                                 onChange={(e) => {
                                                     const userClass = e.target.value;
@@ -357,8 +361,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                     updateComponent(selectedComponent.id, (node) => {
                                                         node.defaultProps ??= {};
 
+                                                        const base = node.baseClassName || "";
+
                                                         node.defaultProps.className =
-                                                            `${userClass} test-component`.trim();
+                                                            `${base} ${userClass}`.trim();
                                                     });
                                                 }}
                                             />
