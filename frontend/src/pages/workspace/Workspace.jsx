@@ -511,24 +511,6 @@ const Workspace = ({ isAuthenticated }) => {
     })
   );
 
-
-  const handleFullScreen = async () => {
-    if (!document.fullscreenElement) {
-      const el = fullScreenElement.current;
-
-      console.log(el);
-
-      if (el.requestFullscreen) {
-        el.requestFullscreen();
-      } else if (el.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen();
-      }
-    } else {
-      document.exitFullscreen();
-    }
-  }
-
-
   if (loading) {
     return (
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", height: "93vh", overflow: "hidden", position: "relative" }}>
