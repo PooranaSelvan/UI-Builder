@@ -2,22 +2,31 @@ import React, { useRef, useState } from "react";
 import axios from "axios";
 import "./file-loader.css";
 
-const ImageUpload = ({ selectedComponent, updateComponent }) => {
+const ImageUpload = ({ selectedComponent, updateComponent, label }) => {
   const fileRef = useRef(null);
   const [loading, setLoading] = useState(false);
 
   const handleFile = async (file) => {
     if (!file) return;
 
-    let cloudinaryData = await uploadImageToCloud(file);
+    const cloudinaryData = await uploadImageToCloud(file);
     const imageURL = cloudinaryData?.secure_url;
 
+    if (!imageURL) return;
 
     updateComponent(selectedComponent.id, (node) => {
       node.defaultProps ??= {};
       node.defaultProps.style ??= {};
 
-      node.defaultProps.style.backgroundImage = `url(${imageURL})`;
+      if (node.tag === "img") {
+        node.defaultProps.src = imageURL;
+      }
+      else {
+        node.defaultProps.style.backgroundImage = `url(${imageURL})`;
+        node.defaultProps.style.backgroundSize = "cover";
+        node.defaultProps.style.backgroundPosition = "center";
+        node.defaultProps.style.backgroundRepeat = "no-repeat";
+      }
     });
   };
 
@@ -45,7 +54,7 @@ const ImageUpload = ({ selectedComponent, updateComponent }) => {
 
   return (
     <div className="background-image">
-      <label>Background Image</label>
+      <label>{label}</label>
 
       <div className="image-input">
         <input
@@ -55,7 +64,6 @@ const ImageUpload = ({ selectedComponent, updateComponent }) => {
               ? selectedComponent.defaultProps?.src || ""
               : selectedComponent.defaultProps?.style?.backgroundImage || ""
           }
-          readOnly
         />
 
         {!loading ? (
