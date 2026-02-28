@@ -102,25 +102,19 @@ button {
 
 
 /* Scroll Bar */
-/* Width */
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
-/* Track (background) */
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
 }
-
-/* Thumb (the draggable part) */
 ::-webkit-scrollbar-thumb {
   background: var(--red-500);
   border-radius: 10px;
 }
 
-/* Hover effect */
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
-}
+} */

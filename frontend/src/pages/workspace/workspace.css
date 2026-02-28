@@ -5,8 +5,8 @@
      align-items: center;
      justify-content: space-between;
      gap: 20px;
-     position: absolute;
-     top: 10px;
+     position: fixed;
+     top: 85px;
      left: 50%;
      transform: translateX(-50%);
      z-index: 20;

@@ -1,10 +1,8 @@
-
 .right-panel {
     height: 100%;
     width: 19%;
     background-color: white;
     border: none;
-    padding: 0;
     display: flex;
     flex-direction: column;
 }
@@ -19,10 +17,11 @@
 }
 
 .empty{
-    width: 19%;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+    width: 19%;
 }
 
 .error-text{
@@ -36,12 +35,15 @@
 
 .button-flex {
     display: flex;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.239);
+    backdrop-filter: blur(5px);
     position: fixed;
     justify-content: center;
     align-items: center;
-    width: 19%;
+    width: 18%;  
     overflow-x: scroll;
+    gap: 40px;
+    border-bottom: 1px solid var(--red-300);
 }
 
 .button-flex button {
@@ -56,8 +58,8 @@
 }
 
 .button-flex .active {
-    color: red;
-    border-bottom: 3px solid red;
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
 }
 
 .right-side-content {
@@ -110,12 +112,12 @@
 }
 
 .properties-toggle .btn-icon{
-    color: red;
+    color: var(--primary);
 }
 
 #btn-icon {
     font-size: 10px;
-    color: red;
+    color: var(--primary);
 }
 
 .toggle-button {
@@ -949,7 +951,7 @@
 
 .delete-button{
     position: fixed;
-    color: red;
+    color: var(--primary);
     border: 1px solid var(--red-300);
     padding: .2% 5%;
     border-radius: 5px;

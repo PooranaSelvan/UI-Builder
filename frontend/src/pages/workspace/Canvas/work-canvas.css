@@ -6,7 +6,7 @@
      background-color: #F3F4F6;
      background-image: linear-gradient(to right, #ececec 1px, transparent 1px), linear-gradient(to bottom, #ececec 1px, transparent 1px);
      background-size: 20px 20px;
-     width: 65%;
+     /* width: 65%; */
      padding: 50px;
      overflow: scroll;
      position: relative;

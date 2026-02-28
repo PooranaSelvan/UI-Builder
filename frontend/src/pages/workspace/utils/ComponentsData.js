@@ -2,7 +2,6 @@ import {
   Image,
   Square,
   Link2,
-  Video,
   Minus,
   Layout,
   MousePointerClick,
@@ -13,7 +12,9 @@ import {
   AlignLeft,
   SquareCheck,
   CircleCheck,
-  Grid2X2
+  PanelTop,
+  AlignStartVertical,
+  LayoutList
 } from "lucide-react";
 
 export const components = [
@@ -38,13 +39,13 @@ export const components = [
       {
         id: "flex-container",
         label: "Flex Container",
-        icon: Grid2X2,
+        icon: AlignStartVertical,
         tag: "div",
         rank: 1,
         content: "Flex Container",
         defaultProps: {
           className: "layout-flex test-component", style: {
-            display : "flex",
+            display: "flex",
             height: "200px"
           }
         },
@@ -59,7 +60,7 @@ export const components = [
         content: "Grid Container",
         defaultProps: {
           className: "layout-grid test-component", style: {
-            display : "grid",
+            display: "grid",
             height: "200px"
           }
         },
@@ -70,7 +71,7 @@ export const components = [
       {
         id: "navbar",
         label: "Navbar",
-        icon: Grid,
+        icon: PanelTop,
         tag: "nav",
         rank: 1,
         content: "Navbar",
@@ -325,7 +326,7 @@ export const components = [
       {
         id: "media",
         label: "Media Section",
-        icon: Layout,
+        icon: LayoutList,
         tag: "section",
         rank: 3,
         content: "Media Section",
@@ -676,6 +677,280 @@ export const components = [
                 ]
               }
             ]
+          }
+        ]
+      },
+      {
+        id: "form",
+        label: "Form",
+        icon: FormInput,
+        tag: "form",
+        rank: 2,
+        content: "",
+        defaultProps: {
+          className: "form-wrapper test-component",
+          style: {
+            display: "flex",
+            flexWrap : "wrap",
+            alignItems : "center",
+            flexDirection: "column",
+            gap: "20px",
+            paddingTop: "30px",
+            paddingBottom: "30px",
+            paddingLeft: "40px",
+            paddingRight: "40px",
+            backgroundColor: "#f9f9f9",
+            borderRadius: "8px",
+            width: "1200px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
+          }
+        },
+        children: [
+          {
+            id: "form-title",
+            label: "Form Title",
+            tag: "h2",
+            content: "Contact Us",
+            defaultProps: {
+              className: "form-title test-component",
+              style: {
+                margin: 0
+              }
+            },
+            children: []
+          },
+
+          // Name Input
+          {
+            id: "form-name",
+            label: "Input",
+            tag: "input",
+            content: "",
+            defaultProps: {
+              className: "form-input test-component",
+              type: "text",
+              placeholder: "Enter your name"
+            },
+            children: []
+          },
+
+          // Email Input
+          {
+            id: "form-email",
+            label: "Input",
+            tag: "input",
+            content: "",
+            defaultProps: {
+              className: "form-input test-component",
+              type: "text",
+              placeholder: "Enter your email"
+            },
+            children: []
+          },
+
+          // Message Textarea
+          {
+            id: "form-message",
+            label: "Textarea",
+            tag: "textarea",
+            content: "",
+            defaultProps: {
+              className: "form-textarea test-component",
+              placeholder: "Enter your message",
+              rows: 4
+            },
+            children: []
+          },
+
+          // Select Dropdown
+          {
+            id: "form-select",
+            label: "Select",
+            tag: "select",
+            defaultProps: {
+              className: "form-select test-component"
+            },
+            children: [
+              {
+                tag: "option",
+                content: "Select a subject",
+                defaultProps: { value: "" }
+              },
+              {
+                tag: "option",
+                content: "General Inquiry",
+                defaultProps: { value: "general" }
+              },
+              {
+                tag: "option",
+                content: "Support",
+                defaultProps: { value: "support" }
+              },
+              {
+                tag: "option",
+                content: "Feedback",
+                defaultProps: { value: "feedback" }
+              }
+            ]
+          },
+
+          // Checkbox
+          {
+            id: "form-checkbox-wrapper",
+            label: "Checkbox Wrapper",
+            tag: "label",
+            content: "",
+            defaultProps: {
+              className: "form-checkbox-wrapper test-component",
+              style: {
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                cursor: "pointer"
+              }
+            },
+            children: [
+              {
+                id: "form-checkbox",
+                label: "Check Box",
+                tag: "input",
+                content: "",
+                defaultProps: {
+                  className: "form-checkbox test-component",
+                  type: "checkbox"
+                },
+                children: []
+              },
+              {
+                id: "form-checkbox-text",
+                label: "Checkbox Text",
+                tag: "span",
+                content: "I agree to the terms and conditions",
+                defaultProps: {
+                  className: "test-component"
+                },
+                children: []
+              }
+            ]
+          },
+
+          // Radio Buttons
+          {
+            id: "form-radio-group",
+            label: "Radio Group",
+            tag: "div",
+            content: "",
+            defaultProps: {
+              className: "form-radio-group test-component",
+              style: {
+                display: "flex",
+                gap: "20px"
+              }
+            },
+            children: [
+              {
+                id: "radio-option-1",
+                label: "Radio Option",
+                tag: "label",
+                content: "",
+                defaultProps: {
+                  style: {
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    cursor: "pointer"
+                  }
+                },
+                children: [
+                  {
+                    id: "radio-1",
+                    label: "Radio Button",
+                    tag: "input",
+                    content: "",
+                    defaultProps: {
+                      className: "form-radio test-component",
+                      type: "radio",
+                      name: "contact-type",
+                      value: "email"
+                    },
+                    children: []
+                  },
+                  {
+                    id: "radio-1-text",
+                    label: "Radio Text",
+                    tag: "span",
+                    content: "Email",
+                    defaultProps: {},
+                    children: []
+                  }
+                ]
+              },
+              {
+                id: "radio-option-2",
+                label: "Radio Option",
+                tag: "label",
+                content: "",
+                defaultProps: {
+                  style: {
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    cursor: "pointer"
+                  }
+                },
+                children: [
+                  {
+                    id: "radio-2",
+                    label: "Radio Button",
+                    tag: "input",
+                    content: "",
+                    defaultProps: {
+                      className: "form-radio test-component",
+                      type: "radio",
+                      name: "contact-type",
+                      value: "phone"
+                    },
+                    children: []
+                  },
+                  {
+                    id: "radio-2-text",
+                    label: "Radio Text",
+                    tag: "span",
+                    content: "Phone",
+                    defaultProps: {},
+                    children: []
+                  }
+                ]
+              }
+            ]
+          },
+
+          // Submit Button
+          {
+            id: "form-submit",
+            label: "Submit Button",
+            tag: "button",
+            content: "Submit",
+            defaultProps: {
+              className: "btn btn-primary test-component",
+              type: "submit",
+              style: {
+                paddingTop: "12px",
+                paddingBottom: "12px",
+                paddingLeft : "12px",
+                paddingRight : "12px",
+                borderTopLeftRadius: "6px",
+                borderTopRightRadius: "6px",
+                borderBottomLeftRadius: "6px",
+                borderBottomLeftRadius: "6px",
+                borderWidth: "0px",
+                cursor: "pointer",
+                backgroundColor: "#4aa500",
+                color: "white",
+                fontWeight: "600"
+              }
+            },
+            children: []
           }
         ]
       },
