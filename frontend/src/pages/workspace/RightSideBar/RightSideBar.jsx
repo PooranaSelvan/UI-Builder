@@ -399,19 +399,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             </div>
                                         )}
                                         {["img", "video"].includes(selectedComponent.tag) && (
-                                            <div className='content'>
-                                                <label>Source</label>
-                                                <input
-                                                    type="text"
-                                                    value={selectedComponent.defaultProps?.src || ""}
-                                                    onChange={(e) => {
-                                                        updateComponent(selectedComponent.id, (node) => {
-                                                            node.defaultProps ??= {};
-                                                            node.defaultProps.src = e.target.value;
-                                                        });
-                                                    }}
-                                                />
+                                            <div className="content">
+                                                <ImageUpload selectedComponent={selectedComponent} updateComponent={updateComponent} label={'Source'} />
                                             </div>
+
                                         )}
 
                                     </div>
@@ -919,25 +910,6 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             })
                                         }}
                                     />
-                                    <div className='wrap-input'>
-                                        <label htmlFor="">Align items</label>
-                                        <select
-                                            value={selectedComponent.defaultProps?.style?.alignItems || ""}
-                                            onChange={(e) => {
-                                                updateComponent(selectedComponent.id, (node) => {
-                                                    node.defaultProps ??= {};
-                                                    node.defaultProps.style ??= {};
-                                                    node.defaultProps.style.alignItems = e.target.value;
-                                                });
-                                            }}
-                                        >
-                                            <option value="stretch">stretch</option>
-                                            <option value="center">center</option>
-                                            <option value="flex-start">flex-start</option>
-                                            <option value="flex-end">flex-end</option>
-                                            <option value="baseline">baseline</option>
-                                        </select>
-                                    </div>
                                 </Heading>
                             )}
                             {display === 'grid' && (
@@ -1179,7 +1151,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                     }} />
                                     {selectedComponent.tag !== "img" && (
                                         <>
-                                            <ImageUpload selectedComponent={selectedComponent} updateComponent={updateComponent} />
+                                            <ImageUpload selectedComponent={selectedComponent} updateComponent={updateComponent} label={'Background image'} />
                                             <div className="three-input">
                                                 <div>
                                                     <label htmlFor="">bg-Repeat</label>

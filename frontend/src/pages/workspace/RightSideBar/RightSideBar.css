@@ -125,7 +125,6 @@
 
 .properties-general {
     display: flex;
-    flex-wrap: wrap;
     flex-direction: column;
     flex-wrap: wrap;
     margin-bottom: 6%;
