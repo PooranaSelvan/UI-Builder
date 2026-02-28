@@ -4,7 +4,7 @@ export default function IconPicker({ value, onChange, search = "" }) {
   const filteredIcons = Object.entries(LucideIcons)
     .filter(([name]) => name[0] === name[0].toUpperCase()) 
     .filter(([name]) => name.toLowerCase().includes(search.toLowerCase())) 
-    .slice(0, 1700); 
+    .slice(0, 500); 
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8 }}>
