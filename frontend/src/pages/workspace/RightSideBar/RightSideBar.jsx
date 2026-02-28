@@ -97,10 +97,11 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     const [apiUrl, setApiUrl] = useState("");
     const [loadingApi, setLoadingApi] = useState(false);
     const [eventType, setEventType] = useState("");
-    const userClass =
-        selectedComponent?.defaultProps?.className
-            ?.replace(selectedComponent?.baseClassName || "", "")
-            .trim() || "";
+    const baseClasses = (selectedComponent?.baseClassName || "").split(" ");
+    const allClasses = (selectedComponent?.defaultProps?.className || "").split(" ");
+    const userClass = allClasses
+        .filter(cls => !baseClasses.includes(cls))
+        .join(" ");
     const display = selectedComponent?.defaultProps?.style?.display ?? "block";
     const allowedEvents = EVENT_MAP[selectedComponent?.tag] || [];
     const selectedAction = selectedComponent?.defaultProps?.events?.[eventType]?.action ?? "";
@@ -184,13 +185,6 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
             style.borderTopLeftRadius ??= "0px";
             style.borderTopRightRadius ??= "0px";
 
-            updateComponent(selectedComponent.id, (node) => {
-                node.defaultProps ??= {};
-
-                if (!node.baseClassName) {
-                    node.baseClassName = node.defaultProps.className || "";
-                }
-            });
         });
 
     }, [selectedComponent?.id]);
@@ -254,6 +248,8 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
 
         setFiles(prev => [...prev, newFile]);
     };
+
+    { console.log("classname: ", userClass, "baseclass : ", selectedComponent?.baseClassName) }
 
 
     const deleteFile = (fileId) => {
@@ -1325,7 +1321,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <div className="color">
                                                 <label htmlFor="" id='text-color'>Text color</label>
                                                 <ColorPalette
-                                                    value={selectedComponent.defaultProps?.style?.color ?? "#000000"}
+                                                    value={selectedComponent.defaultProps?.style?.color || "#000000"}
                                                     onChange={(v) =>
                                                         updateComponent(selectedComponent.id, (node) => {
                                                             node.defaultProps ??= {};
