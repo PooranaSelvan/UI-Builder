@@ -97,6 +97,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     const [apiUrl, setApiUrl] = useState("");
     const [loadingApi, setLoadingApi] = useState(false);
     const [eventType, setEventType] = useState("");
+    const [classInput, setClassInput] = useState("");
     const baseClasses = (selectedComponent?.baseClassName || "").split(" ");
     const allClasses = (selectedComponent?.defaultProps?.className || "").split(" ");
     const userClass = allClasses
@@ -296,6 +297,21 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
         }
     }, [selectedComponent?.id])
 
+    useEffect(() => {
+        if (!selectedComponent) return;
+
+        const systemClasses = ["test-component"];
+
+        const allClasses =
+            selectedComponent.defaultProps?.className?.split(" ") || [];
+
+        const userClass = allClasses
+            .filter(cls => !systemClasses.includes(cls))
+            .join(" ");
+
+        setClassInput(userClass);
+    }, [selectedComponent?.id]);
+
 
     const filteredFiles = files.filter(f => f.id === selectedComponent?.defaultProps?.fileId);
 
@@ -340,21 +356,10 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <input
                                                 type="text"
                                                 placeholder="Enter the class name"
-                                                value={
-                                                    (() => {
-                                                        const baseClasses =
-                                                            selectedComponent?.baseClassName?.split(" ") || [];
-
-                                                        const allClasses =
-                                                            selectedComponent?.defaultProps?.className?.split(" ") || [];
-
-                                                        return allClasses
-                                                            .filter(cls => !baseClasses.includes(cls))
-                                                            .join(" ");
-                                                    })()
-                                                }
+                                                value={classInput}
                                                 onChange={(e) => {
-                                                    const userClass = e.target.value;
+                                                    const value = e.target.value;
+                                                    setClassInput(value);
 
                                                     updateComponent(selectedComponent.id, (node) => {
                                                         node.defaultProps ??= {};
@@ -362,7 +367,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                                         const base = node.baseClassName || "";
 
                                                         node.defaultProps.className =
-                                                            `${base} ${userClass}`.trim();
+                                                            `${base} ${value}`.trim();
                                                     });
                                                 }}
                                             />
@@ -1487,13 +1492,13 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             <label>media query</label>
                                             <CodeMirror
                                                 key={userClass ? "editable" : "readonly"}
-                                                editable={!!userClass}
+                                                editable={classInput.trim().length > 0}
                                                 height="300px"
                                                 theme={vscodeDark}
                                                 extensions={[
                                                     css(),
                                                     readonlyClickHandler,
-                                                    EditorState.readOnly.of(!userClass)
+                                                    EditorState.readOnly.of(classInput.trim().length === 0)
                                                 ]}
                                                 value={selectedComponent?.defaultProps?.mediaquery?.style ?? ""}
                                                 onChange={(value) => {

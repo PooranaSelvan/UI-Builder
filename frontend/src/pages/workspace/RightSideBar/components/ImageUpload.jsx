@@ -81,9 +81,30 @@ const ImageUpload = ({ selectedComponent, updateComponent, label }) => {
             setInputValue(e.target.value);
           }}
           onBlur={() => {
-            if (inputValue.trim()) {
-              applyImage(inputValue.trim());
-            }
+            const value = inputValue.trim();
+
+            updateComponent(selectedComponent.id, (node) => {
+              node.defaultProps ??= {};
+              node.defaultProps.style ??= {};
+
+              if (!value) {
+                if (node.tag === "img") {
+                  delete node.defaultProps.src;
+                } else {
+                  delete node.defaultProps.style.backgroundImage;
+                }
+                return;
+              }
+
+              if (node.tag === "img") {
+                node.defaultProps.src = value;
+              } else {
+                node.defaultProps.style.backgroundImage = `url(${value})`;
+                node.defaultProps.style.backgroundSize = "cover";
+                node.defaultProps.style.backgroundPosition = "center";
+                node.defaultProps.style.backgroundRepeat = "no-repeat";
+              }
+            });
           }}
         />
 
