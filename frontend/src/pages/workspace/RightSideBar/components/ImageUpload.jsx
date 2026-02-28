@@ -59,7 +59,7 @@ const ImageUpload = ({ selectedComponent, updateComponent, label }) => {
       <div className="image-input">
         <input
           type="text"
-          value={
+          defaultValue={
             selectedComponent?.tag === "img"
               ? selectedComponent.defaultProps?.src || ""
               : selectedComponent.defaultProps?.style?.backgroundImage || ""
