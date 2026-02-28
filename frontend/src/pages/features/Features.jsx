@@ -2,7 +2,7 @@ import React from 'react';
 import "./features.css";
 import Footer from '../../components/Footer.jsx';
 import Button from '../../components/Button.jsx';
-import { MoveRight, Play, Check, ArrowUpRight } from 'lucide-react';
+import { MoveRight, Check, ArrowUpRight } from 'lucide-react';
 import float from './assets/float.png';
 import publish from './assets/publish.png';
 import { useNavigate } from 'react-router-dom';
@@ -30,8 +30,7 @@ const Features = ({ isAuthenticated }) => {
             <p>Design and launch websites at the speed of thought. A minimalist canvas for maximum productivity.</p>
           </div>
           <div className="heading-btn">
-            <Button onClick={handleNavigate} className='build-btn'>Start Building <MoveRight size={20} /></Button>
-            <Button className='demo-btn'><Play size={20} color='red' /> View Demo</Button>
+            <Button onClick={handleNavigate} className='build-btn'>Start Building <ArrowUpRight size={20} /></Button>
           </div>
         </div>
         <div className="features">
@@ -49,7 +48,7 @@ const Features = ({ isAuthenticated }) => {
                 <p>Visual Builder</p>
               </span>
               <h2><span>Effortlessly</span> design <br /> pixel-perfect Sites.</h2>
-              <p>Create amazing interfaces with our,</p>
+              <p>Create exceptional interfaces with : </p>
               <ul>
                 <li>
                   <span className='check'><Check size={14} /></span>
@@ -73,7 +72,7 @@ const Features = ({ isAuthenticated }) => {
                 <p>Visual Builder</p>
               </span>
               <h2>Publish instantly</h2>
-              <p>Turn your work into live with a single click. No waiting - your updates are live as you publish.</p>
+              <p>Go live with a single click. Your updates are available immediately upon publishing.</p>
             </div>
             <div className="feature-image publish-image">
               <div className="floating-box publish-float">

@@ -52,8 +52,7 @@
   transform: scale(1.05);
 }
 
-.footer-product,
-.footer-legal {
+.footer-product {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;

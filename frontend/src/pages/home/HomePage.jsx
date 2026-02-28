@@ -1,32 +1,36 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Button from '../../components/Button';
 import "../../index.css";
 import "./homePage.css";
 import "./canvas.css";
-import { LayoutDashboard, Layers2, Rocket, ChevronDown, ArrowUpRight, Play } from 'lucide-react';
+import { LayoutDashboard, Layers2, Rocket, ChevronDown, ArrowUpRight, Play, X } from 'lucide-react';
 import Footer from '../../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import demoVideo from "../../assets/demo.mp4";
+
 
 const HomePage = ({ isAuthenticated }) => {
   let navigate = useNavigate();
+  const [openVideo, setOpenVideo] = useState(false);
+
   const stepsData = [
     {
       number: 1,
       icon: <LayoutDashboard size={30} fill='white' color='red' strokeWidth={2} />,
       heading: "Choose Template",
-      description: "Start with a pre-built template or create from scratch. Pick your perfect starting point."
+      description: "Start with a pre-built template or create one from scratch. Pick your perfect starting point."
     },
     {
       number: 2,
       icon: <Layers2 size={30} fill='white' color='red' strokeWidth={2} />,
       heading: "Drag & Drop",
-      description: "Add buttons, forms, layouts and more by simply dragging them onto your canvas."
+      description: "Add buttons, forms, layouts, and more by simply dragging them onto your canvas."
     },
     {
       number: 3,
       icon: <Rocket size={30} fill='white' color='red' strokeWidth={2} />,
       heading: "Deploy Instantly",
-      description: "Click deploy and your app goes live immediately. Share with the world."
+      description: "Click deploy to make your app live instantly. Share it with your audience."
     }
   ];
 
@@ -39,6 +43,11 @@ const HomePage = ({ isAuthenticated }) => {
     }
   }
 
+
+  const handleOpenDemo = () => {
+    setOpenVideo(true);
+  }
+
   return (
     <div className='home-wrapper'>
       {/* Home Hero */}
@@ -48,18 +57,28 @@ const HomePage = ({ isAuthenticated }) => {
           <div className="home-hero-content">
             <h1>Build Custom UI <span className="gradient-text">10x Faster</span></h1>
             <p>
-              Drag and drop components and deploy custom apps for you in minutes not weeks.
+              Drag and drop components and deploy custom apps for you in minutes, not weeks.
               <span className='gradient-text'> Secure, scalable, and fully customizable.</span>
             </p>
             <div className='home-hero-btns'>
               <Button className='primary-button get-started-btn' id="start-build" style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 32px", fontSize: "16px", fontWeight: "600" }} onClick={handleGetStarted}>
                 Start Building <ArrowUpRight size={20} />
               </Button>
-              <Button className='video-btn' id="demo-btn">
+              <Button className='video-btn' id="demo-btn" onClick={handleOpenDemo}>
                 Watch Demo <Play size={20} />
               </Button>
             </div>
           </div>
+
+          {openVideo && (
+            <div className="demo-modal" onClick={() => setOpenVideo(false)}>
+              <Button onClick={() => setOpenVideo(false)} className='demo-close'>
+                <X size={20} />
+                Close
+              </Button>
+              <iframe src={demoVideo} title="Demo Video" className='demo-frame'></iframe>
+            </div>
+          )}
 
           {/* Canvas */}
           <div className="canvas-wrapper">
@@ -206,7 +225,7 @@ const HomePage = ({ isAuthenticated }) => {
         <div className="canvas-gradient-round-blur"></div>
 
         <div className="scrollToExplore">
-          <p>Scroll To Explore</p>
+          <p>Scroll to Explore</p>
           <ChevronDown />
         </div>
       </div>
@@ -244,7 +263,6 @@ const HomePage = ({ isAuthenticated }) => {
         </div>
         <div className="starter-pattern"></div>
       </div>
-
       <Footer />
     </div>
   )

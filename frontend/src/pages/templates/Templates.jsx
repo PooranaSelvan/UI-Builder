@@ -52,7 +52,7 @@ const Templates = () => {
             ))
           }
         </div>
-        <p>More Templates Coming Soon...</p>
+        <p>More Templates Coming Soon. Stay Tuned..</p>
       </div>
       <Footer />
     </>

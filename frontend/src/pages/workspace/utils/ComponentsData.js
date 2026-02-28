@@ -53,7 +53,7 @@ export const components = [
             paddingBottom: "15px",
             paddingLeft: "40px",
             paddingRight: "40px",
-            backgroundColor: "#ff6b6b",
+            backgroundColor: "#4aa500",
             color: "white",
             boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
           }
@@ -157,7 +157,7 @@ export const components = [
                 borderWidth: "0px",
                 cursor: "pointer",
                 backgroundColor: "white",
-                color: "red",
+                color: "#4aa500",
                 fontWeight: "600"
               }
             },
@@ -184,7 +184,7 @@ export const components = [
             paddingBottom: "80px",
             paddingLeft: "20px",
             paddingRight: "20px",
-            backgroundColor: "#ff6b6b",
+            backgroundColor: "#4aa500",
             color: "white",
             gap: "20px"
           }
@@ -253,7 +253,7 @@ export const components = [
                     borderWidth: "none",
                     cursor: "pointer",
                     backgroundColor: "#fff",
-                    color: "red",
+                    color: "#4aa500",
                     fontWeight: "600"
                   }
                 },
@@ -292,118 +292,156 @@ export const components = [
         ]
       },
       {
-        id: "body",
-        label: "Body",
+        id: "media",
+        label: "Media Section",
         icon: Layout,
         tag: "section",
-        rank: 2,
-        content: "Body Section",
+        rank: 3,
+        content: "Media Section",
         defaultProps: {
-          className: "layout-body test-component",
+          className: "layout-media test-component",
           style: {
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             alignItems: "center",
-            textAlign: "center",
+            justifyContent: "center",
             paddingTop: "100px",
             paddingBottom: "100px",
             paddingLeft: "30px",
             paddingRight: "30px",
-            backgroundColor: "#ff6b6b",
+            backgroundColor: "#4aa500",
             color: "#ffffff",
-            gap: "30px"
+            gap: "60px",
+            flexWrap: "wrap"
           }
         },
         children: [
           {
-            id: "body-heading",
-            label: "Heading",
-            tag: "h2",
-            content: "Build Faster. Design Smarter.",
+            id: "media-left",
+            label: "Media Left",
+            tag: "div",
+            content: "Image Wrapper",
             defaultProps: {
-              className: "body-heading test-component",
+              className: "media-left test-component",
               style: {
-                fontSize: "42",
-                fontWeight: "700",
-                margin: 0
+                flex: "1",
+                display: "flex",
+                justifyContent: "center"
               }
             },
-            children: []
+            children: [
+              {
+                id: "media-image",
+                label: "Image",
+                tag: "img",
+                defaultProps: {
+                  src: "https://placehold.co/300x300",
+                  className: "media-image test-component",
+                  style: {
+                    width: "100%",
+                    maxWidth: "550px",
+                    borderTopLeftRadius: "12px",
+                    borderTopRightRadius: "12px",
+                    borderBottomLeftRadius: "12px",
+                    borderBottomRightRadius: "12px"
+                  }
+                },
+                children: []
+              }
+            ]
           },
           {
-            id: "body-subheading",
-            label: "Sub Heading",
-            tag: "h3",
-            content: "A powerful low-code UI builder for modern web teams",
+            id: "media-right",
+            label: "Media Right",
+            tag: "div",
+            content: "Text Content Wrapper",
             defaultProps: {
-              className: "body-subheading test-component",
+              className: "media-right test-component",
               style: {
-                fontSize: "24",
-                fontWeight: "500",
-                margin: 0,
-                opacity: "0.9"
+                flex: "1",
+                display: "flex",
+                flexDirection: "column",
+                gap: "20px",
+                maxWidth: "600px"
               }
             },
-            children: []
-          },
-          {
-            id: "body-paragraph-1",
-            label: "Paragraph",
-            tag: "p",
-            content: "Sirpam lets designers and developers collaborate visually. Drag components, customize styles, and see changes instantly — without writing repetitive code.",
-            defaultProps: {
-              className: "body-paragraph test-component",
-              style: {
-                fontSize: "18",
-                maxWidth: "800px",
-                lineHeight: "1.7",
-                opacity: "0.95"
+            children: [
+              {
+                id: "media-heading",
+                label: "Heading",
+                tag: "h2",
+                content: "Design Visually. Ship Confidently.",
+                defaultProps: {
+                  className: "media-heading test-component",
+                  style: {
+                    fontSize: "42",
+                    fontWeight: "700",
+                    margin: 0
+                  }
+                },
+                children: []
+              },
+              {
+                id: "media-paragraph-1",
+                label: "Paragraph",
+                tag: "p",
+                content: "Sirpam empowers teams to build responsive layouts with real-time previews. Customize components, adjust spacing, and manage styles effortlessly.",
+                defaultProps: {
+                  className: "media-paragraph test-component",
+                  style: {
+                    fontSize: "18",
+                    lineHeight: "1.7",
+                    opacity: "0.95",
+                    margin: 0
+                  }
+                },
+                children: []
+              },
+              {
+                id: "media-paragraph-2",
+                label: "Paragraph",
+                tag: "p",
+                content: "Create reusable UI patterns, ensure design consistency, and accelerate development workflows — all within a unified visual interface.",
+                defaultProps: {
+                  className: "media-paragraph test-component",
+                  style: {
+                    fontSize: "18",
+                    lineHeight: "1.7",
+                    opacity: "0.95",
+                    margin: 0
+                  }
+                },
+                children: []
+              },
+              {
+                id: "media-cta",
+                label: "CTA Button",
+                tag: "button",
+                content: "Learn More",
+                defaultProps: {
+                  className: "btn btn-light test-component",
+                  style: {
+                    marginTop: "10px",
+                    paddingTop: "14px",
+                    paddingBottom: "14px",
+                    paddingLeft: "36px",
+                    paddingRight: "36px",
+                    fontSize: "16",
+                    borderTopLeftRadius: "8px",
+                    borderTopRightRadius: "8px",
+                    borderBottomLeftRadius: "8px",
+                    borderBottomRightRadius: "8px",
+                    borderWidth: "0px",
+                    cursor: "pointer",
+                    backgroundColor: "#ffffff",
+                    color: "#4aa500",
+                    fontWeight: "600",
+                    alignSelf: "flex-start"
+                  }
+                },
+                children: []
               }
-            },
-            children: []
-          },
-          {
-            id: "body-paragraph-2",
-            label: "Paragraph",
-            tag: "p",
-            content: "From landing pages to full-scale applications, Sirpam helps you create reusable UI blocks, maintain consistency, and ship products faster.",
-            defaultProps: {
-              className: "body-paragraph test-component",
-              style: {
-                fontSize: "18",
-                maxWidth: "800px",
-                lineHeight: "1.7",
-                opacity: "0.95"
-              }
-            },
-            children: []
-          },
-          {
-            id: "body-cta",
-            label: "CTA Button",
-            tag: "button",
-            content: "Explore Features",
-            defaultProps: {
-              className: "btn btn-light test-component",
-              style: {
-                marginTop: "20px",
-                paddingTop: "14px",
-                paddingBottom: "14px",
-                paddingLeft: "36px",
-                paddingRight: "36px",
-                fontSize: "16",
-                borderTopLeftRadius: "8px",
-                borderTopRightRadius: "8px",
-                borderBottomLeftRadius: "8px",
-                borderBottomRightRadius: "8px",
-                borderWidth: "0px",
-                cursor: "pointer",
-                backgroundColor: "#ffffff",
-                color: "#ff6b6b",
-                fontWeight: "600"
-              }
-            },
-            children: []
+            ]
           }
         ]
       },
@@ -421,7 +459,7 @@ export const components = [
             paddingBottom: "100px",
             paddingLeft: "40px",
             paddingRight: "40px",
-            backgroundColor: "#ff6b6b",
+            backgroundColor: "#4aa500",
             display: "flex",
             justifyContent: "center"
           }
@@ -627,7 +665,7 @@ export const components = [
             paddingBottom: "30px",
             paddingLeft: "40px",
             paddingRight: "40px",
-            backgroundColor: "#ff6b6b",
+            backgroundColor: "#4aa500",
             color: "white"
           }
         },

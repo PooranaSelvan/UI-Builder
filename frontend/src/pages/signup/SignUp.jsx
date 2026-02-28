@@ -111,10 +111,6 @@ const SignUp = ({ isAuthenticated, setIsAuthenticated }) => {
                 {showPassword ? <Eye size={15} /> : < EyeOff size={15} />}
               </span>
             </div>
-            <p className="password-hint">
-              Must be at least 8 characters long.
-            </p>
-
 
             <label className="input-label">Confirm Password</label>
             <div className="input-wrapper">
@@ -152,7 +148,7 @@ const SignUp = ({ isAuthenticated, setIsAuthenticated }) => {
 
             <Button type="button" className="google-btn" onClick={handleZohoLogin}>
               <img src={ZohoLogo} alt="" />
-              Sign up with Zoho
+              Continue with Zoho
             </Button>
 
             <p className="login-text">

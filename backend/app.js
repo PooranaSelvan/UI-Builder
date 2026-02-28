@@ -152,10 +152,10 @@ app.get("/auth/logout", async (req, res) => {
 // const data = 
 
 
-// const sql = `INSERT INTO templates (templateName, description, data) VALUES (?, ?, ?)`;
-// const values = ['Portfolio Website', 'A powerful & personal portfolio website.', JSON.stringify(data)];
+// const sql = `update templates set data = ? where templateId = 13`;
+// // const values = ['Portfolio Website', 'A powerful & personal portfolio website.', JSON.stringify(data)];
 
-// con.query(sql, values, (err, results) => {
+// con.query(sql, data, (err, results) => {
 //   if (err) {
 //     console.error('Error inserting JSON:', err);
 //   } else {

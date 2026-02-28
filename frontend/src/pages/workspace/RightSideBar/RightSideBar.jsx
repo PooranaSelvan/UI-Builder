@@ -346,7 +346,6 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
                                             }} disabled />
 
                                             <label>ClassName</label>
-                                            <label>ClassName</label>
                                             <input
                                                 type="text"
                                                 placeholder="Enter the class name"

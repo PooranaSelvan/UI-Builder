@@ -92,12 +92,6 @@ const LoginPage = ({ isAuthenticated, setIsAuthenticated }) => {
                                     <button type='button' className='eye-button' onClick={() => setShowPassword(prev => !prev)}>{showPassword ? <Eye /> : <EyeOff />} </button>
                                 </div>
                             </div>
-                            <div className="check-box">
-                                <label htmlFor="">
-                                    <input type="checkbox" />
-                                    <span>Keep me signed in</span>
-                                </label>
-                            </div>
                             <Button style={buttonStyle} className='btn-login' onClick={handleNormalLogin}>Sign In</Button>
                             <div className='option'>
                                 <div className="red-line">
@@ -110,7 +104,7 @@ const LoginPage = ({ isAuthenticated, setIsAuthenticated }) => {
                             </div>
                             <Button style={googleStyle} className='google-btn' onClick={handleZohoLogin}>
                                 <img src={ZohoLogo} alt="" />
-                                Continue With Zoho
+                                Continue with Zoho
                             </Button>
                         </form>
                         <p style={{ marginTop: "30px", fontSize: "14px" }}>Don't have an account? <NavLink to='/signup'>Create.</NavLink></p>

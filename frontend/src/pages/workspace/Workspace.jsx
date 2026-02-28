@@ -542,12 +542,6 @@ const Workspace = ({ isAuthenticated }) => {
       <DndContext onDragEnd={(e) => { handleDragEnd(e) }} sensors={sensors}>
         <div style={{ display: "flex", height: "93vh", overflow: "hidden", position: "relative" }}>
           <div className="workspace-topbar" id="topbar-tour">
-            <div className="workspace-topbar-screens">
-              <Button style={{ background: "transparent" }} className="workspace-topbar-screen-btn" onClick={handleFullScreen}>
-                <Fullscreen />
-              </Button>
-            </div>
-            <div className="divider-line" />
             <div className="workspace-topbar-btns">
               <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleSavePage} disabled={!components.length}>
                 <Save size={20} />
