@@ -122,12 +122,13 @@
   background: white;
   padding: 28px;
   border-radius: 18px;
-  border: 1px solid #f1dcdc;
+  border: 2px solid #f1dcdc;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
 }
 
 .folder-card:hover {
-  border: 2px solid var(--red-400);
+  border: 2px solid var(--primary);
   transform: translateY(-3px);
 
 }
@@ -191,16 +192,17 @@
 .page-card {
   background: #ffffff;
   border-radius: 18px;
-  border: 1px solid #f1dcdc;
+  border: 2px solid #f1dcdc;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 240px;
   padding: 20px 24px;
+  transition: all 0.3s ease-in-out;
 }
 
 .page-card:hover {
-  border: 2px solid #f3b3b3;
+  border: 2px solid var(--primary);
   transform: translateY(-3px);
 }
 
@@ -272,6 +274,9 @@
 .page-link p {
   font-size: 12px;
   transition: all 0.3s ease-in-out;
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 .page-link p:hover {

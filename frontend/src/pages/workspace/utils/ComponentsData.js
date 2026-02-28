@@ -700,7 +700,7 @@ export const components = [
             paddingBottom: "30px",
             paddingLeft: "40px",
             paddingRight: "40px",
-            backgroundColor: "#f9f9f9",
+            backgroundColor: "#4aa500",
             borderRadius: "8px",
             width: "1200px",
             boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
@@ -730,7 +730,18 @@ export const components = [
             defaultProps: {
               className: "form-input test-component",
               type: "text",
-              placeholder: "Enter your name"
+              placeholder: "Enter your name",
+              style: {
+                paddingTop : "10px",
+                paddingBottom : "10px",
+                paddingLeft : "20px",
+                paddingRight : "20px",
+                borderTopLeftRadius : "12px",
+                borderTopRightRadius : "12px",
+                borderBottomLeftRadius : "12px",
+                borderBottomRightRadius : "12px",
+                borderWidth : "0px"
+              }
             },
             children: []
           },
@@ -744,7 +755,18 @@ export const components = [
             defaultProps: {
               className: "form-input test-component",
               type: "text",
-              placeholder: "Enter your email"
+              placeholder: "Enter your email",
+              style: {
+                paddingTop : "10px",
+                paddingBottom : "10px",
+                paddingLeft : "20px",
+                paddingRight : "20px",
+                borderTopLeftRadius : "12px",
+                borderTopRightRadius : "12px",
+                borderBottomLeftRadius : "12px",
+                borderBottomRightRadius : "12px",
+                borderWidth : "0px"
+              }
             },
             children: []
           },
@@ -758,7 +780,18 @@ export const components = [
             defaultProps: {
               className: "form-textarea test-component",
               placeholder: "Enter your message",
-              rows: 4
+              rows: 4,
+              style: {
+                paddingTop : "10px",
+                paddingBottom : "10px",
+                paddingLeft : "20px",
+                paddingRight : "20px",
+                borderTopLeftRadius : "12px",
+                borderTopRightRadius : "12px",
+                borderBottomLeftRadius : "12px",
+                borderBottomRightRadius : "12px",
+                borderWidth : "0px"
+              }
             },
             children: []
           },
@@ -946,8 +979,8 @@ export const components = [
                 borderBottomLeftRadius: "6px",
                 borderWidth: "0px",
                 cursor: "pointer",
-                backgroundColor: "#4aa500",
-                color: "white",
+                backgroundColor: "white",
+                color: "#4aa500",
                 fontWeight: "600"
               }
             },

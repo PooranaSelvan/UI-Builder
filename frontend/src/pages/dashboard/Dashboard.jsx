@@ -768,7 +768,7 @@ const Dashboard = () => {
               <div className="page-footer" style={{ justifyContent: page.isPublished ? "space-between" : "flex-end" }}>
                 {page.isPublished && (
                   <div className="page-link">
-                    <p onClick={() => window.open(`/publish/${page.pageUrl}`, "_blank")}>Link</p>
+                    <p onClick={() => window.open(`/publish/${page.pageUrl}`, "_blank")}>Open</p>
                     <Copy size={15} onClick={() => handleCopyLink(page.pageUrl)} />
                   </div>
                 )}
