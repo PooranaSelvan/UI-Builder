@@ -19,6 +19,7 @@
     "@uiw/codemirror-theme-vscode": "^4.25.5",
     "@uiw/react-codemirror": "^4.25.5",
     "axios": "^1.13.4",
+    "change-case": "^5.4.4",
     "date-fns": "^4.1.0",
     "driver.js": "^1.4.0",
     "js-beautify": "^1.8.8",

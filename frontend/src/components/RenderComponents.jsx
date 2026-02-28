@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { VOID_TAGS } from "../pages/workspace/utils/voidTags";
+import { kebabCase } from "change-case";
 
 const RenderComponents = ({ children }) => {
      const [hiddenIds, setHiddenIds] = useState({});
@@ -68,10 +69,9 @@ const RenderComponents = ({ children }) => {
           };
      };
 
-     const createHandlers = (events = {}, baseStyle = {}, id) => {
+     const createHandlers = (events = {}, id) => {
           const res = {};
 
-          // Navigation
           if (events.navigation?.targetPage) {
                res.onClick = (e) => {
                     e.preventDefault();
@@ -90,7 +90,6 @@ const RenderComponents = ({ children }) => {
           } else if (events.onClick) {
                res.onClick = handleAction(events.onClick, "onClick", id);
           }
-
 
           if (events.visibility?.trigger === "hover") {
                const { action, targetId } = events.visibility;
@@ -118,7 +117,6 @@ const RenderComponents = ({ children }) => {
                };
           }
 
-          // Direct mapped events
           if (events.onChange) {
                res.onChange = handleAction(events.onChange, "onChange", id);
           }
@@ -143,14 +141,12 @@ const RenderComponents = ({ children }) => {
      };
 
      const renderElements = (elements) => {
-
           let ele = elements.map((element, index) => {
-               console.log(element);
-               const { id, tag, content, defaultProps = {}, children = [], baseClassName } = element;
+               const { id, tag, content, defaultProps = {}, children = [] } = element;
                const { events, style: rawStyle = {}, mediaquery, ...rest } = defaultProps;
-               const { res } = createHandlers(events, rawStyle, id);
-               let elementStyle = { ...rawStyle };
+               const { res } = createHandlers(events, id);
                let mediaQuery = mediaquery?.style || "";
+               let elementStyle = {};
 
                if (hoveredIds[id] && events?.style) {
                     if (events.style.hoverColor) {
@@ -170,16 +166,26 @@ const RenderComponents = ({ children }) => {
 
                let orginalClassName = removeClass(rest.className) || "";
 
-               const props = { ...rest, ...res, id, style: elementStyle, className: orginalClassName };
-               const key = id || `${tag}-${index}`;
+               let convertedCase = Object.keys(rawStyle).reduce((acc, key) => {
+                    acc[kebabCase(key)] = rawStyle[key];
+                    return acc;
+               }, {});
 
-               // let sample = removeClass(Array.from(new Set([...orginalClassName.split(" "), baseClassName && baseClassName.split(" ")].flat(Infinity))).join(" ")) || "";
+               let css = `.${orginalClassName} {
+                    \n${Object.entries(convertedCase) .map(([key, value]) => `  ${key}: ${value};`).join("\n")}
+               \n}`;
+
+               if (mediaQuery) {
+                    css += "\n" + mediaQuery;
+               }
+
+               const props = { ...rest, ...res, id, ...(Object.keys(elementStyle).length > 0 ? { style: elementStyle } : {}), className: orginalClassName };
 
                if (VOID_TAGS.has(tag)) {
                     return (
                          <>
-                              {mediaQuery && <style>{mediaQuery}</style>}
-                              {React.createElement(tag, { key, ...props })}
+                              <style>{css}</style>
+                              {React.createElement(tag, { ...props })}
                          </>
                     );
                }
@@ -188,8 +194,8 @@ const RenderComponents = ({ children }) => {
 
                return (
                     <>
-                         {mediaQuery && <style>{mediaQuery}</style>}
-                         {React.createElement(tag, {key, ...props }, children.length > 0 ? renderElements(children) : textContent)}
+                         <style>{css}</style>
+                         {React.createElement(tag, { ...props }, children.length > 0 ? renderElements(children) : textContent)}
                     </>
                );
           });
