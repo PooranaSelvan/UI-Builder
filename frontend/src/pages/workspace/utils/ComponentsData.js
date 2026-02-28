@@ -14,7 +14,8 @@ import {
   CircleCheck,
   PanelTop,
   AlignStartVertical,
-  LayoutList
+  LayoutList,
+  Video
 } from "lucide-react";
 
 export const components = [
