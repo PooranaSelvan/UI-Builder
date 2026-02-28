@@ -12,7 +12,8 @@ import {
   Heading,
   AlignLeft,
   SquareCheck,
-  CircleCheck
+  CircleCheck,
+  Grid2X2
 } from "lucide-react";
 
 export const components = [
@@ -30,6 +31,36 @@ export const components = [
         defaultProps: {
           className: "layout-container test-component", style: {
             height: "500px"
+          }
+        },
+        children: []
+      },
+      {
+        id: "flex-container",
+        label: "Flex Container",
+        icon: Grid2X2,
+        tag: "div",
+        rank: 1,
+        content: "Flex Container",
+        defaultProps: {
+          className: "layout-flex test-component", style: {
+            display : "flex",
+            height: "200px"
+          }
+        },
+        children: []
+      },
+      {
+        id: "grid-container",
+        label: "Grid Container",
+        icon: Grid,
+        tag: "div",
+        rank: 1,
+        content: "Grid Container",
+        defaultProps: {
+          className: "layout-grid test-component", style: {
+            display : "grid",
+            height: "200px"
           }
         },
         children: []
@@ -893,15 +924,6 @@ export const components = [
         tag: "hr",
         rank: 4,
         defaultProps: { className: "basic-divider test-component" }
-      },
-      {
-        id: "video",
-        label: "Video",
-        icon: Video,
-        tag: "div",
-        rank: 4,
-        content: "Video placeholder",
-        defaultProps: { className: "basic-video test-component" }
       }
     ]
   },

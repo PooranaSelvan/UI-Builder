@@ -315,8 +315,6 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
         );
     }
 
-    console.log(selectedComponent);
-
     return (
         <aside className='right-panel' onMouseOver={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
             <div className="right-side-main-bar" id='right-sidebar-tour'>
