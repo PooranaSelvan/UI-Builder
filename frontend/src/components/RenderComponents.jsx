@@ -166,35 +166,35 @@ const RenderComponents = ({ children }) => {
 
                let orginalClassName = removeClass(rest.className) || "";
 
-               let convertedCase = Object.keys(rawStyle).reduce((acc, key) => {
-                    acc[kebabCase(key)] = rawStyle[key];
+               let convertedCase = Object.keys(rawStyle).reduce((acc, k) => {
+                    acc[kebabCase(k)] = rawStyle[k];
                     return acc;
                }, {});
 
-               let css = `.${orginalClassName} {
-                    \n${Object.entries(convertedCase) .map(([key, value]) => `  ${key}: ${value};`).join("\n")}
-               \n}`;
+               let css = "";
+               if (id && Object.keys(convertedCase).length > 0) {
+                    css = `#${id} {\n${Object.entries(convertedCase).map(([k, v]) => `  ${k}: ${v};`).join("\n")}\n}`;
+               }
 
                if (mediaQuery) {
                     css += "\n" + mediaQuery;
                }
 
                const props = { ...rest, ...res, id, ...(Object.keys(elementStyle).length > 0 ? { style: elementStyle } : {}), className: orginalClassName };
+               const textContent = id in dynamicText ? dynamicText[id] : content;
 
                if (VOID_TAGS.has(tag)) {
                     return (
                          <>
-                              <style>{css}</style>
+                              {css && <style>{css}</style>}
                               {React.createElement(tag, { ...props })}
                          </>
                     );
                }
 
-               const textContent = id in dynamicText ? dynamicText[id] : content;
-
                return (
                     <>
-                         <style>{css}</style>
+                         {css && <style>{css}</style>}
                          {React.createElement(tag, { ...props }, children.length > 0 ? renderElements(children) : textContent)}
                     </>
                );
