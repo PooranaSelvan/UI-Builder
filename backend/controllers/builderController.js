@@ -177,13 +177,13 @@ const getPageByPageId = async (req, res) => {
 
 
 const getPublishedPage = async (req, res) => {
-     const { pageUrl } = req.params;
+     const { projectName, pageUrl } = req.params;
 
-     if (!pageUrl) {
+     if (!pageUrl || !projectName) {
           return res.status(400).json({ message: "Invalid Page URL!" });
      }
 
-     con.query(getPublishedPageQuery, [pageUrl], (err, result) => {
+     con.query(getPublishedPageQuery, [`${projectName.toLowerCase()}/${pageUrl}`], (err, result) => {
           if (err) {
                console.log(err);
                return res.status(500).json({ message: err?.sqlMessage, error: err });

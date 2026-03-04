@@ -16,7 +16,7 @@
     flex-direction: column;
 }
 
-.empty{
+.empty {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -24,7 +24,7 @@
     width: 19%;
 }
 
-.error-text{
+.error-text {
     color: black;
     text-align: center;
 }
@@ -40,7 +40,7 @@
     position: fixed;
     justify-content: center;
     align-items: center;
-    width: 19%;  
+    width: 19%;
     overflow-x: scroll;
     gap: 40px;
     border-bottom: 1px solid var(--red-300);
@@ -107,11 +107,11 @@
     margin-bottom: 12px;
 }
 
-.properties-toggle .title{
+.properties-toggle .title {
     color: black;
 }
 
-.properties-toggle .btn-icon{
+.properties-toggle .btn-icon {
     color: var(--primary);
 }
 
@@ -151,7 +151,7 @@
     margin-bottom: 5%;
 }
 
-.properties-general div select{
+.properties-general div select {
     padding: 3%;
     color: gray;
     background-color: #F9FAFB;
@@ -161,16 +161,16 @@
 }
 
 #checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
 }
 
 #property-check {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
 }
 
 .properties-event div select {
@@ -182,7 +182,7 @@
     width: 100%;
 }
 
-.event-form label{
+.event-form label {
     display: block;
     margin-bottom: 3px;
     font-size: 10px;
@@ -192,19 +192,19 @@
 }
 
 .checkbox-group {
-  display: flex;
-  gap: 30px;
-  align-items: center;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
 
-.event-form input{
+.event-form input {
     padding: 2%;
     width: 100%;
     font-size: 12px;
@@ -214,7 +214,7 @@
     margin-bottom: 4%;
 }
 
-.event-form select{
+.event-form select {
     padding: 2%;
     color: gray;
     background-color: #F9FAFB;
@@ -235,11 +235,11 @@
     color: gray;
 }
 
-.display-input{
+.display-input {
     width: 100%;
 }
 
-.display-input select{
+.display-input select {
     border-radius: 5px;
     width: 100%;
     padding: 2%;
@@ -249,7 +249,7 @@
     outline: none;
 }
 
-.display-input label{
+.display-input label {
     font-size: 10px;
     text-transform: uppercase;
     font-weight: bold;
@@ -287,7 +287,7 @@
     outline: none;
 }
 
-.custom-css div textarea{
+.custom-css div textarea {
     border-radius: 5px;
     width: 100%;
     padding: 2%;
@@ -299,7 +299,7 @@
     max-width: 100%;
 }
 
-.custom-css div label{
+.custom-css div label {
     display: block;
     margin-bottom: 3px;
     font-size: 10px;
@@ -309,12 +309,12 @@
 }
 
 .cm-editor {
-  font-family: 'Fira Code', monospace !important;
-  font-size: 14px !important;
+    font-family: 'Fira Code', monospace !important;
+    font-size: 14px !important;
 }
 
 .cm-content {
-  letter-spacing: 0.3px !important;
+    letter-spacing: 0.3px !important;
 }
 
 
@@ -360,7 +360,7 @@
     outline: none;
 }
 
-.long-input .grid-input{
+.long-input .grid-input {
     width: 100%;
 }
 
@@ -489,7 +489,7 @@
     background-color: #F9FAFB;
 }
 
-.four-side-grid input[type = "number"]{
+.four-side-grid input[type="number"] {
     text-align: center;
 }
 
@@ -525,7 +525,7 @@
     border-radius: 5px;
 }
 
-.warn-msg{
+.warn-msg {
     width: 100%;
     height: 100%;
     color: black;
@@ -536,7 +536,7 @@
     margin-top: 400px;
 }
 
-.property-select{
+.property-select {
     margin-bottom: 10%;
 }
 
@@ -566,31 +566,41 @@
 .image-input {
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .image-input input {
-    width: 75%;
     border-radius: 5px;
     border: 1px solid #e5e7eb;
-    background-color: #F9FAFB;
+    background-color: white;
     padding: 2%;
-    margin-bottom: 4%;
 }
 
 .image-input button {
     width: 20%;
-    font-weight: 300;
+    font-weight: 500;
     color: white;
-    background-color: #dc2626;
-    font-size: 12px;
-    padding: 2%;
+    background-color: var(--primary);
+    font-size: 14px;
+    padding: 8px 45px;
     cursor: pointer;
     border-radius: 5px;
-    margin-bottom: 4%;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    min-width: 90px;
+    box-shadow: var(--btn-shadow-normal);
+}
+.image-input button:hover {
+    background-color: var(--primary-hover);
+    box-shadow: var(--btn-shadow-hover);
 }
 
-.add-option{
+.add-option {
     padding: 2% 4%;
     background-color: #dc2626;
     color: white;
@@ -602,7 +612,7 @@
     width: 100%;
 }
 
-.border-properties{
+.border-properties {
     width: 100%;
     display: flex;
     align-items: center;
@@ -610,12 +620,12 @@
     gap: 2%;
 }
 
-.border-prop{
+.border-prop {
     width: 48%;
     margin-bottom: 5%;
 }
 
-.border-prop label{
+.border-prop label {
     font-size: 10px;
     text-transform: uppercase;
     font-weight: bold;
@@ -624,7 +634,7 @@
     margin-bottom: 3%;
 }
 
-.border-prop input{
+.border-prop input {
     width: 100%;
     border-radius: 5px;
     border: 1px solid #e5e7eb;
@@ -632,7 +642,7 @@
     padding: 4%;
 }
 
-.border-prop select{
+.border-prop select {
     width: 100%;
     padding: 4%;
     border-radius: 5px;
@@ -893,7 +903,8 @@
 
 .api-connection {
     padding: 4%;
-    border: 1px solid #e5e7eb;;
+    border: 1px solid #e5e7eb;
+    ;
     border-radius: 10px;
 }
 
@@ -938,38 +949,42 @@
     padding: 2%;
 }
 
-.delete-box{
-    background-color: #F9FAFB;
-    padding: 7%;
+.delete-box {
+    background-color: rgba(255, 255, 255, 0.239);
+    backdrop-filter: blur(5px);
+    padding: 9%;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     bottom: 0;
-    top: 5;
+    border-top: 1px solid var(--primary);
 }
 
-.delete-button{
+.delete-button {
     position: fixed;
     color: var(--primary);
-    border: 1px solid var(--red-300);
-    padding: .2% 5%;
-    border-radius: 5px;
-    background-color: #F9FAFB;
+    border: 2px solid var(--primary);
+    padding: 10px 80px;
+    border-radius: 8px;
+    background-color: var(--red-50);
+    bottom: 10px;
+    transition: all 0.3s ease-in-out;
 }
 
-.delete-button:hover{
-    background-color: #FEF2F2;
+.delete-button:hover {
+    background-color: var(--red-100);
 }
 
-.scale{
+.scale {
     width: 100%;
 }
 
-.scale div{
+.scale div {
     width: 100%;
 }
 
-.scale div input{
+.scale div input {
     width: 100%;
     background-color: #F9FAFB;
     outline: none;
@@ -978,7 +993,7 @@
     border-radius: 5px;
 }
 
-.scale div label{
+.scale div label {
     font-size: 10px;
     text-transform: uppercase;
     font-weight: bold;
@@ -987,7 +1002,7 @@
     margin-bottom: 3%;
 }
 
-.properties-class input{
+.properties-class input {
     padding: 2%;
     width: 100%;
     font-size: 12px;
@@ -996,12 +1011,12 @@
     background-color: #F9FAFB;
 }
 
-.api-form{
+.api-form {
     width: 100%;
     margin-top: 5%;
 }
 
-.api-form label{
+.api-form label {
     font-size: 10px;
     text-transform: uppercase;
     font-weight: bold;
@@ -1010,7 +1025,7 @@
     margin-bottom: 3%;
 }
 
-.api-form input{
+.api-form input {
     width: 100%;
     background-color: #F9FAFB;
     outline: none;
@@ -1019,15 +1034,15 @@
     border-radius: 5px;
 }
 
-.content{
+.content {
     margin-top: 8%;
 }
 
-.wrap-input{
+.wrap-input {
     width: 100%;
 }
 
-.wrap-input label{
+.wrap-input label {
     font-size: 10px;
     text-transform: uppercase;
     font-weight: bold;
@@ -1036,7 +1051,7 @@
     margin-bottom: 3%;
 }
 
-.wrap-input select{
+.wrap-input select {
     width: 100%;
     padding: 2%;
     border-radius: 5px;
@@ -1045,11 +1060,11 @@
     outline: none;
 }
 
-.font-input{
+.font-input {
     width: 100%;
 }
 
-.font-input select{
+.font-input select {
     width: 100%;
     padding: 2%;
     border-radius: 5px;
@@ -1058,7 +1073,7 @@
     outline: none;
 }
 
-.font-input label{
+.font-input label {
     font-size: 10px;
     text-transform: uppercase;
     font-weight: bold;
@@ -1068,38 +1083,22 @@
     margin-top: 5%;
 }
 
-.browse-btn {
-  height: 38px;
-  padding: 0 18px;
-  border: none;
-  border-radius: 8px;
-  background: #e53935;
-  color: white;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 90px;
-}
-
 .browse-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid white;
-  border-top: 2px solid transparent;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+    width: 16px;
+    height: 16px;
+    border: 2px solid white;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+    to {
+        transform: rotate(360deg);
+    }
 }

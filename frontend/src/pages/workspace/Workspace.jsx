@@ -11,7 +11,7 @@ import { components as componentLibrary } from "./utils/ComponentsData.js";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
-import { Smartphone, Tablet, MonitorCheck, Fullscreen, Eye, Rocket, Save, Undo2, AlertCircle, Trash2 } from 'lucide-react';
+import { Eye, Rocket, Save, Undo2, AlertCircle, Trash2 } from 'lucide-react';
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/axios.js";
 import Loading from "../../components/Loading.jsx";
@@ -28,7 +28,6 @@ const Workspace = ({ isAuthenticated }) => {
   const [loading, setLoading] = useState(true);
   let navigate = useNavigate();
   const [deleteTargetId, setDeleteTargetId] = useState(null);
-  const fullScreenElement = useRef(null);
 
 
   useEffect(() => {
@@ -475,12 +474,21 @@ const Workspace = ({ isAuthenticated }) => {
 
   const handleNavigatePreview = () => {
     if (components.length === 0) {
-      toast.error("There are no Components Load Preview!", toastErrorStyle);
+      toast.error("There are no Components Load Preview!", { id: "There are no Components Load Preview!", ...toastErrorStyle });
       return;
     }
 
     localStorage.setItem("previewComponents", JSON.stringify(components));
     window.open("/preview", "_blank");
+  }
+
+  const openPublish = () => {
+    if (!page.isPublished) {
+      toast.error("This page is not Published!", { id: "This page is not Published!", ...toastErrorStyle });
+      return;
+    }
+
+    window.open(`${window.location.origin}/publish/${page?.pageUrl}`, "_blank");
   }
 
   const combinedComponents = [
@@ -520,19 +528,23 @@ const Workspace = ({ isAuthenticated }) => {
   }
 
   return (
-    <div ref={fullScreenElement}>
+    <div>
       <DndContext onDragEnd={(e) => { handleDragEnd(e) }} sensors={sensors}>
         <div style={{ display: "flex", height: "93vh", overflow: "hidden", position: "relative" }}>
           <div className="workspace-topbar" id="topbar-tour">
             <div className="workspace-topbar-btns">
               <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleSavePage} disabled={!components.length}>
                 <Save size={20} />
-                Save Page
+                Save
               </Button>
               <Button className="secondary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleNavigatePreview}>
                 <Eye size={20} />
                 Preview
               </Button>
+              <div className="current-url" onClick={openPublish}>
+                {console.log(page)}
+                <p>/publish/{page?.pageUrl}</p>
+              </div>
               {page?.isPublished ? (
                 <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleUnPublishPage}>
                   <Undo2 size={20} />

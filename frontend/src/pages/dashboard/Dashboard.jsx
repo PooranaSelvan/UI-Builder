@@ -147,7 +147,7 @@ const Dashboard = () => {
         projectId: selectedApp.id,
         pageName: name,
         description,
-        pageUrl: url,
+        pageUrl: `${selectedApp.name && selectedApp.name.toLowerCase()}/${url}`,
         data: []
       });
 
@@ -803,6 +803,7 @@ const Dashboard = () => {
                 )
               : handleCreateNewPage
           }
+          projectUrl={selectedApp.name}
         />
       </div >
       {showDelete && deleteInfo?.type === "page" && (

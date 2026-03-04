@@ -25,7 +25,7 @@ router.route("/projects").delete(deleteProject);
 
 
 // Published
-router.route("/publish/:pageUrl").get(getPublishedPage);
+router.route("/publish/:projectName/:pageUrl").get(getPublishedPage);
 router.route("/publish").post(publishPage);
 router.route("/publish/un").post(unPublishPage);
 router.route("/check-url/:url").get(checkPageUrl);

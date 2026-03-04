@@ -4,7 +4,7 @@ import { BotMessageSquare, WandSparkles, Copy } from 'lucide-react';
 import Button from '../../../components/Button';
 import toast from 'react-hot-toast';
 
-const PromptModal = ({ setShowAiModel, onSubmit, isGenerating, isGenerated, data }) => {
+const PromptModal = ({ setShowAiModel, onSubmit, isGenerating, isGenerated, data, setData }) => {
      const [prompt, setPrompt] = useState("");
 
      const handleCopyData = async () => {
@@ -39,7 +39,7 @@ const PromptModal = ({ setShowAiModel, onSubmit, isGenerating, isGenerated, data
                          </div>
                     )}
                     <div className="prompt-btns">
-                         <Button className='prompt-cancel-btn' onClick={() => setShowAiModel(false)}>Cancel</Button>
+                         <Button className='prompt-cancel-btn' onClick={() => {setShowAiModel(false); setData(null);}}>Cancel</Button>
                          {!isGenerating ? (
                               <Button className='prompt-generate-btn' onClick={() => onSubmit(prompt)}>
                                    <WandSparkles />

@@ -10,7 +10,7 @@ import { useCustomComponents } from "../../../context/CustomComponentsContext";
 import { SortableContext, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
 
 
-export default function LeftPanel({ components, onEditSavedComponent, onRenameComponent, onChangeIcon, onDeleteComponent, canvasElements, onDeleteCanvasComponent, onSelectComponent,selectedComponentId, setShowAiModel, setGenerated }) {
+export default function LeftPanel({ components, onEditSavedComponent, onRenameComponent, onChangeIcon, onDeleteComponent, canvasElements, onDeleteCanvasComponent, onSelectComponent, selectedComponentId, setShowAiModel, setGenerated, aiData }) {
   const [showJsonModal, setShowJsonModal] = useState(false);
   const [jsonInput, setJsonInput] = useState("");
   const location = useLocation();
@@ -37,6 +37,32 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
       });
     }
   }, [components]);
+
+
+  useEffect(() => {
+    async function addAiData() {
+      if (!aiData) {
+        return;
+      }
+
+      let builtJSON = {
+        ...aiData,
+        id: `${aiData.label}-${Date.now()}`,
+        iconName: aiData.icon || "Square",
+        children: Array.isArray(aiData.children) ? aiData.children : [],
+        defaultProps: aiData.defaultProps || {},
+      };
+
+
+      await addCustomComponent({
+        componentName: builtJSON.label,
+        icon: builtJSON.icon || "Square",
+        data: JSON.stringify([builtJSON])
+      });
+    }
+
+    addAiData();
+  }, [aiData]);
 
 
   const toggleSection = (title) => {
@@ -73,12 +99,12 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
       const raw = JSON.parse(jsonInput);
 
       if (!raw.label || !raw.tag || raw.rank === undefined) {
-        toast.error("Required fields: label, tag, rank", {id : "all-need"});
+        toast.error("Required fields: label, tag, rank", { id: "all-need" });
         return;
       }
 
       if (typeof raw.rank !== "number") {
-        toast.error("rank must be a number", {id : "all-need"});
+        toast.error("rank must be a number", { id: "all-need" });
         return;
       }
 
@@ -100,7 +126,7 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
       setShowJsonModal(false);
 
     } catch (err) {
-      toast.error("Invalid JSON format!", {id : "all-need"});
+      toast.error("Invalid JSON format!", { id: "all-need" });
     }
   };
 
@@ -209,7 +235,7 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
     );
   }
 
- 
+
   return (
     <>
       <aside className="left-panel" style={{ width: `${widthPercent}%` }}>
@@ -319,9 +345,9 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
             <p className="no-results">No components found</p>
           )}
 
-          {/* AI Integrated */}
+          {/* AI */}
           {isComponentEditor && activeTab === "components" && (
-            <button className="json-ai" onClick={() => {setShowAiModel(true); setGenerated(false);}}>
+            <button className="json-ai" onClick={() => { setShowAiModel(true); setGenerated(false); }}>
               <BotMessageSquare />
               Create with AI
             </button>
@@ -345,17 +371,17 @@ export default function LeftPanel({ components, onEditSavedComponent, onRenameCo
             <div className="json-modal-box">
               <div className="modal-header">
                 <h4>Add Component via JSON</h4>
-                <X size={18} 
-                onClick={() => {
-                  setJsonInput("");
-                  setShowJsonModal(false);
+                <X size={18}
+                  onClick={() => {
+                    setJsonInput("");
+                    setShowJsonModal(false);
                   }} />
               </div>
 
               <textarea
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
-                
+
                 className="json-textarea"
                 placeholder={`Sample JSON:
 {

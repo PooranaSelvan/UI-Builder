@@ -613,7 +613,6 @@ const ComponentEditor = () => {
           }
         });
 
-      console.log(res);
       setGeneratedComponent(JSON.parse(res.data.response));
     } catch (error) {
       console.log(error);
@@ -688,6 +687,7 @@ const ComponentEditor = () => {
             selectedComponentId={selectedComponentId}
             setShowAiModel={setShowAiModel}
             setGenerated={setGenerated}
+            aiData={generatedComponent}
           />
 
           <Canvas
@@ -707,7 +707,7 @@ const ComponentEditor = () => {
 
       {/* Ai Modal */}
       {showAiModel && (
-        <PromptModal setShowAiModel={setShowAiModel} isGenerated={generated} data={generatedComponent} onSubmit={generateComponent} isGenerating={generating} />
+        <PromptModal setShowAiModel={setShowAiModel} isGenerated={generated} data={generatedComponent} setData={setGeneratedComponent} onSubmit={generateComponent} isGenerating={generating} />
       )}
 
 

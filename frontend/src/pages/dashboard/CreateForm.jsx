@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../../utils/axios.js";
 
-export default function CreateForm({ isOpen, onClose, title, nameLabel, descriptionLabel, buttonText, createNewProject, createNewPage }) {
+export default function CreateForm({ isOpen, onClose, title, nameLabel, descriptionLabel, buttonText, createNewProject, createNewPage, projectUrl }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
@@ -105,8 +105,8 @@ export default function CreateForm({ isOpen, onClose, title, nameLabel, descript
             {createNewPage && (
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", flexDirection: "column", gap: "10px", marginBottom: "10px" }}>
                 <label>URL</label>
-                <div style={{ display: "flex" }}>
-                  <input type="text" disabled value={"/publish"} style={{ border: "none", width: "100px" }} />
+                <div>
+                  <input type="text" disabled value={`/publish/${projectUrl && projectUrl.toLowerCase()}`} style={{ border: "none" }} />
                   <input placeholder="url" value={url} onChange={(e) => handleURLChange(e)} style={{ border: isUrlValid ? "2px solid green" : "2px solid var(--primary)" }} />
                 </div>
               </div>

@@ -32,7 +32,7 @@ export const deleteAllCustomComponentsQuery = "DELETE FROM components WHERE user
 
 export const updatePageData = "UPDATE pages SET data = ?, lastModified = NOW() WHERE pageId = ?";
 
-export const getPageByPageIdQuery = "SELECT p.pageId, p.projectId, p.pageName, p.description, p.data, p.lastModified, p.isPublished, pr.userId FROM pages p JOIN projects pr ON p.projectId = pr.projectId WHERE p.pageId = ?";
+export const getPageByPageIdQuery = "SELECT p.pageId, p.projectId, p.pageName, p.description, p.url, p.data, p.lastModified, p.isPublished, pr.userId FROM pages p JOIN projects pr ON p.projectId = pr.projectId WHERE p.pageId = ?";
 
 export const deleteUserQuery = "DELETE FROM users where userId = ?";
 
