@@ -6,7 +6,7 @@ import RenderComponents from "../../components/RenderComponents";
 import api from "../../utils/axios.js";
 
 const Project = () => {
-  const { projectName, pageUrl } = useParams();
+  const { userName, projectName, pageUrl } = useParams();
   const [components, setComponents] = useState([]);
   const [loading, setLoading] = useState(true);
   let navigate = useNavigate();
@@ -14,7 +14,7 @@ const Project = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        let res = await api.get(`/builder/publish/${projectName}/${pageUrl}`);
+        let res = await api.get(`/builder/publish/${userName}/${projectName}/${pageUrl}`);
 
         setComponents(res.data.data || []);
       } catch (error) {

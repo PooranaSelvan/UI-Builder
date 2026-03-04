@@ -13,11 +13,12 @@ const UpdateForm = ({ isOpen, onClose, pageData, onRename }) => {
      const [isUrlValid, setIsUrlValid] = useState(false);
 
      useEffect(() => {
+          // console.log(pageData.url.split("/")[2]);
           if (pageData) {
                // console.log(pageData);
                setName(pageData.name || "");
                setDescription(pageData.description || "");
-               setUrl(pageData.url || "");
+               setUrl(pageData.url.split("/")[2] || "");
           }
      }, [pageData]);
 
@@ -38,7 +39,7 @@ const UpdateForm = ({ isOpen, onClose, pageData, onRename }) => {
 
           let timer = setTimeout(async () => {
                try {
-                    const res = await api.get(`/builder/check-url/${url}`);
+                    const res = await api.get(`/builder/check-url/${pageData.url.split("/")[0]}/${pageData.url.split("/")[1]}/${url}`);
                     setIsUrlValid(res.data.status);
                } catch (err) {
                     console.log(err);
@@ -54,7 +55,7 @@ const UpdateForm = ({ isOpen, onClose, pageData, onRename }) => {
      const handleUpdate = async (e) => {
           e.preventDefault();
 
-          console.log(name, description, url);
+          // console.log(name, description, url);
 
           if (!name || !description || !url) {
                toast.error("All fields are required!");
@@ -105,8 +106,8 @@ const UpdateForm = ({ isOpen, onClose, pageData, onRename }) => {
 
                               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", flexDirection: "column", gap: "10px", marginBottom: "10px" }}>
                                    <label>URL</label>
-                                   <div style={{ display: "flex" }}>
-                                        <input type="text" disabled value={"/publish"} style={{ border: "none", width: "100px" }} />
+                                   <div>
+                                        <input type="text" disabled value={`/publish/${pageData.url.split("/")[0]}/${pageData.url.split("/")[1]}`} style={{ border: "none" }} />
                                         <input placeholder="url" value={url} onChange={(e) => setUrl(e.target.value)} style={{ border: isUrlValid ? "2px solid green" : "2px solid var(--primary)" }} />
                                    </div>
                               </div>

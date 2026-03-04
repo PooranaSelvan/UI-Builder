@@ -177,13 +177,13 @@ const getPageByPageId = async (req, res) => {
 
 
 const getPublishedPage = async (req, res) => {
-     const { projectName, pageUrl } = req.params;
+     const { userName, projectName, pageUrl } = req.params;
 
-     if (!pageUrl || !projectName) {
+     if (!userName || !pageUrl || !projectName) {
           return res.status(400).json({ message: "Invalid Page URL!" });
      }
 
-     con.query(getPublishedPageQuery, [`${projectName.toLowerCase()}/${pageUrl}`], (err, result) => {
+     con.query(getPublishedPageQuery, [`${userName}/${projectName.toLowerCase()}/${pageUrl}`], (err, result) => {
           if (err) {
                console.log(err);
                return res.status(500).json({ message: err?.sqlMessage, error: err });
@@ -208,13 +208,13 @@ const getPublishedPage = async (req, res) => {
 }
 
 const checkPageUrl = async (req, res) => {
-     const { url } = req.params;
+     const { userName, projectName, url } = req.params;
 
-     if (!url) {
+     if (!userName || !projectName || !url) {
           return res.status(400).json({ message: "All fields are required!" });
      }
 
-     con.query(checkPageUrlQuery, [url], (err, result) => {
+     con.query(checkPageUrlQuery, [`${userName}/${projectName.toLowerCase()}/${url}`], (err, result) => {
           if (err) {
                console.log(err);
                return res.status(500).json({ message: err?.sqlMessage, err });

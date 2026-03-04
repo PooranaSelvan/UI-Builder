@@ -25,10 +25,10 @@ router.route("/projects").delete(deleteProject);
 
 
 // Published
-router.route("/publish/:projectName/:pageUrl").get(getPublishedPage);
+router.route("/publish/:userName/:projectName/:pageUrl").get(getPublishedPage);
 router.route("/publish").post(publishPage);
 router.route("/publish/un").post(unPublishPage);
-router.route("/check-url/:url").get(checkPageUrl);
+router.route("/check-url/:userName/:projectName/:url").get(checkPageUrl);
 
 
 export default router;

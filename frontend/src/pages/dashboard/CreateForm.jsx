@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../../utils/axios.js";
 
-export default function CreateForm({ isOpen, onClose, title, nameLabel, descriptionLabel, buttonText, createNewProject, createNewPage, projectUrl }) {
+export default function CreateForm({ isOpen, onClose, title, nameLabel, descriptionLabel, buttonText, createNewProject, createNewPage, projectUrl, user }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
@@ -27,7 +27,7 @@ export default function CreateForm({ isOpen, onClose, title, nameLabel, descript
 
     let timer = setTimeout(async () => {
       try {
-        const res = await api.get(`/builder/check-url/${url}`);
+        const res = await api.get(`/builder/check-url/${user.email.split("@")[0].split(".")[0].toLowerCase()}/${projectUrl.toLowerCase()}/${url}`);
         setIsUrlValid(res.data.status);
       } catch (err) {
         console.log(err);
@@ -106,7 +106,7 @@ export default function CreateForm({ isOpen, onClose, title, nameLabel, descript
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", flexDirection: "column", gap: "10px", marginBottom: "10px" }}>
                 <label>URL</label>
                 <div>
-                  <input type="text" disabled value={`/publish/${projectUrl && projectUrl.toLowerCase()}`} style={{ border: "none" }} />
+                  <input type="text" disabled value={`/publish/${user.email.split("@")[0].split(".")[0].toLowerCase()}/${projectUrl && projectUrl.toLowerCase()}`} style={{ border: "none" }} />
                   <input placeholder="url" value={url} onChange={(e) => handleURLChange(e)} style={{ border: isUrlValid ? "2px solid green" : "2px solid var(--primary)" }} />
                 </div>
               </div>

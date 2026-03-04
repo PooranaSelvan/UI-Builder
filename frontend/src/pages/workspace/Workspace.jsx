@@ -542,7 +542,6 @@ const Workspace = ({ isAuthenticated }) => {
                 Preview
               </Button>
               <div className="current-url" onClick={openPublish}>
-                {console.log(page)}
                 <p>/publish/{page?.pageUrl}</p>
               </div>
               {page?.isPublished ? (

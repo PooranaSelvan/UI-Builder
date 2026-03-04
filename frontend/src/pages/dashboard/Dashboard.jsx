@@ -36,6 +36,7 @@ const Dashboard = () => {
   const [templateMode, setTemplateMode] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isPageModalOpen, setIsPageModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
   const regenerateIds = (items) => {
     return items.map(item => ({
@@ -62,6 +63,7 @@ const Dashboard = () => {
       try {
         let res = await api.get("/checkme/");
         setUserId(res.data.user.userId);
+        setUser(res.data.user);
       } catch (error) {
         navigate("/login", { replace: true });
       }
@@ -141,13 +143,15 @@ const Dashboard = () => {
       return;
     }
 
+    let builtUrl = `${user.email.split("@")[0].split(".")[0].toLowerCase()}/${selectedApp.name && selectedApp.name.toLowerCase()}/${url}`;
+
     try {
       setLoading(true);
       let res = await api.post("/builder/pages/", {
         projectId: selectedApp.id,
         pageName: name,
         description,
-        pageUrl: `${selectedApp.name && selectedApp.name.toLowerCase()}/${url}`,
+        pageUrl: builtUrl,
         data: []
       });
 
@@ -158,7 +162,7 @@ const Dashboard = () => {
         projectId,
         name: name,
         description,
-        pageUrl: url,
+        pageUrl: builtUrl,
         status: "Draft",
         modified: new Date().toLocaleString(),
         data: [],
@@ -357,17 +361,19 @@ const Dashboard = () => {
       return;
     }
 
+    let builtUrl = `${user.email.split("@")[0].split(".")[0].toLowerCase()}/${selectedApp.name && selectedApp.name.toLowerCase()}/${url}`;
+
     try {
       let res = await api.post("/builder/page/rename", {
         pageId,
         name: pageName,
         description: pageDescription,
-        url
+        url : builtUrl
       });
 
       setSelectedApp((projects) => ({
         ...projects,
-        pages: projects.pages.map((page) => page.id === pageId ? { ...page, pageName, pageDescription, pageUrl: url } : page)
+        pages: projects.pages.map((page) => page.id === pageId ? { ...page, pageName, pageDescription, pageUrl: builtUrl } : page)
       }));
 
       setProjects((projects) =>
@@ -375,7 +381,7 @@ const Dashboard = () => {
           project.id === selectedApp.id ? {
             ...project,
             pages: project.pages.map((page) =>
-              page.id === pageId ? { ...page, pageName, pageDescription, pageUrl: url } : page
+              page.id === pageId ? { ...page, pageName, pageDescription, pageUrl: builtUrl } : page
             )
           } : project
         )
@@ -489,23 +495,26 @@ const Dashboard = () => {
       return;
     }
 
+    let builtUrl = `${user.email.split("@")[0].split(".")[0].toLowerCase()}/${selectedApp.name && selectedApp.name.toLowerCase()}/${url}`;
+
     try {
       setLoading(true);
-      const templateData = regenerateIds(template.data || []);
-      const res = await api.post("/builder/pages/", {
+      let templateData = regenerateIds(template.data || []);
+      
+      let res = await api.post("/builder/pages/", {
         projectId: project.id,
         pageName: name,
         description,
-        pageUrl: url,
+        pageUrl: builtUrl,
         data: templateData
       });
 
-      const newPage = {
+      let newPage = {
         id: res.data.pageId,
         projectId: project.id,
         name,
         description,
-        pageUrl: url,
+        pageUrl: builtUrl,
         data: templateData,
         isPublished: false,
         modified: new Date().toLocaleString()
@@ -582,28 +591,6 @@ const Dashboard = () => {
               />
             ))}
 
-            {selectedApp && !templateMode && (
-              <CreateForm
-                isOpen={showPageForm || isPageModalOpen}
-                onClose={() => {
-                  setShowPageForm(false);
-                  setIsPageModalOpen(false);
-                  setTemplateMode(false);
-                  setSelectedTemplateProject(null);
-                }}
-                title={`Create Page }`}
-                nameLabel="Page Name"
-                descriptionLabel="Page Description"
-                buttonText="Create Page"
-                createNewPage={
-                  templateMode
-                    ? (name, description, url) =>
-                      handleCreateNewPageTemplate(name, description, url, selectedTemplateProject, template)
-                    : handleCreateNewPage
-                }
-              />
-            )}
-
             {showPageForm && templateMode && selectedTemplateProject && (
               <CreateForm
                 isOpen={isPageModalOpen}
@@ -625,6 +612,8 @@ const Dashboard = () => {
                     template
                   )
                 }
+                projectUrl={selectedApp.name}
+                user={user}
               />
             )}
           </div>
@@ -804,6 +793,7 @@ const Dashboard = () => {
               : handleCreateNewPage
           }
           projectUrl={selectedApp.name}
+          user={user}
         />
       </div >
       {showDelete && deleteInfo?.type === "page" && (

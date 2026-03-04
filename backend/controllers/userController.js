@@ -28,7 +28,7 @@ const registerUser = async (req, res) => {
           con.query(signUpUserQuery, [name, email, hashedPassword, false], async (err, result) => {
                if (err) {
                     if (err.code === "ER_DUP_ENTRY") {
-                         return res.status(401).json({ message: "User Already Exists!" });
+                         return res.status(401).json({ message: "Registration failed! Try again Later!" });
                     }
 
                     return res.status(500).json({ message: err?.sqlMessage, err });
