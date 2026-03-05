@@ -368,7 +368,7 @@ const Dashboard = () => {
         pageId,
         name: pageName,
         description: pageDescription,
-        url : builtUrl
+        url: builtUrl
       });
 
       setSelectedApp((projects) => ({
@@ -421,17 +421,20 @@ const Dashboard = () => {
 
 
   //Export feature
-  const downloadJsonFile = (jsonData, fileName = "page.json") => {
-    const blob = new Blob(
+  const downloadJsonFile = (jsonData, fileName) => {
+    let blob = new Blob(
       [JSON.stringify(jsonData, null, 2)],
       { type: "application/json" }
     );
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement("a");
     a.href = url;
     a.download = fileName;
+    
     document.body.appendChild(a);
     a.click();
+    
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
@@ -444,14 +447,17 @@ const Dashboard = () => {
     });
   }
 
-  const downloadHtmlFile = (htmlContent, fileName = "file.html") => {
-    const blob = new Blob([htmlContent], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+  const downloadHtmlFile = (htmlContent, fileName) => {
+    let blob = new Blob([htmlContent], { type: "text/html" });
+    let url = URL.createObjectURL(blob);
+    
+    let a = document.createElement("a");
     a.href = url;
     a.download = fileName;
+    
     document.body.appendChild(a);
     a.click();
+    
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
@@ -461,8 +467,11 @@ const Dashboard = () => {
       toast.error("Invalid Page!");
       return;
     }
+
+
     try {
-      const res = await api.get(`/builder/page/${exportPageId}`);
+      let res = await api.get(`/builder/page/${exportPageId}`);
+      let currentPage = res.data;
       const pageData = res.data.data;
 
       if (!pageData) {
@@ -471,13 +480,13 @@ const Dashboard = () => {
       }
 
       if (type === "json") {
-        downloadJsonFile(pageData, "page-export.json");
+        downloadJsonFile(pageData, `${currentPage?.name}.json`);
       }
 
       if (type === "html") {
         const rawHTML = generateHTML(pageData);
         const formattedHTML = formatHTML(rawHTML);
-        downloadHtmlFile(formattedHTML, "page-export.html");
+        downloadHtmlFile(formattedHTML, `${currentPage?.name}.html`);
       }
 
       setIsExportModalOpen(false);
@@ -500,7 +509,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       let templateData = regenerateIds(template.data || []);
-      
+
       let res = await api.post("/builder/pages/", {
         projectId: project.id,
         pageName: name,

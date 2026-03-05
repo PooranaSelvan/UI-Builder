@@ -21,6 +21,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     width: 19%;
 }
 
@@ -566,8 +567,8 @@
 .image-input {
     width: 100%;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
     gap: 10px;
 }
 
@@ -579,20 +580,14 @@
 }
 
 .image-input button {
-    width: 20%;
     font-weight: 500;
     color: white;
     background-color: var(--primary);
     font-size: 14px;
-    padding: 8px 45px;
+    padding: 8px 20px;
     cursor: pointer;
     border-radius: 5px;
     transition: all 0.3s ease-in-out;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    min-width: 90px;
     box-shadow: var(--btn-shadow-normal);
 }
 .image-input button:hover {

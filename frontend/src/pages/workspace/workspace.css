@@ -24,17 +24,34 @@
      gap: 20px;
 }
 
-.current-url {
-     background-color: white;
-     padding: 10px 40px;
-     border-radius: 999px;
+.current-project {
+     font-weight: 550;
      cursor: pointer;
+     transition: all 0.3s ease-in-out;
+}
+.current-project:hover {
+     color: var(--primary);
+     font-weight: 700;
+}
+.current-url {
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+     justify-content: center;
+     gap: 20px;
+     background-color: white;
+     padding: 10px 20px;
+     border-radius: 999px;
      transition: all 0.3s ease-in-out;
      border: 2px solid var(--primary);
 }
-.current-url:hover {
-     border-color: transparent;
-     background-color: #d1d1d2;
+.current-url svg {
+     cursor: pointer;
+     transition: all 0.3s ease-in-out;
+}
+.current-url svg:hover {
+     color: var(--primary);
+     transform: scale(1.1);
 }
 
 @media (max-width: 1024px) {

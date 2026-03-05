@@ -73,10 +73,7 @@ const ImageUpload = ({ selectedComponent, updateComponent, label }) => {
       <label>{label}</label>
 
       <div className="image-input">
-        <input
-          type="text"
-          placeholder="Enter image URL or upload"
-          value={inputValue}
+        <input type="text" placeholder="Enter image URL or upload" value={inputValue}
           onChange={(e) => {
             setInputValue(e.target.value);
           }}
@@ -108,12 +105,7 @@ const ImageUpload = ({ selectedComponent, updateComponent, label }) => {
           }}
         />
 
-        <button
-          type="button"
-          onClick={() => fileRef.current.click()}
-          disabled={loading}
-          className={`browse-btn ${loading ? "loading" : ""}`}
-        >
+        <button type="button" onClick={() => fileRef.current.click()} disabled={loading} className={`browse-btn ${loading ? "loading" : ""}`}>
           {loading ? (
             <span className="spinner"></span>
           ) : (

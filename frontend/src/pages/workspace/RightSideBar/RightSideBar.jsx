@@ -319,7 +319,7 @@ const RightSideBar = ({ selectedComponent, updateComponent, deleteComponent }) =
     if (!selectedComponent) {
         return (
             <aside className="right-side-main-bar empty" id='right-sidebar-tour'>
-                <p className='error-text'>Select an element to edit</p>
+                <p className='error-text'>Tap a component to bring it to life</p>
             </aside>
         );
     }

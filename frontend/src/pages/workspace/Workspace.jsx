@@ -11,7 +11,7 @@ import { components as componentLibrary } from "./utils/ComponentsData.js";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
-import { Eye, Rocket, Save, Undo2, AlertCircle, Trash2 } from 'lucide-react';
+import { Eye, Rocket, Save, Undo2, AlertCircle, Trash2, ExternalLink } from 'lucide-react';
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/axios.js";
 import Loading from "../../components/Loading.jsx";
@@ -491,6 +491,10 @@ const Workspace = ({ isAuthenticated }) => {
     window.open(`${window.location.origin}/publish/${page?.pageUrl}`, "_blank");
   }
 
+  const handleNavigateDashboard = () => {
+    navigate("/dashboard");
+  }
+
   const combinedComponents = [
     ...componentLibrary,
     ...(customComponents.length
@@ -541,8 +545,13 @@ const Workspace = ({ isAuthenticated }) => {
                 <Eye size={20} />
                 Preview
               </Button>
-              <div className="current-url" onClick={openPublish}>
-                <p>/publish/{page?.pageUrl}</p>
+              <div className="current-url">
+                <div style={{display : "flex", gap : "2px"}}>
+                  <p className="current-project" onClick={handleNavigateDashboard}>{`${page?.pageUrl.split("/")[1]}`}</p>
+                  <p>/</p>
+                  <p>{`${page?.pageUrl.split("/")[2]}`}</p>
+                </div>
+                <ExternalLink size={20} onClick={openPublish} />
               </div>
               {page?.isPublished ? (
                 <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleUnPublishPage}>
