@@ -11,7 +11,7 @@ import { components as componentLibrary } from "./utils/ComponentsData.js";
 import { CustomComponentsContext } from "../../context/CustomComponentsContext";
 import "./workspace.css";
 import Button from "../../components/Button.jsx";
-import { Eye, Rocket, Save, Undo2, AlertCircle, Trash2, ExternalLink } from 'lucide-react';
+import { Eye, Rocket, Save, Undo2, AlertCircle, Trash2, ExternalLink, Cloudy } from 'lucide-react';
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/axios.js";
 import Loading from "../../components/Loading.jsx";
@@ -26,6 +26,7 @@ const Workspace = ({ isAuthenticated }) => {
   const { customComponents } = useContext(CustomComponentsContext);
   const [page, setPage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [pageSaving, setPageSaving] = useState(false);
   let navigate = useNavigate();
   const [deleteTargetId, setDeleteTargetId] = useState(null);
 
@@ -89,6 +90,7 @@ const Workspace = ({ isAuthenticated }) => {
     }
 
     try {
+      setPageSaving(true);
       let res = await api.put(`/builder/pages/${pageId}`, {
         data: components
       });
@@ -102,8 +104,35 @@ const Workspace = ({ isAuthenticated }) => {
       return updatedPage;
     } catch (error) {
       console.log(error.response);
+    } finally {
+      setPageSaving(false);
     }
   }
+
+
+  useEffect(() => {
+    let timer = setTimeout(async () => {
+      try {
+        setPageSaving(true);
+        let res = await api.put(`/builder/pages/${pageId}`, {
+          data: components
+        });
+
+        let updatedPage = { ...page, data: components };
+
+        setPage(ele => ({ ...ele, data: components }));
+        localStorage.setItem("previewComponents", JSON.stringify(components));
+        
+      } catch (error) {
+        console.log(error.response);
+        toast.error("Auto Saving Failed! Please Save Manually!", {...toastErrorStyle, id : "auto-save"});
+      } finally {
+        setPageSaving(false);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [components]);
 
 
   const handlePublishPage = async () => {
@@ -537,16 +566,25 @@ const Workspace = ({ isAuthenticated }) => {
         <div style={{ display: "flex", height: "93vh", overflow: "hidden", position: "relative" }}>
           <div className="workspace-topbar" id="topbar-tour">
             <div className="workspace-topbar-btns">
-              <Button className="primary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleSavePage} disabled={!components.length}>
-                <Save size={20} />
-                Save
+              <Button className="primary-button save-btn" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleSavePage} disabled={!components.length || pageSaving}>
+                {pageSaving ? (
+                  <p>
+                    <Cloudy size={20} />
+                    Saving...
+                  </p>
+                ) : (
+                  <p>
+                    <Save size={20} />
+                    Save
+                  </p>
+                )}
               </Button>
               <Button className="secondary-button" style={{ display: "flex", alignItems: "center", justifyCenter: "center", gap: "10px", padding: "10px 20px" }} onClick={handleNavigatePreview}>
                 <Eye size={20} />
                 Preview
               </Button>
               <div className="current-url">
-                <div style={{display : "flex", gap : "2px"}}>
+                <div style={{ display: "flex", gap: "2px" }}>
                   <p className="current-project" onClick={handleNavigateDashboard}>{`${page?.pageUrl.split("/")[1]}`}</p>
                   <p>/</p>
                   <p>{`${page?.pageUrl.split("/")[2]}`}</p>
