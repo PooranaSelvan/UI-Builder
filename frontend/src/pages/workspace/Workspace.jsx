@@ -585,7 +585,7 @@ const Workspace = ({ isAuthenticated }) => {
               </Button>
               <div className="current-url">
                 <div style={{ display: "flex", gap: "2px" }}>
-                  <p className="current-project" onClick={handleNavigateDashboard}>{`${page?.pageUrl.split("/")[1]}`}</p>
+                  <p className="current-project" onClick={handleNavigateDashboard}>{`${page?.pageUrl && page?.pageUrl.split("/")[1]}`}</p>
                   <p>/</p>
                   <p>{`${page?.pageUrl.split("/")[2]}`}</p>
                 </div>
